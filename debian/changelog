@@ -1,3 +1,55 @@
+python-apt (0.5.36ubuntu3) hoary; urgency=low
+
+  * fixed some reference count problems in the depcache code
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Fri,  1 Apr 2005 23:57:49 +0200
+
+python-apt (0.5.36ubuntu2) hoary; urgency=low
+
+  * return "None" in GetCandidateVer() if no Candidate is found
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Tue, 15 Mar 2005 12:30:06 +0100
+
+python-apt (0.5.36ubuntu1) hoary; urgency=low
+
+  * DepCache.ReadPinFile() added
+  * Fixed a bug in DepCache.Upgrade()
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Wed,  2 Mar 2005 11:32:15 +0100
+
+python-apt (0.5.36) hoary; urgency=low
+
+  * Fix build-depends, somehow lost in merge
+
+ -- Matt Zimmerman <mdz@ubuntu.com>  Sat, 26 Feb 2005 18:53:54 -0800
+
+python-apt (0.5.35) hoary; urgency=low
+
+  * Target hoary this time
+
+ -- Matt Zimmerman <mdz@ubuntu.com>  Sat, 26 Feb 2005 15:57:21 -0800
+
+python-apt (0.5.34) unstable; urgency=low
+
+  * Restore Ubuntu changes
+    - Build python 2.4 as default, add python2.3-apt
+    - Typo fix (Ubuntu #4677)
+
+ -- Matt Zimmerman <mdz@ubuntu.com>  Sat, 26 Feb 2005 15:53:30 -0800
+
+python-apt (0.5.33) unstable; urgency=low
+
+  * Merge michael.vogt@ubuntu.com--2005/python-apt--pkgDepCache--0
+    - Basic depcache API (Ubuntu #6889)
+
+ -- Matt Zimmerman <mdz@ubuntu.com>  Sat, 26 Feb 2005 15:37:48 -0800
+
+python-apt (0.5.32) unstable; urgency=low
+
+  * Update to work with apt 0.5.32 (bzip2 deb support)
+
+ -- Matt Zimmerman <mdz@debian.org>  Sun, 12 Dec 2004 09:44:45 -0800
+
 python-apt (0.5.10) unstable; urgency=low
 
   * Recompile with apt 0.5
