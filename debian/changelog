@@ -1,0 +1,90 @@
+python-apt (0.5.10) unstable; urgency=low
+
+  * Recompile with apt 0.5
+
+ -- Matt Zimmerman <mdz@debian.org>  Fri, 26 Dec 2003 09:09:40 -0800
+
+python-apt (0.5.9) unstable; urgency=low
+
+  * Fix broken object initialization in sourcelist.cc and srcrecords.cc
+    (Closes: #215792)
+
+ -- Matt Zimmerman <mdz@debian.org>  Thu, 25 Dec 2003 12:12:04 -0800
+
+python-apt (0.5.8) unstable; urgency=low
+
+  * Adjust build-depends to build with python2.3.  No other changes.
+  * This seems to break the new source package support, probably because
+    the new source package support is buggy.
+
+ -- Matt Zimmerman <mdz@debian.org>  Fri,  8 Aug 2003 09:01:12 -0400
+
+python-apt (0.5.5.2) unstable; urgency=low
+
+  * Add myself to Uploaders so that bugs don't get tagged as NMU-fixed anymore 
+  * Initial support for working with source packages (Closes: #199716)
+
+ -- Matt Zimmerman <mdz@debian.org>  Tue, 22 Jul 2003 22:20:00 -0400
+
+python-apt (0.5.5.1) unstable; urgency=low
+
+  * DepIterator::GlobOr increments the iterator; don't increment it again.
+    This caused every other dependency to be skipped (Closes: #195805)
+  * Avoid a null pointer dereference when calling keys() on an empty
+    configuration (Closes: #149380) 
+
+ -- Matt Zimmerman <mdz@debian.org>  Mon,  2 Jun 2003 23:18:53 -0400
+
+python-apt (0.5.5) unstable; urgency=low
+
+  * Rebuild with apt 0.5.5
+
+ -- Matt Zimmerman <mdz@debian.org>  Tue,  6 May 2003 10:01:22 -0400
+
+python-apt (0.5.4.9) unstable; urgency=low
+
+  * Parse /var/lib/dpkg/status in examples/tagfile.py, so that it works
+    out of the box (Closes: #175340)
+  * Rebuild with apt 0.5.4.9 (libapt-pkg-libc6.3-5-3.3)
+
+ -- Matt Zimmerman <mdz@debian.org>  Tue, 18 Feb 2003 16:42:24 -0500
+
+python-apt (0.5.4.4) unstable; urgency=low
+
+  * Fix for memory leak with TmpGetCache.
+    Closes: #151489
+  * Include additional examples from Moshe Zadka <m@moshez.org>
+    Closes: #150091, #152048
+  * Rebuild for python2.2, which is now the default version
+    Closes: #158460
+  * No CVS directories in source tarball
+    Closes: #157773
+
+ -- Matt Zimmerman <mdz@debian.org>  Tue, 27 Aug 2002 19:22:10 -0400
+  
+python-apt (0.5.4.3) unstable; urgency=low
+
+  * #include <new> in python/generic.h so that we can build on ia64, which
+    uses g++-2.96 (Closes: #137467)
+
+ -- Matt Zimmerman <mdz@debian.org>  Sat,  9 Mar 2002 23:34:13 -0500
+
+python-apt (0.5.4.2) unstable; urgency=high
+
+  * Fix g++-3.0 compilation issues (Closes: #134020)
+
+ -- Matt Zimmerman <mdz@debian.org>  Sun, 24 Feb 2002 00:20:22 -0500
+
+python-apt (0.5.4.1) unstable; urgency=low
+
+  * Add apt-utils to build-depends, since libapt-pkg-dev doesn't pull it
+    in.  This should allow python-apt to be autobuilt more readily.
+
+ -- Matt Zimmerman <mdz@debian.org>  Sat, 23 Feb 2002 19:01:15 -0500
+
+python-apt (0.5.4) unstable; urgency=low
+
+  * Initial release.
+  * Initial packaging by Jason Gunthorpe, et al.
+
+ -- Matt Zimmerman <mdz@debian.org>  Wed, 16 Jan 2002 01:37:56 -0500
