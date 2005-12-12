@@ -16,10 +16,6 @@
 #include <Python.h>
 									/*}}}*/
 
-struct PkgSourceListStruct
-{
-   pkgSourceList List;
-};
     
 // PkgsourceList Class							/*{{{*/
 // ---------------------------------------------------------------------
@@ -27,23 +23,40 @@ struct PkgSourceListStruct
 static char *doc_PkgSourceListFindIndex = "xxx";
 static PyObject *PkgSourceListFindIndex(PyObject *Self,PyObject *Args)
 {   
-   PkgSourceListStruct &Struct = GetCpp<PkgSourceListStruct>(Self);
+   pkgSourceList *list = GetCpp<pkgSourceList*>(Self);
    return Py_BuildValue("i", 1);
 }
 
 static char *doc_PkgSourceListReadMainList = "xxx";
 static PyObject *PkgSourceListReadMainList(PyObject *Self,PyObject *Args)
 {
-   PkgSourceListStruct &Struct = GetCpp<PkgSourceListStruct>(Self);
-   Struct.List.ReadMainList();
+   pkgSourceList *list = GetCpp<pkgSourceList*>(Self);
+   bool res = list->ReadMainList();
 
-   return Py_None;
+   return HandleErrors(Py_BuildValue("b",res));
+}
+
+static char *doc_PkgSourceListGetIndexes = "Load the indexes into the fetcher";
+static PyObject *PkgSourceListGetIndexes(PyObject *Self,PyObject *Args)
+{
+   pkgSourceList *list = GetCpp<pkgSourceList*>(Self);
+
+   PyObject *pyFetcher;
+   
+   if (PyArg_ParseTuple(Args, "O!",&PkgAcquireType,&pyFetcher) == 0) 
+      return 0;
+
+   pkgAcquire *fetcher = GetCpp<pkgAcquire*>(pyFetcher);
+   bool res = list->GetIndexes(fetcher);
+
+   return HandleErrors(Py_BuildValue("b",res));
 }
 
 static PyMethodDef PkgSourceListMethods[] = 
 {
    {"FindIndex",PkgSourceListFindIndex,METH_VARARGS,doc_PkgSourceListFindIndex},
    {"ReadMainList",PkgSourceListReadMainList,METH_VARARGS,doc_PkgSourceListReadMainList},
+   {"GetIndexes",PkgSourceListGetIndexes,METH_VARARGS,doc_PkgSourceListReadMainList},
    {}
 };
 
@@ -56,10 +69,10 @@ PyTypeObject PkgSourceListType =
    PyObject_HEAD_INIT(&PyType_Type)
    0,			                // ob_size
    "pkgSourceList",                          // tp_name
-   sizeof(CppOwnedPyObject<PkgSourceListStruct>),   // tp_basicsize
+   sizeof(CppPyObject<pkgSourceList*>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppOwnedDealloc<PkgSourceListStruct>,   // tp_dealloc
+   CppDealloc<pkgSourceList*>,   // tp_dealloc
    0,                                   // tp_print
    PkgSourceListAttr,                      // tp_getattr
    0,                                   // tp_setattr
@@ -73,6 +86,6 @@ PyTypeObject PkgSourceListType =
 
 PyObject *GetPkgSourceList(PyObject *Self,PyObject *Args)
 {
-   return CppPyObject_NEW<PkgSourceListStruct>(&PkgSourceListType);
+   return CppPyObject_NEW<pkgSourceList*>(&PkgSourceListType,new pkgSourceList());
 }
 
