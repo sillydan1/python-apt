@@ -1,3 +1,12 @@
+python-apt (0.6.16ubuntu3) dapper; urgency=low
+
+  * typos fixed (thanks to Gustavo Franco)
+  * pkgRecords.Record added to get raw record data
+  * python/cache.cc: "key" in pkgCache::VerIterator.DependsList[key] is
+                     no longer locale specific but always englis
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Tue, 21 Feb 2006 19:23:09 +0100
+
 python-apt (0.6.16ubuntu2) dapper; urgency=low
 
   * Drop python2.3 package.
