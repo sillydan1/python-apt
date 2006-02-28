@@ -112,8 +112,6 @@ class Cache(object):
     def _runFetcher(self, fetcher):
         # do the actual fetching
         res = fetcher.Run()
-        if res == fetcher.ResultFailed:
-            return False
         
         # now check the result (this is the code from apt-get.cc)
         failed = False
@@ -148,7 +146,6 @@ class Cache(object):
         # now run the fetcher, throw exception if something fails to be
         # fetched
         res = self._runFetcher(fetcher)
-        
         # cleanup
         os.close(lock)
         return res
@@ -165,8 +162,9 @@ class Cache(object):
         self._list.GetIndexes(fetcher)
         # now run the fetcher, throw exception if something fails to be
         # fetched
-        res = self._runFetcher(fetcher)
-        return res
+        if self._runFetcher(fetcher) == fetcher.ResultContinue:
+            return True
+        return False
         
     def installArchives(self, pm, installProgress):
         installProgress.startUpdate()
