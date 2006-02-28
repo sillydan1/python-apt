@@ -1,3 +1,167 @@
+python-apt (0.6.16.2ubuntu1) dapper; urgency=low
+
+  * apt/progress.py: 
+    - added InstallProgress.statusChange(pkg, percent, status) 
+    - make DumbInstallProgress a new-style class 
+      (thanks to kamion for the suggestions)
+    - fix various pychecker warnings
+  * apt/cache.py, apt/package.py: fix various pychecker warnings
+
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Tue, 28 Feb 2006 12:04:37 +0100
+
+python-apt (0.6.16.1) unstable; urgency=low
+
+  * memleak fixed when pkgCache objects are deallocated
+  * typos fixed (thanks to Gustavo Franco)
+  * pkgRecords.Record added to get raw record data
+  * python/cache.cc: "key" in pkgCache::VerIterator.DependsList[key] is
+                     no longer locale specific but always english
+
+ -- Michael Vogt <mvo@debian.org>  Wed, 22 Feb 2006 10:41:13 +0100
+
+python-apt (0.6.16) unstable; urgency=low
+
+  * added GetPkgAcqFile to queue individual file downloads with the 
+    system (dosn't make use of the improved pkgAcqFile yet)
+  * added SourceList.GetIndexes()
+  * rewrote apt.cache.update() to use the improved aquire interface
+  * apt/ API change: apt.Package.candidateOrigin returns a list of origins 
+    now instead of a single one
+  * apt_pkg.Cdrom.Add() returns a boolean now, CdromProgress has totalSteps
+  * added support for pkgIndexFile and added SourcesList.FindIndex()
+  * added "trusted" to the Origin class
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Thu,  5 Jan 2006 00:56:36 +0100
+
+python-apt (0.6.15) unstable; urgency=low
+
+  * rewrote cache.Commit() and make it raise proper Exception if stuff
+    goes wrong
+  * fix a invalid return from cache.commit(), fail if a download failed
+  * apt.Package.candidateOrigin returns a class now
+  * added pkgAcquire, pkgPackageManager and a example (acquire.py)
+  * tightend build-dependencies for new apt and the c++ transition
+
+ -- Michael Vogt <mvo@debian.org>  Mon, 28 Nov 2005 23:48:37 +0100
+
+python-apt (0.6.14) unstable; urgency=low
+
+  * doc/examples/build-deps.py:
+    - fixed/improved (thanks to Martin Michlmayr, closes: #321507)
+  * apt_pkg.Cache.Update() does no longer reopen the cache
+    (this is the job of the caller now)
+  * python/srcrecords.cc:
+    - support for "srcrecords.Files" added
+    - always run "Restart" before performing a Lookup 
+  * export locking via: GetLock(),PkgSystem{Lock,UnLock} 
+  * apt/cache.py:
+    - added  __iter__ to make "for pkg in apt.Cache:" stuff possible
+
+ -- Michael Vogt <mvo@debian.org>  Wed,  9 Nov 2005 04:52:08 +0100
+
+python-apt (0.6.13) unstable; urgency=low
+
+  * support for depcache added
+  * support for the PkgProblemResolver added
+  * support for PkgSrcRecord.BuildDepends added
+  * support for cdrom handling (add, ident) added
+  * support for progress reporting from operations added
+    (e.g. OpProgress, FetchProgress, InstallProgress, CdromProgress)
+  * added tests/ directory with various tests for the code
+  * native apt/ python directory added that contains
+    a more pythonic interface to apt_pkg
+  * made the apt/ python code PEP08 conform
+  * python exceptions return the apt error message now 
+    (thanks to Chris Halls for the patch)
+  
+ -- Michael Vogt <mvo@debian.org>  Fri,  5 Aug 2005 10:30:31 +0200
+
+python-apt (0.6.12.2) unstable; urgency=low
+
+   * rebuild against the latest apt (c++ transition)
+
+ -- Michael Vogt <mvo@debian.org>  Mon, 1 Aug 2005 11:06:03 +0200
+
+python-apt (0.6.12.1) unstable; urgency=low
+
+   * rebuild against the latest apt
+
+ -- Michael Vogt <mvo@debian.org>  Tue, 28 Jun 2005 18:29:57 +0200 
+
+python-apt (0.6.12ubuntu1) breezy; urgency=low
+
+  * Greek0@gmx.net--2005-main/python-apt--debian--0.6:
+    - python2.{3,4}-apt conflicts with python-apt (<< 0.6.11)
+      (closes: #308586)
+      (closes ubuntu: #11380)
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Thu, 12 May 2005 11:34:05 +0200
+
+python-apt (0.6.12) breezy; urgency=low
+  
+  * added a tests/ directory
+  * added tests/pkgsrcrecords.py that will check if the pkgsrcrecords
+    interface does not segfault
+  * new native python "apt" interface that hides the details of apt_pkg
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Fri,  6 May 2005 10:11:52 +0200
+  
+python-apt (0.6.11) experimental; urgency=low
+
+  * fixed some reference count problems in the depcache and 
+    pkgsrcrecords code
+  * DepCache.Init() is never called implicit now
+  * merged with python-apt tree from Greek0@gmx.net--2005-main
+
+ -- Michael Vogt <mvo@debian.org>  Fri,  6 May 2005 10:04:38 +0200
+
+python-apt (0.5.36ubuntu2) hoary; urgency=low
+
+  * return "None" in GetCandidateVer() if no Candidate is found
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Tue, 15 Mar 2005 12:30:06 +0100
+
+python-apt (0.5.36ubuntu1) hoary; urgency=low
+
+  * DepCache.ReadPinFile() added
+  * Fixed a bug in DepCache.Upgrade()
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Wed,  2 Mar 2005 11:32:15 +0100
+
+python-apt (0.5.36) hoary; urgency=low
+
+  * Fix build-depends, somehow lost in merge
+
+ -- Matt Zimmerman <mdz@ubuntu.com>  Sat, 26 Feb 2005 18:53:54 -0800
+
+python-apt (0.5.35) hoary; urgency=low
+
+  * Target hoary this time
+
+ -- Matt Zimmerman <mdz@ubuntu.com>  Sat, 26 Feb 2005 15:57:21 -0800
+
+python-apt (0.5.34) unstable; urgency=low
+
+  * Restore Ubuntu changes
+    - Build python 2.4 as default, add python2.3-apt
+    - Typo fix (Ubuntu #4677)
+
+ -- Matt Zimmerman <mdz@ubuntu.com>  Sat, 26 Feb 2005 15:53:30 -0800
+
+python-apt (0.5.33) unstable; urgency=low
+
+  * Merge michael.vogt@ubuntu.com--2005/python-apt--pkgDepCache--0
+    - Basic depcache API (Ubuntu #6889)
+
+ -- Matt Zimmerman <mdz@ubuntu.com>  Sat, 26 Feb 2005 15:37:48 -0800
+
+python-apt (0.5.32) unstable; urgency=low
+
+  * Update to work with apt 0.5.32 (bzip2 deb support)
+
+ -- Matt Zimmerman <mdz@debian.org>  Sun, 12 Dec 2004 09:44:45 -0800
+
 python-apt (0.5.10) unstable; urgency=low
 
   * Recompile with apt 0.5
