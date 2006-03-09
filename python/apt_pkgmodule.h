@@ -52,6 +52,7 @@ PyObject *StrCheckDomainList(PyObject *Self,PyObject *Args);
    
 // Cache Stuff
 extern PyTypeObject PkgCacheType;
+extern PyTypeObject PkgCacheFileType;
 extern PyTypeObject PkgListType;
 extern PyTypeObject PackageType;
 extern PyTypeObject PackageFileType;
@@ -59,10 +60,39 @@ extern PyTypeObject DependencyType;
 extern PyTypeObject RDepListType;
 PyObject *TmpGetCache(PyObject *Self,PyObject *Args);
 
+// DepCache
+extern PyTypeObject PkgDepCacheType;
+PyObject *GetDepCache(PyObject *Self,PyObject *Args);
+
+// pkgProblemResolver
+extern PyTypeObject PkgProblemResolverType;
+PyObject *GetPkgProblemResolver(PyObject *Self, PyObject *Args);
+
+// cdrom
+extern PyTypeObject PkgCdromType;
+PyObject *GetCdrom(PyObject *Self,PyObject *Args);
+
+// acquire
+extern PyTypeObject PkgAcquireType;
+PyObject *GetAcquire(PyObject *Self,PyObject *Args);
+PyObject *GetPkgAcqFile(PyObject *Self, PyObject *Args, PyObject *kwds);
+
+// packagemanager
+extern PyTypeObject PkgManagerType;
+PyObject *GetPkgManager(PyObject *Self,PyObject *Args);
+
+
 // PkgRecords Stuff
 extern PyTypeObject PkgRecordsType;
 PyObject *GetPkgRecords(PyObject *Self,PyObject *Args);
 PyObject *GetPkgSrcRecords(PyObject *Self,PyObject *Args);
+
+// pkgSourceList
+extern PyTypeObject PkgSourceListType;
 PyObject *GetPkgSourceList(PyObject *Self,PyObject *Args);
+
+// pkgSourceList
+extern PyTypeObject PackageIndexFileType;
+
 
 #endif
