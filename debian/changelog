@@ -1,3 +1,9 @@
+python-apt (0.6.16.2ubuntu8.1) dapper-proposed; urgency=low
+
+  * protect against not-parsable strings send from dpkg (lp: 68553)
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Tue, 30 Jan 2007 10:47:46 +0100
+
 python-apt (0.6.16.2ubuntu8) dapper; urgency=low
 
   * apt/package.py:
