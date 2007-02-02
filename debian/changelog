@@ -1,3 +1,13 @@
+python-apt (0.6.20ubuntu2) feisty; urgency=low
+
+  * python/depcache.cc:
+    - MarkInstall() has new FromUser argument to support marking
+      packages as automatically installed
+  * merged the 'aptsources' module for sources.list handling 
+    (thanks to Sebastian Heinlein)
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Fri,  2 Feb 2007 16:26:38 +0100
+
 python-apt (0.6.20ubuntu1) feisty; urgency=low
 
   * merged from debian
