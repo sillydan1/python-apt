@@ -1,3 +1,10 @@
+python-apt (0.6.20ubuntu6) feisty; urgency=low
+
+  * Build the extension for the debug interpreter.
+  * Set Ubuntu maintainer address.
+
+ -- Matthias Klose <doko@ubuntu.com>  Sat, 17 Feb 2007 02:10:37 +0100
+
 python-apt (0.6.20ubuntu5) feisty; urgency=low
 
   * be more robust in has_repository (LP#84897)
