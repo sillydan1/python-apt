@@ -1,3 +1,13 @@
+python-apt (0.6.20ubuntu7) feisty; urgency=low
+
+  * aptsources/distro.py:
+    - fix crash in add_source (LP#85806)
+  * apt/package.py:
+    - handle invalid unicode more gracefully (LP#86215)
+  * rebuild against latest apt
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 26 Feb 2007 14:31:00 +0100
+
 python-apt (0.6.20ubuntu6) feisty; urgency=low
 
   * Build the extension for the debug interpreter.
