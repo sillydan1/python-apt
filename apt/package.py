@@ -24,6 +24,10 @@ import sys
 import random
 import string
 
+#from gettext import gettext as _
+import gettext
+def _(s): return gettext.dgettext("python-apt", s)
+
 class BaseDependency(object):
     " a single dependency "
     def __init__(self, name, rel, ver, pre):
