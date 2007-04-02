@@ -1,3 +1,13 @@
+python-apt (0.6.20ubuntu15) feisty; urgency=low
+
+  [ Sebastian Heinlein ]
+  * Update the mirror lists from Launchpad
+  * Only include http and ftp servers - LP#99060
+  [Michael Vogt]
+  * fix error in invalid unicode handler (LP#99753)
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon,  2 Apr 2007 14:25:31 +0200
+
 python-apt (0.6.20ubuntu14) feisty; urgency=low
 
   [Michael Vogt]
@@ -10,7 +20,7 @@ python-apt (0.6.20ubuntu14) feisty; urgency=low
   * remove an oboslete function
   * fix the url comparision with trainling slashes - LP#95031
 
- -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 26 Mar 2007 18:47:22 +0200
+ --
 
 python-apt (0.6.20ubuntu13) feisty; urgency=low
 
