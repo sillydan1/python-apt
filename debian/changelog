@@ -1,4 +1,11 @@
-python-apt (0.6.20ubuntu15) feisty; urgency=low
+python-apt (0.6.20ubuntu16) feisty; urgency=low
+
+  * Fix the addition of of sources that are already enabled but not with
+    all components - fix LP#98795
+
+ -- Sebastian Heinlein <glatzor@ubuntu.com>  Wed,  4 Apr 2007 11:31:33 +0200
+
+python-apt (0.6.20ubuntu15) unstable; urgency=low
 
   [ Sebastian Heinlein ]
   * Update the mirror lists from Launchpad
@@ -20,7 +27,7 @@ python-apt (0.6.20ubuntu14) feisty; urgency=low
   * remove an oboslete function
   * fix the url comparision with trainling slashes - LP#95031
 
- --
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 26 Mar 2007 18:47:22 +0200
 
 python-apt (0.6.20ubuntu13) feisty; urgency=low
 
