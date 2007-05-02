@@ -1,5 +1,57 @@
 ChangelogURI: http://changelogs.ubuntu.com/changelogs/pool/%s/%s/%s/%s_%s/changelog
 
+Suite: gutsy
+RepositoryType: deb
+BaseURI: http://archive.ubuntu.com/ubuntu/
+MatchURI: archive.ubuntu.com/ubuntu
+MirrorsFile: /usr/share/python-apt/templates/Ubuntu.mirrors
+Description: Ubuntu 7.10 'Gutsy Gibbon'
+Component: main
+CompDescription: Officially supported
+CompDescriptionLong: Canonical-supported Open Source software
+Component: universe
+CompDescription: Community-maintained
+CompDescriptionLong: Community-maintained Open Source software
+Component: restricted
+CompDescription: Non-free drivers
+CompDescriptionLong: Proprietary drivers for devices
+Component: multiverse
+CompDescription: Restricted software
+CompDescriptionLong: Software restricted by copyright or legal issues
+
+Suite: gutsy
+MatchName: .*
+BaseURI: cdrom:\[Ubuntu.*7.10
+Description: Cdrom with Ubuntu 7.10 'Gutsy Gibbon'
+Available: False
+Component: main
+CompDescription: Officially supported
+Component: restricted
+CompDescription: Restricted copyright
+
+Suite: gutsy-security
+ParentSuite: gutsy
+RepositoryType: deb
+BaseURI: http://security.ubuntu.com/ubuntu/
+MatchURI: archive.ubuntu.com/ubuntu|security.ubuntu.com
+Description: Important security updates
+
+Suite: gutsy-updates
+ParentSuite: gutsy
+RepositoryType: deb
+Description: Recommended updates
+
+Suite: gutsy-proposed
+ParentSuite: gutsy
+RepositoryType: deb
+Description: Pre-released updates
+
+Suite: gutsy-backports
+ParentSuite: gutsy
+RepositoryType: deb
+Description: Unsupported updates
+
+
 Suite: feisty
 RepositoryType: deb
 BaseURI: http://archive.ubuntu.com/ubuntu/
