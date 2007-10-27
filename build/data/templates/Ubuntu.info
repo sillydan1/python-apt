@@ -1,5 +1,57 @@
 ChangelogURI: http://changelogs.ubuntu.com/changelogs/pool/%s/%s/%s/%s_%s/changelog
 
+Suite: hardy
+RepositoryType: deb
+BaseURI: http://archive.ubuntu.com/ubuntu/
+MatchURI: archive.ubuntu.com/ubuntu
+MirrorsFile: /usr/share/python-apt/templates/Ubuntu.mirrors
+Description: Ubuntu 8.04 'Hardy Heron'
+Component: main
+CompDescription: Officially supported
+CompDescriptionLong: Canonical-supported Open Source software
+Component: universe
+CompDescription: Community-maintained
+CompDescriptionLong: Community-maintained Open Source software
+Component: restricted
+CompDescription: Non-free drivers
+CompDescriptionLong: Proprietary drivers for devices
+Component: multiverse
+CompDescription: Restricted software
+CompDescriptionLong: Software restricted by copyright or legal issues
+
+Suite: hardy
+MatchName: .*
+BaseURI: cdrom:\[Ubuntu.*8.04
+Description: Cdrom with Ubuntu 8.04 'Hardy Heron'
+Available: False
+Component: main
+CompDescription: Officially supported
+Component: restricted
+CompDescription: Restricted copyright
+
+Suite: hardy-security
+ParentSuite: hardy
+RepositoryType: deb
+BaseURI: http://security.ubuntu.com/ubuntu/
+MatchURI: archive.ubuntu.com/ubuntu|security.ubuntu.com
+Description: Important security updates
+
+Suite: hardy-updates
+ParentSuite: hardy
+RepositoryType: deb
+Description: Recommended updates
+
+Suite: hardy-proposed
+ParentSuite: hardy
+RepositoryType: deb
+Description: Pre-released updates
+
+Suite: hardy-backports
+ParentSuite: hardy
+RepositoryType: deb
+Description: Unsupported updates
+
+
 Suite: gutsy
 RepositoryType: deb
 BaseURI: http://archive.ubuntu.com/ubuntu/
