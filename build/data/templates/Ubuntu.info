@@ -1,5 +1,57 @@
 ChangelogURI: http://changelogs.ubuntu.com/changelogs/pool/%s/%s/%s/%s_%s/changelog
 
+Suite: intrepid
+RepositoryType: deb
+BaseURI: http://archive.ubuntu.com/ubuntu/
+MatchURI: archive.ubuntu.com/ubuntu
+MirrorsFile: /usr/share/python-apt/templates/Ubuntu.mirrors
+Description: Ubuntu 8.10 'Intrepid Ibex'
+Component: main
+CompDescription: Officially supported
+CompDescriptionLong: Canonical-supported Open Source software
+Component: universe
+CompDescription: Community-maintained
+CompDescriptionLong: Community-maintained Open Source software
+Component: restricted
+CompDescription: Non-free drivers
+CompDescriptionLong: Proprietary drivers for devices
+Component: multiverse
+CompDescription: Restricted software
+CompDescriptionLong: Software restricted by copyright or legal issues
+
+Suite: intrepid
+MatchName: .*
+BaseURI: cdrom:\[Ubuntu.*8.10
+Description: Cdrom with Ubuntu 8.10 'Intrepid Ibex'
+Available: False
+Component: main
+CompDescription: Officially supported
+Component: restricted
+CompDescription: Restricted copyright
+
+Suite: intrepid-security
+ParentSuite: intrepid
+RepositoryType: deb
+BaseURI: http://security.ubuntu.com/ubuntu/
+MatchURI: archive.ubuntu.com/ubuntu|security.ubuntu.com
+Description: Important security updates
+
+Suite: intrepid-updates
+ParentSuite: intrepid
+RepositoryType: deb
+Description: Recommended updates
+
+Suite: intrepid-proposed
+ParentSuite: intrepid
+RepositoryType: deb
+Description: Pre-released updates
+
+Suite: intrepid-backports
+ParentSuite: intrepid
+RepositoryType: deb
+Description: Unsupported updates
+
+
 Suite: hardy
 RepositoryType: deb
 BaseURI: http://archive.ubuntu.com/ubuntu/
