@@ -1,3 +1,15 @@
+python-apt (0.7.4ubuntu7.1) hardy-proposed; urgency=low
+
+  * aptsources/distinfo.py:
+    - support arch specific BaseURI, MatchURI and MirrosFile fields
+      in the distinfo template (LP: 220890)
+  * data/templates/Ubuntu.info.in:
+    - updated to reflect move of powerpc to ports.ubuntu.com
+    - make the mirros file for hardy i386/amd64 only because we
+      only carry those architectures on the main server
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Wed, 28 May 2008 12:05:53 +0200
+
 python-apt (0.7.4ubuntu7) hardy; urgency=low
 
   * data/templates/Ubuntu.mirrors: 
