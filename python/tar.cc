@@ -1,6 +1,6 @@
 // -*- mode: cpp; mode: fold -*-
 // Description								/*{{{*/
-// $Id: tar.cc,v 1.3 2002/02/07 03:35:26 jgg Exp $
+// $Id: tar.cc,v 1.4 2004/12/12 17:55:54 mdz Exp $
 /* ######################################################################
 
    Tar Inteface
@@ -88,7 +88,7 @@ bool ProcessTar::DoItem(Item &Itm,int &Fd)
 // ---------------------------------------------------------------------
 /* */
 char *doc_tarExtract =
-"tarExtract(File,Func,Comp) -> None"
+"tarExtract(File,Func,Comp) -> None\n"
 "The tar file referenced by the file object File, Func called for each\n"
 "Tar member. Comp must be the string \"gzip\" (gzip is automatically invoked) \n";   
 PyObject *tarExtract(PyObject *Self,PyObject *Args)
@@ -110,7 +110,7 @@ PyObject *tarExtract(PyObject *Self,PyObject *Args)
    {
       // Open the file and associate the tar
       FileFd Fd(fileno(PyFile_AsFile(File)),false);
-      ExtractTar Tar(Fd,0xFFFFFFFF);
+      ExtractTar Tar(Fd,0xFFFFFFFF,Comp);
       if (_error->PendingError() == true)
 	 return HandleErrors();
       
@@ -128,7 +128,7 @@ PyObject *tarExtract(PyObject *Self,PyObject *Args)
 // ---------------------------------------------------------------------
 /* */
 char *doc_debExtract =
-"debExtract(File,Func,Chunk) -> None"
+"debExtract(File,Func,Chunk) -> None\n"
 "The deb referenced by the file object File is examined. The AR member\n"
 "given by Chunk is treated as a tar.gz and fed through Func like\n"
 "tarExtract\n";
@@ -137,6 +137,7 @@ PyObject *debExtract(PyObject *Self,PyObject *Args)
    PyObject *File;
    PyObject *Function;
    char *Chunk;
+   const char *Comp = "gzip";
    
    if (PyArg_ParseTuple(Args,"O!Os",&PyFile_Type,&File,
 			&Function,&Chunk) == 0)
@@ -160,12 +161,16 @@ PyObject *debExtract(PyObject *Self,PyObject *Args)
       const ARArchive::Member *Member = Deb.GotoMember(Chunk);
       if (Member == 0)
       {
-	 _error->Error("Cannot fund chunk %s",Chunk);
+	 _error->Error("Cannot find chunk %s",Chunk);
 	 return HandleErrors();
       }
       
       // Extract it.
-      ExtractTar Tar(Deb.GetFile(),Member->Size);
+      if (strcmp(".bz2", &Chunk[strlen(Chunk)-4]) == 0)
+	      Comp = "bzip2";
+      else if(strcmp(".lzma", &Chunk[strlen(Chunk)-5]) == 0)
+	      Comp = "lzma";
+      ExtractTar Tar(Deb.GetFile(),Member->Size,Comp);
       ProcessTar Proc(Function);
       if (Tar.Go(Proc) == false)
 	 return HandleErrors();

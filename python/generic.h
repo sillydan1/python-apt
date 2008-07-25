@@ -31,8 +31,23 @@
 #include <string>
 #include <new>
 
+#if PYTHON_API_VERSION < 1013
+typedef int Py_ssize_t;
+#endif
+
 template <class T> struct CppPyObject : public PyObject
 {
+   // We are only using CppPyObject and friends as dumb structs only, ie the
+   // c'tor is never called. 
+   // However if T doesn't have a default c'tor C++ doesn't generate one for
+   // CppPyObject (since it can't know how it should initialize Object).
+   //
+   // This causes problems then in CppOwnedPyObject, for which C++ can't create
+   // a c'tor that calls the base class c'tor (which causes a compilation
+   // error).
+   // So basically having the c'tor here removes the need for T to have a
+   // default c'tor, which is not always desireable.
+   CppPyObject() { };
    T Object;
 };
 
@@ -98,7 +113,7 @@ template <class T>
 void CppDealloc(PyObject *Obj)
 {
    GetCpp<T>(Obj).~T();
-   PyMem_DEL(Obj);
+   PyObject_DEL(Obj);
 }
 
 template <class T>
@@ -108,7 +123,7 @@ void CppOwnedDealloc(PyObject *iObj)
    Obj->Object.~T();
    if (Obj->Owner != 0)
       Py_DECREF(Obj->Owner);
-   PyMem_DEL(Obj);
+   PyObject_DEL(Obj);
 }
 
 inline PyObject *CppPyString(std::string Str)
