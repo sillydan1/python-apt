@@ -26,6 +26,9 @@ struct PkgSrcRecordsStruct
       List.ReadMainList();
       Records = new pkgSrcRecords(List);
    };
+   ~PkgSrcRecordsStruct() {
+      delete Records;
+   };
 };
     
 // PkgSrcRecords Class							/*{{{*/
@@ -43,15 +46,32 @@ static PyObject *PkgSrcRecordsLookup(PyObject *Self,PyObject *Args)
    Struct.Last = Struct.Records->Find(Name, false);
    if (Struct.Last == 0) {
       Struct.Records->Restart();
-      return Py_None;
+      Py_INCREF(Py_None);
+      return HandleErrors(Py_None);	
    }
 
    return Py_BuildValue("i", 1);
 }
 
+static char *doc_PkgSrcRecordsRestart = "Start Lookup from the begining";
+static PyObject *PkgSrcRecordsRestart(PyObject *Self,PyObject *Args)
+{   
+   PkgSrcRecordsStruct &Struct = GetCpp<PkgSrcRecordsStruct>(Self);
+   
+   char *Name = 0;
+   if (PyArg_ParseTuple(Args,"") == 0)
+      return 0;
+   
+   Struct.Records->Restart();
+
+   Py_INCREF(Py_None);
+   return HandleErrors(Py_None);	
+}
+
 static PyMethodDef PkgSrcRecordsMethods[] = 
 {
    {"Lookup",PkgSrcRecordsLookup,METH_VARARGS,doc_PkgSrcRecordsLookup},
+   {"Restart",PkgSrcRecordsRestart,METH_VARARGS,doc_PkgSrcRecordsRestart},
    {}
 };
 
@@ -69,6 +89,8 @@ static PyObject *PkgSrcRecordsAttr(PyObject *Self,char *Name)
 	 return CppPyString(Struct.Last->Maintainer());
       else if (strcmp("Section",Name) == 0)
 	 return CppPyString(Struct.Last->Section());
+      else if (strcmp("Record",Name) == 0)
+	 return CppPyString(Struct.Last->AsStr());
       else if (strcmp("Binaries",Name) == 0) {
          PyObject *List = PyList_New(0);
 
@@ -76,10 +98,44 @@ static PyObject *PkgSrcRecordsAttr(PyObject *Self,char *Name)
              *b != 0;
              ++b)
             PyList_Append(List, CppPyString(*b));
-
          return List; // todo
-      } else if (strcmp("Files",Name) == 0)
-         return 0; // todo
+      } else if (strcmp("Index",Name) == 0) {
+	 const pkgIndexFile &tmp = Struct.Last->Index();
+	 return CppOwnedPyObject_NEW<pkgIndexFile*>(Self,&PackageIndexFileType, (pkgIndexFile*)&tmp);
+      } else if (strcmp("Files",Name) == 0) {
+         PyObject *List = PyList_New(0);
+
+         vector<pkgSrcRecords::File> f;
+	 if(!Struct.Last->Files(f))
+	    return NULL; // error
+
+	 PyObject *v;
+	 for(unsigned int i=0;i<f.size();i++) {
+	    v = Py_BuildValue("(siss)", 
+			      f[i].MD5Hash.c_str(), 
+			      f[i].Size, 
+			      f[i].Path.c_str(), 
+			      f[i].Type.c_str());
+	    PyList_Append(List, v);
+	    Py_DECREF(v);
+	 }
+         return List;
+      } else if (strcmp("BuildDepends",Name) == 0) {
+         PyObject *List = PyList_New(0);
+
+         vector<pkgSrcRecords::Parser::BuildDepRec> bd;
+	 if(!Struct.Last->BuildDepends(bd, false /* arch-only*/))
+	    return NULL; // error
+
+	 PyObject *v;
+	 for(unsigned int i=0;i<bd.size();i++) {
+	    v = Py_BuildValue("(ssii)", bd[i].Package.c_str(), 
+			      bd[i].Version.c_str(), bd[i].Op, bd[i].Type);
+	    PyList_Append(List, v);
+	    Py_DECREF(v);
+	 }
+         return List;
+      }
    }
    
    return Py_FindMethod(PkgSrcRecordsMethods,Self,Name);
@@ -89,10 +145,10 @@ PyTypeObject PkgSrcRecordsType =
    PyObject_HEAD_INIT(&PyType_Type)
    0,			                // ob_size
    "pkgSrcRecords",                          // tp_name
-   sizeof(CppOwnedPyObject<PkgSrcRecordsStruct>),   // tp_basicsize
+   sizeof(CppPyObject<PkgSrcRecordsStruct>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppOwnedDealloc<PkgSrcRecordsStruct>,   // tp_dealloc
+   CppDealloc<PkgSrcRecordsStruct>,   // tp_dealloc
    0,                                   // tp_print
    PkgSrcRecordsAttr,                      // tp_getattr
    0,                                   // tp_setattr
@@ -108,6 +164,17 @@ PyTypeObject PkgSrcRecordsType =
 
 PyObject *GetPkgSrcRecords(PyObject *Self,PyObject *Args)
 {
-   return CppPyObject_NEW<PkgSrcRecordsStruct>(&PkgSrcRecordsType);
+#if 0
+   PyObject *Owner;
+   if (PyArg_ParseTuple(Args,"O!",&PkgCacheType,&Owner) == 0)
+      return 0;
+
+   return HandleErrors(CppOwnedPyObject_NEW<PkgSrcRecordsStruct>(Owner,
+			   &PkgSrcRecordsType));
+#endif
+   if (PyArg_ParseTuple(Args,"") == 0)
+      return 0;
+   
+   return HandleErrors(CppPyObject_NEW<PkgSrcRecordsStruct>(&PkgSrcRecordsType));
 }
 

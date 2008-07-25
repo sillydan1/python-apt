@@ -19,6 +19,7 @@
 #include <apt-pkg/tagfile.h>
 #include <apt-pkg/md5.h>
 #include <apt-pkg/sha1.h>
+#include <apt-pkg/sha256.h>
 #include <apt-pkg/init.h>
 #include <apt-pkg/pkgsystem.h>
     
@@ -114,7 +115,6 @@ static PyObject *RealParseDepends(PyObject *Self,PyObject *Args,
    if (PyArg_ParseTuple(Args,"s#",&Start,&Len) == 0)
       return 0;
    Stop = Start + Len;
-   
    PyObject *List = PyList_New(0);
    PyObject *LastRow = 0;
    while (1)
@@ -175,8 +175,11 @@ static PyObject *md5sum(PyObject *Self,PyObject *Args)
    // Digest of a string.
    if (PyString_Check(Obj) != 0)
    {
+      char *s;
+      Py_ssize_t len;
       MD5Summation Sum;
-      Sum.Add(PyString_AsString(Obj));
+      PyString_AsStringAndSize(Obj, &s, &len);
+      Sum.Add((const unsigned char*)s, len);
       return CppPyString(Sum.Result().Value());
    }   
    
@@ -212,8 +215,11 @@ static PyObject *sha1sum(PyObject *Self,PyObject *Args)
    // Digest of a string.
    if (PyString_Check(Obj) != 0)
    {
+      char *s;
+      Py_ssize_t len;
       SHA1Summation Sum;
-      Sum.Add(PyString_AsString(Obj));
+      PyString_AsStringAndSize(Obj, &s, &len);
+      Sum.Add((const unsigned char*)s, len);
       return CppPyString(Sum.Result().Value());
    }   
    
@@ -221,6 +227,46 @@ static PyObject *sha1sum(PyObject *Self,PyObject *Args)
    if (PyFile_Check(Obj) != 0)
    {
       SHA1Summation Sum;
+      int Fd = fileno(PyFile_AsFile(Obj));
+      struct stat St;
+      if (fstat(Fd,&St) != 0 ||
+	  Sum.AddFD(Fd,St.st_size) == false)
+      {
+	 PyErr_SetFromErrno(PyExc_SystemError);
+	 return 0;
+      }
+      
+      return CppPyString(Sum.Result().Value());
+   }
+   
+   PyErr_SetString(PyExc_TypeError,"Only understand strings and files");
+   return 0;
+}
+									/*}}}*/
+// sha256sum - Compute the sha1sum of a file or string			/*{{{*/
+// ---------------------------------------------------------------------
+static char *doc_sha256sum = "sha256sum(String) -> String or sha256sum(File) -> String";
+static PyObject *sha256sum(PyObject *Self,PyObject *Args)
+{
+   PyObject *Obj;
+   if (PyArg_ParseTuple(Args,"O",&Obj) == 0)
+      return 0;
+   
+   // Digest of a string.
+   if (PyString_Check(Obj) != 0)
+   {
+      char *s;
+      Py_ssize_t len;
+      SHA256Summation Sum;
+      PyString_AsStringAndSize(Obj, &s, &len);
+      Sum.Add((const unsigned char*)s, len);
+      return CppPyString(Sum.Result().Value());
+   }   
+   
+   // Digest of a file
+   if (PyFile_Check(Obj) != 0)
+   {
+      SHA256Summation Sum;
       int Fd = fileno(PyFile_AsFile(Obj));
       struct stat St;
       if (fstat(Fd,&St) != 0 ||
@@ -283,6 +329,56 @@ static PyObject *InitSystem(PyObject *Self,PyObject *Args)
 }
 									/*}}}*/
 
+// fileutils.cc: GetLock						/*{{{*/
+// ---------------------------------------------------------------------
+static char *doc_GetLock = 
+"GetLock(string) -> int\n"
+"This will create an empty file of the given name and lock it. Once this"
+" is done all other calls to GetLock in any other process will fail with"
+" -1. The return result is the fd of the file, the call should call"
+" close at some time\n";
+static PyObject *GetLock(PyObject *Self,PyObject *Args)
+{
+   const char *file;
+   char errors = false;
+   if (PyArg_ParseTuple(Args,"s|b",&file,&errors) == 0)
+      return 0;
+   
+   int fd = GetLock(file, errors);
+
+   return  HandleErrors(Py_BuildValue("i", fd));
+}
+
+static char *doc_PkgSystemLock =
+"PkgSystemLock() -> boolean\n"
+"Get the global pkgsystem lock\n";
+static PyObject *PkgSystemLock(PyObject *Self,PyObject *Args)
+{
+   if (PyArg_ParseTuple(Args,"") == 0)
+      return 0;
+   
+   bool res = _system->Lock();
+   
+   Py_INCREF(Py_None);
+   return HandleErrors(Py_BuildValue("b", res));
+}
+
+static char *doc_PkgSystemUnLock =
+"PkgSystemUnLock() -> boolean\n"
+"Unset the global pkgsystem lock\n";
+static PyObject *PkgSystemUnLock(PyObject *Self,PyObject *Args)
+{
+   if (PyArg_ParseTuple(Args,"") == 0)
+      return 0;
+   
+   bool res = _system->UnLock();
+   
+   Py_INCREF(Py_None);
+   return HandleErrors(Py_BuildValue("b", res));
+}
+
+									/*}}}*/
+
 // initapt_pkg - Core Module Initialization				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
@@ -298,7 +394,12 @@ static PyMethodDef methods[] =
    {"ParseSection",ParseSection,METH_VARARGS,doc_ParseSection},
    {"ParseTagFile",ParseTagFile,METH_VARARGS,doc_ParseTagFile},
    {"RewriteSection",RewriteSection,METH_VARARGS,doc_RewriteSection},
-   
+
+   // Locking
+   {"GetLock",GetLock,METH_VARARGS,doc_GetLock},
+   {"PkgSystemLock",PkgSystemLock,METH_VARARGS,doc_PkgSystemLock},
+   {"PkgSystemUnLock",PkgSystemUnLock,METH_VARARGS,doc_PkgSystemUnLock},
+
    // Command line
    {"ReadConfigFile",LoadConfig,METH_VARARGS,doc_LoadConfig},
    {"ReadConfigFileISC",LoadConfigISC,METH_VARARGS,doc_LoadConfig},
@@ -316,6 +417,7 @@ static PyMethodDef methods[] =
    // Stuff
    {"md5sum",md5sum,METH_VARARGS,doc_md5sum},
    {"sha1sum",sha1sum,METH_VARARGS,doc_sha1sum},
+   {"sha256sum",sha256sum,METH_VARARGS,doc_sha256sum},
 
    // Strings
    {"CheckDomainList",StrCheckDomainList,METH_VARARGS,"CheckDomainList(String,String) -> Bool"},
@@ -331,9 +433,24 @@ static PyMethodDef methods[] =
 
    // Cache
    {"GetCache",TmpGetCache,METH_VARARGS,"GetCache() -> PkgCache"},
+   {"GetDepCache",GetDepCache,METH_VARARGS,"GetDepCache(Cache) -> DepCache"},
    {"GetPkgRecords",GetPkgRecords,METH_VARARGS,"GetPkgRecords(Cache) -> PkgRecords"},
    {"GetPkgSrcRecords",GetPkgSrcRecords,METH_VARARGS,"GetPkgSrcRecords() -> PkgSrcRecords"},
    {"GetPkgSourceList",GetPkgSourceList,METH_VARARGS,"GetPkgSourceList() -> PkgSourceList"},
+
+   // misc
+   {"GetPkgProblemResolver",GetPkgProblemResolver,METH_VARARGS,"GetDepProblemResolver(DepCache) -> PkgProblemResolver"},
+   {"GetPkgActionGroup",GetPkgActionGroup,METH_VARARGS,"GetPkgActionGroup(DepCache) -> PkgActionGroup"},
+
+   // Cdrom
+   {"GetCdrom",GetCdrom,METH_VARARGS,"GetCdrom() -> Cdrom"},
+
+   // Acquire
+   {"GetAcquire",GetAcquire,METH_VARARGS,"GetAcquire() -> Acquire"},
+   {"GetPkgAcqFile",(PyCFunction)GetPkgAcqFile,METH_KEYWORDS|METH_VARARGS,"GetPkgAcquireFile() -> pkgAcquireFile"},
+
+   // PkgManager
+   {"GetPackageManager",GetPkgManager,METH_VARARGS,"GetPackageManager(DepCache) -> PackageManager"},
 
    {}
 };
@@ -375,12 +492,10 @@ extern "C" void initapt_pkg()
    // Version..
    AddStr(Dict,"Version",pkgVersion);
    AddStr(Dict,"LibVersion",pkgLibVersion);
-   AddStr(Dict,"CPU",pkgCPU);
-   AddStr(Dict,"OS",pkgOS);
    AddStr(Dict,"Date",__DATE__);
    AddStr(Dict,"Time",__TIME__);
 
-   // My constants!!
+   // My constants
    AddInt(Dict,"DepDepends",pkgCache::Dep::Depends);
    AddInt(Dict,"DepPreDepends",pkgCache::Dep::PreDepends);
    AddInt(Dict,"DepSuggests",pkgCache::Dep::Suggests);
@@ -388,12 +503,24 @@ extern "C" void initapt_pkg()
    AddInt(Dict,"DepConflicts",pkgCache::Dep::Conflicts);
    AddInt(Dict,"DepReplaces",pkgCache::Dep::Replaces);
    AddInt(Dict,"DepObsoletes",pkgCache::Dep::Obsoletes);
-   
+
    AddInt(Dict,"PriImportant",pkgCache::State::Important);
    AddInt(Dict,"PriRequired",pkgCache::State::Required);
    AddInt(Dict,"PriStandard",pkgCache::State::Standard);
    AddInt(Dict,"PriOptional",pkgCache::State::Optional);
    AddInt(Dict,"PriExtra",pkgCache::State::Extra);
+
+   AddInt(Dict,"CurStateNotInstalled",pkgCache::State::NotInstalled);
+   AddInt(Dict,"CurStateUnPacked",pkgCache::State::UnPacked);
+   AddInt(Dict,"CurStateHalfConfigured",pkgCache::State::HalfConfigured);
+   AddInt(Dict,"CurStateHalfInstalled",pkgCache::State::HalfInstalled);
+   AddInt(Dict,"CurStateConfigFiles",pkgCache::State::ConfigFiles);
+   AddInt(Dict,"CurStateInstalled",pkgCache::State::Installed);
+
+   AddInt(Dict,"InstStateOk",pkgCache::State::Ok);
+   AddInt(Dict,"InstStateReInstReq",pkgCache::State::ReInstReq);
+   AddInt(Dict,"InstStateHold",pkgCache::State::Hold);
+   AddInt(Dict,"InstStateHoldReInstReq",pkgCache::State::HoldReInstReq);
 }
 									/*}}}*/
 									  
