@@ -1,3 +1,11 @@
+python-apt (0.7.4ubuntu7.4) hardy-proposed; urgency=low
+
+  * data/templates/Ubuntu.info.in:
+    - fix match uri to work for deb-src entries that point
+      to archive.ubuntu.com too (LP: #220890)
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 10 Nov 2008 10:42:04 +0100
+
 python-apt (0.7.4ubuntu7.3) hardy-proposed; urgency=low
 
   * python/cache.cc:
