@@ -1,3 +1,5 @@
 README
 apt/README.apt
 data/templates/README.templates
+build/doc/html/
+build/doc/text/
