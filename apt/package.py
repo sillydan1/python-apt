@@ -32,10 +32,6 @@ import apt_pkg
 __all__ = 'BaseDependency', 'Dependency', 'Origin', 'Package', 'Record'
 
 
-# Set a timeout for the changelog download
-socket.setdefaulttimeout(2)
-
-
 def _(string):
     """Return the translation of the string."""
     return gettext.dgettext("python-apt", string)
@@ -596,59 +592,69 @@ class Package(object):
                      "prefix": prefix,
                      "src_pkg": src_pkg,
                      "src_ver": src_ver}
-        try:
-            # Check if the download was canceled
-            if cancel_lock and cancel_lock.isSet():
-                return ""
-            changelog_file = urllib2.urlopen(uri)
-            # do only get the lines that are new
-            changelog = ""
-            regexp = "^%s \((.*)\)(.*)$" % (re.escape(src_pkg))
 
-            while True:
+        timeout = socket.getdefaulttimeout()
+        
+        # FIXME: when python2.4 vanishes from the archive,
+        #        merge this into a single try..finally block (pep 341)
+        try:
+            try:
+                # Set a timeout for the changelog download
+                socket.setdefaulttimeout(2)
+
                 # Check if the download was canceled
                 if cancel_lock and cancel_lock.isSet():
                     return ""
-                # Read changelog line by line
-                line_raw = changelog_file.readline()
-                if line_raw == "":
-                    break
-                # The changelog is encoded in utf-8, but since there isn't any
-                # http header, urllib2 seems to treat it as ascii
-                line = line_raw.decode("utf-8")
+                changelog_file = urllib2.urlopen(uri)
+                # do only get the lines that are new
+                changelog = ""
+                regexp = "^%s \((.*)\)(.*)$" % (re.escape(src_pkg))
 
-                #print line.encode('utf-8')
-                match = re.match(regexp, line)
-                if match:
-                    # strip epoch from installed version
-                    # and from changelog too
-                    installed = self.installedVersion
-                    if installed and ":" in installed:
-                        installed = installed.split(":", 1)[1]
-                    changelog_ver = match.group(1)
-                    if changelog_ver and ":" in changelog_ver:
-                        changelog_ver = changelog_ver.split(":", 1)[1]
-                    if installed and \
-                        apt_pkg.VersionCompare(changelog_ver, installed) <= 0:
+                while True:
+                    # Check if the download was canceled
+                    if cancel_lock and cancel_lock.isSet():
+                        return ""
+                    # Read changelog line by line
+                    line_raw = changelog_file.readline()
+                    if line_raw == "":
                         break
-                # EOF (shouldn't really happen)
-                changelog += line
+                    # The changelog is encoded in utf-8, but since there isn't any
+                    # http header, urllib2 seems to treat it as ascii
+                    line = line_raw.decode("utf-8")
 
-            # Print an error if we failed to extract a changelog
-            if len(changelog) == 0:
-                changelog = _("The list of changes is not available")
-            self._changelog = changelog
+                    #print line.encode('utf-8')
+                    match = re.match(regexp, line)
+                    if match:
+                        # strip epoch from installed version
+                        # and from changelog too
+                        installed = self.installedVersion
+                        if installed and ":" in installed:
+                            installed = installed.split(":", 1)[1]
+                        changelog_ver = match.group(1)
+                        if changelog_ver and ":" in changelog_ver:
+                            changelog_ver = changelog_ver.split(":", 1)[1]
+                        if (installed and 
+                                apt_pkg.VersionCompare(changelog_ver, installed) <= 0):
+                            break
+                    # EOF (shouldn't really happen)
+                    changelog += line
 
-        # FIXME: Ubuntu-specific part.
-        except urllib2.HTTPError:
-            return _("The list of changes is not available yet.\n\n"
-                     "Please use http://launchpad.net/ubuntu/+source/%s/%s/"
-                     "+changelog\n"
-                     "until the changes become available or try again "
-                     "later.") % (src_pkg, src_ver)
-        except (IOError, httplib.BadStatusLine):
-            return _("Failed to download the list of changes. \nPlease "
-                     "check your Internet connection.")
+                # Print an error if we failed to extract a changelog
+                if len(changelog) == 0:
+                    changelog = _("The list of changes is not available")
+                self._changelog = changelog
+
+            except urllib2.HTTPError:
+                return _("The list of changes is not available yet.\n\n"
+                         "Please use http://launchpad.net/ubuntu/+source/%s/%s/"
+                         "+changelog\n"
+                         "until the changes become available or try again "
+                         "later.") % (src_pkg, src_ver)
+            except (IOError, httplib.BadStatusLine):
+                return _("Failed to download the list of changes. \nPlease "
+                         "check your Internet connection.")
+        finally:
+            socket.setdefaulttimeout(timeout)
         return self._changelog
 
     @property
@@ -772,9 +778,11 @@ def _test():
     print "homepage: %s" % pkg.homepage
     print "rec: ", pkg.candidateRecord
 
+
     # now test install/remove
     progress = apt.progress.OpTextProgress()
     cache = apt.Cache(progress)
+    print cache["2vcard"].getChangelog()
     for i in True, False:
         print "Running install on random upgradable pkgs with AutoFix: %s " % i
         for pkg in cache:
