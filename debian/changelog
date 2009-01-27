@@ -1,3 +1,11 @@
+python-apt (0.7.4ubuntu7.5) hardy-proposed; urgency=low
+
+  * aptsources/__init__.py, aptsources/distinfo.py:
+    - run apt_pkg.init() when aptsources gets imported and not
+      the distinfo function (LP: #239458)
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Tue, 27 Jan 2009 11:45:44 +0100
+
 python-apt (0.7.4ubuntu7.4) hardy-proposed; urgency=low
 
   * data/templates/Ubuntu.info.in:
