@@ -1,3 +1,17 @@
+python-apt (0.7.9~exp2ubuntu7) jaunty; urgency=low
+
+  * apt/package.py:
+    - add "not_automatic" flag to the origin
+  * debian/control:
+    - rebuild against latest apt
+  * apt/cache.py:
+    - when setting a alternative rootdir, read the
+      config from it as well (LP: #243550)
+  * python/configuration.cc, python/apt_pkgmodule.cc:
+    - add apt_pkg.ReadConfigDir()
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 09 Feb 2009 15:09:17 +0100
+
 python-apt (0.7.9~exp2ubuntu5) jaunty; urgency=low
 
   * apt/cache.py:
