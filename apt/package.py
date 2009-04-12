@@ -1,6 +1,6 @@
 # package.py - apt package abstraction
 #
-#  Copyright (c) 2005 Canonical
+#  Copyright (c) 2005-2009 Canonical
 #
 #  Author: Michael Vogt <michael.vogt@ubuntu.com>
 #
@@ -39,6 +39,17 @@ __all__ = ('BaseDependency', 'Dependency', 'Origin', 'Package', 'Record',
 def _(string):
     """Return the translation of the string."""
     return gettext.dgettext("python-apt", string)
+
+
+def _file_is_same(path, size, md5):
+    """Return True if the file is the same."""
+    if (os.path.exists(path) and os.path.getsize(path) == size and
+        apt_pkg.md5sum(open(path)) == md5):
+        return True
+
+
+class FetchError(Exception):
+    """Raised when a file could not be fetched."""
 
 
 class BaseDependency(object):
@@ -88,10 +99,11 @@ class DeprecatedProperty(property):
         self.__doc__ = ':Deprecated: ' + (doc or fget.__doc__ or '')
 
     def __get__(self, obj, type=None):
-        warnings.warn("Accessed deprecated property %s.%s, please see the "
-                      "Version class for alternatives." %
-                       ((obj.__class__.__name__ or type.__name__),
-                       self.fget.func_name), DeprecationWarning, 2)
+        if obj is not None:
+            warnings.warn("Accessed deprecated property %s.%s, please see the "
+                          "Version class for alternatives." %
+                           ((obj.__class__.__name__ or type.__name__),
+                           self.fget.func_name), DeprecationWarning, 2)
         return property.__get__(self, obj, type)
 
 
@@ -338,10 +350,87 @@ class Version(object):
             origins.append(Origin(self.package, verFileIter))
         return origins
 
-    def fetch_source(self):
-        """Get the source code of a package"""
+    @property
+    def filename(self):
+        """Return the path to the file inside the archive."""
+        return self._records.FileName
+
+    @property
+    def md5(self):
+        """Return the md5sum of the binary."""
+        return self._records.MD5Hash
+
+    @property
+    def sha1(self):
+        """Return the sha1sum of the binary."""
+        return self._records.SHA1Hash
+
+    @property
+    def sha256(self):
+        """Return the sha1sum of the binary."""
+        return self._records.SHA256Hash
+
+    def _uris(self):
+        """Return an iterator over all available urls."""
+        for (packagefile, index) in self._cand.FileList:
+            indexfile = self.package._pcache._list.FindIndex(packagefile)
+            if indexfile:
+                yield indexfile.ArchiveURI(self._records.FileName)
+
+    @property
+    def uris(self):
+        """Return a list of all available uris for the binary."""
+        return list(self._uris())
+
+    @property
+    def uri(self):
+        """Return a single URI for the binary."""
+        return self._uris().next()
+
+    def fetch_binary(self, destdir='', progress=None):
+        """Fetch the binary version of the package.
+
+        The parameter 'destdir' specifies the directory where the package will
+        be fetched to.
+
+        The parameter 'progress' may refer to an apt.progress.FetchProgress()
+        object. If not specified or None, apt.progress.TextFetchProgress() is
+        used.
+        """
+        base = os.path.basename(self._records.FileName)
+        destfile = os.path.join(destdir, base)
+        if _file_is_same(destfile, self.size, self._records.MD5Hash):
+            print 'Ignoring already existing file:', destfile
+            return
+        acq = apt_pkg.GetAcquire(progress or apt.progress.TextFetchProgress())
+        apt_pkg.GetPkgAcqFile(acq, self.uri, self._records.MD5Hash, self.size,
+                              base, destFile=destfile)
+        acq.Run()
+        for item in acq.Items:
+            if item.Status != item.StatDone:
+                raise FetchError("The item %r could not be fetched: %s" %
+                                    (item.DestFile, item.ErrorText))
+        return os.path.abspath(destfile)
+
+    def fetch_source(self, destdir="", progress=None, unpack=True):
+        """Get the source code of a package.
+
+        The parameter 'destdir' specifies the directory where the source will
+        be fetched to.
+
+        The parameter 'progress' may refer to an apt.progress.FetchProgress()
+        object. If not specified or None, apt.progress.TextFetchProgress() is
+        used.
+
+        The parameter 'unpack' describes whether the source should be unpacked
+        (True) or not (False). By default, it is unpacked.
+
+        If 'unpack' is True, the path to the extracted directory is returned.
+        Otherwise, the path to the .dsc file is returned.
+        """
         src = apt_pkg.GetPkgSrcRecords()
-        acq = apt_pkg.GetAcquire(apt.progress.TextFetchProgress())
+        acq = apt_pkg.GetAcquire(progress or apt.progress.TextFetchProgress())
+
         dsc = None
         src.Lookup(self.package.name)
         try:
@@ -351,23 +440,33 @@ class Version(object):
             raise ValueError("No source for %r" % self)
         for md5, size, path, type in src.Files:
             base = os.path.basename(path)
+            destfile = os.path.join(destdir, base)
             if type == 'dsc':
-                dsc = base
+                dsc = destfile
             if os.path.exists(base) and os.path.getsize(base) == size:
                 fobj = open(base)
                 try:
                     if apt_pkg.md5sum(fobj) == md5:
-                        print 'Ignoring already existing file', base
+                        print 'Ignoring already existing file:', destfile
                         continue
                 finally:
                     fobj.close()
             apt_pkg.GetPkgAcqFile(acq, src.Index.ArchiveURI(path), md5, size,
-                                  base)
+                                  base, destFile=destfile)
         acq.Run()
 
-        outdir = src.Package + '-' + apt_pkg.UpstreamVersion(src.Version)
-        subprocess.check_call(["dpkg-source", "-x", dsc, outdir])
-        return os.path.abspath(outdir)
+        for item in acq.Items:
+            if item.Status != item.StatDone:
+                raise FetchError("The item %r could not be fetched: %s" %
+                                    (item.DestFile, item.ErrorText))
+
+        if unpack:
+            outdir = src.Package + '-' + apt_pkg.UpstreamVersion(src.Version)
+            outdir = os.path.join(destdir, outdir)
+            subprocess.check_call(["dpkg-source", "-x", dsc, outdir])
+            return os.path.abspath(outdir)
+        else:
+            return os.path.abspath(dsc)
 
 
 class Package(object):
@@ -392,7 +491,9 @@ class Package(object):
         """Return the candidate version of the package.
 
         :since: 0.7.9"""
-        return Version(self, self._pcache._depcache.GetCandidateVer(self._pkg))
+        cand = self._pcache._depcache.GetCandidateVer(self._pkg)
+        if cand is not None:
+            return Version(self, cand)
 
     @property
     def installed(self):
@@ -430,12 +531,12 @@ class Package(object):
     @DeprecatedProperty
     def candidateVersion(self):
         """Return the candidate version as string."""
-        return self.candidate.version
+        return getattr(self.candidate, "version", None)
 
     @DeprecatedProperty
     def candidateDependencies(self):
         """Return a list of candidate dependencies."""
-        return self.candidate.dependencies
+        return getattr(self.candidate, "dependencies", None)
 
     @DeprecatedProperty
     def installedDependencies(self):
@@ -445,12 +546,12 @@ class Package(object):
     @DeprecatedProperty
     def architecture(self):
         """Return the Architecture of the package"""
-        return self.candidate.architecture
+        return getattr(self.candidate, "architecture", None)
 
     @DeprecatedProperty
     def candidateDownloadable(self):
         """Return True if the candidate is downloadable."""
-        return self.candidate.downloadable
+        return getattr(self.candidate, "downloadable", None)
 
     @DeprecatedProperty
     def installedDownloadable(self):
@@ -471,7 +572,7 @@ class Package(object):
     @DeprecatedProperty
     def homepage(self):
         """Return the homepage field as string."""
-        return self.candidate.homepage
+        return getattr(self.candidate, "homepage", None)
 
     @property
     def section(self):
@@ -481,7 +582,7 @@ class Package(object):
     @DeprecatedProperty
     def priority(self):
         """Return the priority (of the candidate version)."""
-        return self.candidate.priority
+        return getattr(self.candidate, "priority", None)
 
     @DeprecatedProperty
     def installedPriority(self):
@@ -491,7 +592,7 @@ class Package(object):
     @DeprecatedProperty
     def summary(self):
         """Return the short description (one line summary)."""
-        return self.candidate.summary
+        return getattr(self.candidate, "summary", None)
 
     @DeprecatedProperty
     def description(self):
@@ -502,17 +603,17 @@ class Package(object):
         See http://www.debian.org/doc/debian-policy/ch-controlfields.html
         for more information.
         """
-        return self.candidate.description
+        return getattr(self.candidate, "description", None)
 
     @DeprecatedProperty
     def rawDescription(self):
         """return the long description (raw)."""
-        return self.candidate.raw_description
+        return getattr(self.candidate, "raw_description", None)
 
     @DeprecatedProperty
     def candidateRecord(self):
         """Return the Record of the candidate version of the package."""
-        return self.candidate.recor
+        return getattr(self.candidate, "record", None)
 
     @DeprecatedProperty
     def installedRecord(self):
@@ -577,7 +678,7 @@ class Package(object):
     @DeprecatedProperty
     def packageSize(self):
         """Return the size of the candidate deb package."""
-        return self.candidate.size
+        return getattr(self.candidate, "size", None)
 
     @DeprecatedProperty
     def installedPackageSize(self):
@@ -587,7 +688,7 @@ class Package(object):
     @DeprecatedProperty
     def candidateInstalledSize(self):
         """Return the size of the candidate installed package."""
-        return self.candidate.installed_size
+        return getattr(self.candidate, "installed_size", None)
 
     @DeprecatedProperty
     def installedSize(self):
@@ -632,6 +733,8 @@ class Package(object):
             return self._changelog
 
         if uri is None:
+            if not self.candidate:
+                pass
             if self.candidate.origins[0].origin == "Debian":
                 uri = "http://packages.debian.org/changelogs/pool" \
                       "/%(src_section)s/%(prefix)s/%(src_pkg)s" \
@@ -764,7 +867,7 @@ class Package(object):
     @DeprecatedProperty
     def candidateOrigin(self):
         """Return a list of Origin() objects for the candidate version."""
-        return self.candidate.origins
+        return getattr(self.candidate, "origins", None)
 
     @property
     def versions(self):
