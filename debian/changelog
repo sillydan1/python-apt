@@ -1,3 +1,16 @@
+python-apt (0.7.9~exp2ubuntu11) karmic; urgency=low
+
+  [ Matthias Klose ]
+  * Build for python2.4 as well. LP: #354812.
+
+  [ Michael vogt ]
+  * setup.py:
+    - only use sphinx for python2.5 or later
+  * data/templates/Ubuntu.info.in:
+    - updated for karmic
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Wed, 06 May 2009 14:28:56 +0200
+
 python-apt (0.7.9~exp2ubuntu10) jaunty; urgency=low
 
   * .bzr-buildpackage/default.conf:
