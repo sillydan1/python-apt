@@ -453,13 +453,26 @@ PyObject *ParseCommandLine(PyObject *Self,PyObject *Args)
 static PyMethodDef CnfMethods[] =
 {
    // Query
+   {"find",CnfFind,METH_VARARGS,doc_Find},
+   {"find_file",CnfFindFile,METH_VARARGS,doc_FindFile},
+   {"find_dir",CnfFindDir,METH_VARARGS,doc_FindDir},
+   {"find_i",CnfFindI,METH_VARARGS,doc_FindI},
+   {"find_b",CnfFindB,METH_VARARGS,doc_FindB},
+
+   // Others
+   {"set",CnfSet,METH_VARARGS,doc_Set},
+   {"exists",CnfExists,METH_VARARGS,doc_Exists},
+   {"subtree",CnfSubTree,METH_VARARGS,doc_SubTree},
+   {"list",CnfList,METH_VARARGS,doc_List},
+   {"value_list",CnfValueList,METH_VARARGS,doc_ValueList},
+   {"my_tag",CnfMyTag,METH_VARARGS,doc_MyTag},
+   {"clear",CnfClear,METH_VARARGS,doc_Clear},
+#ifdef COMPAT_0_7
    {"Find",CnfFind,METH_VARARGS,doc_Find},
    {"FindFile",CnfFindFile,METH_VARARGS,doc_FindFile},
    {"FindDir",CnfFindDir,METH_VARARGS,doc_FindDir},
    {"FindI",CnfFindI,METH_VARARGS,doc_FindI},
    {"FindB",CnfFindB,METH_VARARGS,doc_FindB},
-
-   // Others
    {"Set",CnfSet,METH_VARARGS,doc_Set},
    {"Exists",CnfExists,METH_VARARGS,doc_Exists},
    {"SubTree",CnfSubTree,METH_VARARGS,doc_SubTree},
@@ -467,13 +480,22 @@ static PyMethodDef CnfMethods[] =
    {"ValueList",CnfValueList,METH_VARARGS,doc_ValueList},
    {"MyTag",CnfMyTag,METH_VARARGS,doc_MyTag},
    {"Clear",CnfClear,METH_VARARGS,doc_Clear},
-
+#endif
    // Python Special
    {"keys",CnfKeys,METH_VARARGS,doc_Keys},
+   #if PY_MAJOR_VERSION < 3
    {"has_key",CnfExists,METH_VARARGS,doc_Exists},
+   #endif
    {"get",CnfFind,METH_VARARGS,doc_Find},
    {}
 };
+
+static PyObject *CnfNew(PyTypeObject *type, PyObject *args, PyObject *kwds) {
+    static char *kwlist[] = {};
+    if (PyArg_ParseTupleAndKeywords(args,kwds,"",kwlist) == 0)
+        return 0;
+    return CppPyObject_NEW<Configuration>(type);
+}
 
 // Type for a Normal Configuration object
 static PySequenceMethods ConfigurationSeq = {0,0,0,0,0,0,0,CnfContains,0,0};
@@ -484,7 +506,7 @@ PyTypeObject ConfigurationType =
    #if PY_MAJOR_VERSION < 3
    0,                                   // ob_size
    #endif
-   "Configuration",                     // tp_name
+   "apt_pkg.Configuration",             // tp_name
    sizeof(CppPyObject<Configuration>),  // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
@@ -512,6 +534,16 @@ PyTypeObject ConfigurationType =
    0,                                   // tp_iter
    0,                                   // tp_iternext
    CnfMethods,                          // tp_methods
+   0,                                   // tp_members
+   0,                                   // tp_getset
+   0,                                   // tp_base
+   0,                                   // tp_dict
+   0,                                   // tp_descr_get
+   0,                                   // tp_descr_set
+   0,                                   // tp_dictoffset
+   0,                                   // tp_init
+   0,                                   // tp_alloc
+   CnfNew,                              // tp_new
 };
 
 PyTypeObject ConfigurationPtrType =
@@ -520,7 +552,7 @@ PyTypeObject ConfigurationPtrType =
    #if PY_MAJOR_VERSION < 3
    0,			                // ob_size
    #endif
-   "ConfigurationPtr",                  // tp_name
+   "apt_pkg.ConfigurationPtr",          // tp_name
    sizeof(CppPyObject<Configuration *>),  // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
@@ -556,7 +588,7 @@ PyTypeObject ConfigurationSubType =
    #if PY_MAJOR_VERSION < 3
    0,			                // ob_size
    #endif
-   "ConfigurationSub",                  // tp_name
+   "apt_pkg.ConfigurationSub",     // tp_name
    sizeof(SubConfiguration),            // tp_basicsize
    0,                                   // tp_itemsize
    // Methods

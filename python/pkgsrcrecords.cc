@@ -70,8 +70,12 @@ static PyObject *PkgSrcRecordsRestart(PyObject *Self,PyObject *Args)
 
 static PyMethodDef PkgSrcRecordsMethods[] =
 {
+   {"lookup",PkgSrcRecordsLookup,METH_VARARGS,doc_PkgSrcRecordsLookup},
+   {"restart",PkgSrcRecordsRestart,METH_VARARGS,doc_PkgSrcRecordsRestart},
+#ifdef COMPAT_0_7
    {"Lookup",PkgSrcRecordsLookup,METH_VARARGS,doc_PkgSrcRecordsLookup},
    {"Restart",PkgSrcRecordsRestart,METH_VARARGS,doc_PkgSrcRecordsRestart},
+#endif
    {}
 };
 
@@ -168,6 +172,16 @@ static PyObject *PkgSrcRecordsGetBuildDepends(PyObject *Self,void*) {
 }
 
 static PyGetSetDef PkgSrcRecordsGetSet[] = {
+   {"binaries",PkgSrcRecordsGetBinaries},
+   {"build_depends",PkgSrcRecordsGetBuildDepends},
+   {"files",PkgSrcRecordsGetFiles},
+   {"index",PkgSrcRecordsGetIndex},
+   {"maintainer",PkgSrcRecordsGetMaintainer},
+   {"package",PkgSrcRecordsGetPackage},
+   {"record",PkgSrcRecordsGetRecord},
+   {"section",PkgSrcRecordsGetSection},
+   {"version",PkgSrcRecordsGetVersion},
+#ifdef COMPAT_0_7
    {"Binaries",PkgSrcRecordsGetBinaries},
    {"BuildDepends",PkgSrcRecordsGetBuildDepends},
    {"Files",PkgSrcRecordsGetFiles},
@@ -177,8 +191,17 @@ static PyGetSetDef PkgSrcRecordsGetSet[] = {
    {"Record",PkgSrcRecordsGetRecord},
    {"Section",PkgSrcRecordsGetSection},
    {"Version",PkgSrcRecordsGetVersion},
+#endif
    {}
 };
+
+static PyObject *PkgSrcRecordsNew(PyTypeObject *type,PyObject *args,PyObject *kwds) {
+   char *kwlist[] = {0};
+   if (PyArg_ParseTupleAndKeywords(args,kwds,"",kwlist) == 0)
+      return 0;
+
+   return HandleErrors(CppPyObject_NEW<PkgSrcRecordsStruct>(type));
+}
 
 PyTypeObject PkgSrcRecordsType =
 {
@@ -186,7 +209,7 @@ PyTypeObject PkgSrcRecordsType =
    #if PY_MAJOR_VERSION < 3
    0,			                // ob_size
    #endif
-   "pkgSrcRecords",                          // tp_name
+   "apt_pkg.SourceRecords",     // tp_name
    sizeof(CppPyObject<PkgSrcRecordsStruct>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
@@ -216,10 +239,19 @@ PyTypeObject PkgSrcRecordsType =
    PkgSrcRecordsMethods,                   // tp_methods
    0,                                   // tp_members
    PkgSrcRecordsGetSet,                    // tp_getset
+   0,                                   // tp_base
+   0,                                   // tp_dict
+   0,                                   // tp_descr_get
+   0,                                   // tp_descr_set
+   0,                                   // tp_dictoffset
+   0,                                   // tp_init
+   0,                                   // tp_alloc
+   PkgSrcRecordsNew,                         // tp_new
 };
 
 									/*}}}*/
 
+#ifdef COMPAT_0_7
 PyObject *GetPkgSrcRecords(PyObject *Self,PyObject *Args)
 {
 #if 0
@@ -235,4 +267,4 @@ PyObject *GetPkgSrcRecords(PyObject *Self,PyObject *Args)
 
    return HandleErrors(CppPyObject_NEW<PkgSrcRecordsStruct>(&PkgSrcRecordsType));
 }
-
+#endif

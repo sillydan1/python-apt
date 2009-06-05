@@ -528,21 +528,47 @@ static PyObject *PkgDepCacheMarkedReinstall(PyObject *Self,PyObject *Args)
 
 static PyMethodDef PkgDepCacheMethods[] =
 {
+   {"init",PkgDepCacheInit,METH_VARARGS,"Init the depcache (done on construct automatically)"},
+   {"get_candidate_ver",PkgDepCacheGetCandidateVer,METH_VARARGS,"Get candidate version"},
+   {"set_candidate_ver",PkgDepCacheSetCandidateVer,METH_VARARGS,"Set candidate version"},
+
+   // global cache operations
+   {"upgrade",PkgDepCacheUpgrade,METH_VARARGS,"Perform Upgrade (optional boolean argument if dist-upgrade should be performed)"},
+   {"fix_broken",PkgDepCacheFixBroken,METH_VARARGS,"Fix broken packages"},
+   {"read_pinfile",PkgDepCacheReadPinFile,METH_VARARGS,"Read the pin policy"},
+   {"minimize_upgrade",PkgDepCacheMinimizeUpgrade, METH_VARARGS,"Go over the entire set of packages and try to keep each package marked for upgrade. If a conflict is generated then the package is restored."},
+   // Manipulators
+   {"mark_keep",PkgDepCacheMarkKeep,METH_VARARGS,"Mark package for keep"},
+   {"mark_delete",PkgDepCacheMarkDelete,METH_VARARGS,"Mark package for delete (optional boolean argument if it should be purged)"},
+   {"mark_install",PkgDepCacheMarkInstall,METH_VARARGS,"Mark package for Install"},
+   {"set_reinstall",PkgDepCacheSetReInstall,METH_VARARGS,"Set if the package should be reinstalled"},
+   // state information
+   {"is_upgradable",PkgDepCacheIsUpgradable,METH_VARARGS,"Is pkg upgradable"},
+   {"is_now_broken",PkgDepCacheIsNowBroken,METH_VARARGS,"Is pkg is now broken"},
+   {"is_inst_broken",PkgDepCacheIsInstBroken,METH_VARARGS,"Is pkg broken on the current install"},
+   {"is_garbage",PkgDepCacheIsGarbage,METH_VARARGS,"Is pkg garbage (mark-n-sweep)"},
+   {"is_auto_installed",PkgDepCacheIsAutoInstalled,METH_VARARGS,"Is pkg marked as auto installed"},
+   {"marked_install",PkgDepCacheMarkedInstall,METH_VARARGS,"Is pkg marked for install"},
+   {"marked_upgrade",PkgDepCacheMarkedUpgrade,METH_VARARGS,"Is pkg marked for upgrade"},
+   {"marked_delete",PkgDepCacheMarkedDelete,METH_VARARGS,"Is pkg marked for delete"},
+   {"marked_keep",PkgDepCacheMarkedKeep,METH_VARARGS,"Is pkg marked for keep"},
+   {"marked_reinstall",PkgDepCacheMarkedReinstall,METH_VARARGS,"Is pkg marked for reinstall"},
+   {"marked_downgrade",PkgDepCacheMarkedDowngrade,METH_VARARGS,"Is pkg marked for downgrade"},
+
+   // Action
+   {"commit", PkgDepCacheCommit, METH_VARARGS, "Commit pending changes"},
+#ifdef COMPAT_0_7
    {"Init",PkgDepCacheInit,METH_VARARGS,"Init the depcache (done on construct automatically)"},
    {"GetCandidateVer",PkgDepCacheGetCandidateVer,METH_VARARGS,"Get candidate version"},
    {"SetCandidateVer",PkgDepCacheSetCandidateVer,METH_VARARGS,"Set candidate version"},
-
-   // global cache operations
    {"Upgrade",PkgDepCacheUpgrade,METH_VARARGS,"Perform Upgrade (optional boolean argument if dist-upgrade should be performed)"},
    {"FixBroken",PkgDepCacheFixBroken,METH_VARARGS,"Fix broken packages"},
    {"ReadPinFile",PkgDepCacheReadPinFile,METH_VARARGS,"Read the pin policy"},
    {"MinimizeUpgrade",PkgDepCacheMinimizeUpgrade, METH_VARARGS,"Go over the entire set of packages and try to keep each package marked for upgrade. If a conflict is generated then the package is restored."},
-   // Manipulators
    {"MarkKeep",PkgDepCacheMarkKeep,METH_VARARGS,"Mark package for keep"},
    {"MarkDelete",PkgDepCacheMarkDelete,METH_VARARGS,"Mark package for delete (optional boolean argument if it should be purged)"},
    {"MarkInstall",PkgDepCacheMarkInstall,METH_VARARGS,"Mark package for Install"},
    {"SetReInstall",PkgDepCacheSetReInstall,METH_VARARGS,"Set if the package should be reinstalled"},
-   // state information
    {"IsUpgradable",PkgDepCacheIsUpgradable,METH_VARARGS,"Is pkg upgradable"},
    {"IsNowBroken",PkgDepCacheIsNowBroken,METH_VARARGS,"Is pkg is now broken"},
    {"IsInstBroken",PkgDepCacheIsInstBroken,METH_VARARGS,"Is pkg broken on the current install"},
@@ -554,9 +580,8 @@ static PyMethodDef PkgDepCacheMethods[] =
    {"MarkedKeep",PkgDepCacheMarkedKeep,METH_VARARGS,"Is pkg marked for keep"},
    {"MarkedReinstall",PkgDepCacheMarkedReinstall,METH_VARARGS,"Is pkg marked for reinstall"},
    {"MarkedDowngrade",PkgDepCacheMarkedDowngrade,METH_VARARGS,"Is pkg marked for downgrade"},
-
-   // Action
    {"Commit", PkgDepCacheCommit, METH_VARARGS, "Commit pending changes"},
+#endif
    {}
 };
 
@@ -582,22 +607,56 @@ static PyObject *PkgDepCacheGetDebSize(PyObject *Self,void*) {
 #undef depcache
 
 static PyGetSetDef PkgDepCacheGetSet[] = {
+    {"broken_count",PkgDepCacheGetBrokenCount},
+    {"deb_size",PkgDepCacheGetDebSize},
+    {"del_count",PkgDepCacheGetDelCount},
+    {"inst_count",PkgDepCacheGetInstCount},
+    {"keep_count",PkgDepCacheGetKeepCount},
+    {"usr_size",PkgDepCacheGetUsrSize},
+    #ifdef COMPAT_0_7
     {"BrokenCount",PkgDepCacheGetBrokenCount},
     {"DebSize",PkgDepCacheGetDebSize},
     {"DelCount",PkgDepCacheGetDelCount},
     {"InstCount",PkgDepCacheGetInstCount},
     {"KeepCount",PkgDepCacheGetKeepCount},
     {"UsrSize",PkgDepCacheGetUsrSize},
+    #endif
     {}
 };
 
+static PyObject *PkgDepCacheNew(PyTypeObject *type,PyObject *Args,PyObject *kwds)
+{
+   PyObject *Owner;
+   static char *kwlist[] = {"cache", 0};
+   if (PyArg_ParseTupleAndKeywords(Args,kwds,"O!",kwlist,&PkgCacheType,
+                                   &Owner) == 0)
+      return 0;
+
+
+   // the owner of the Python cache object is a cachefile object, get it
+   PyObject *CacheFilePy = GetOwner<pkgCache*>(Owner);
+   // get the pkgCacheFile from the cachefile
+   pkgCacheFile *CacheF = GetCpp<pkgCacheFile*>(CacheFilePy);
+   // and now the depcache
+   pkgDepCache *depcache = (pkgDepCache *)(*CacheF);
+
+   CppOwnedPyObject<pkgDepCache*> *DepCachePyObj;
+   DepCachePyObj = CppOwnedPyObject_NEW<pkgDepCache*>(Owner,type,depcache);
+   HandleErrors(DepCachePyObj);
+
+   return DepCachePyObj;
+}
+
+static char *doc_PkgDepCache = "DepCache(cache) -> DepCache() object\n\n"
+    "A DepCache() holds extra information on the state of the packages.\n\n"
+    "The parameter *cache* refers to an apt_pkg.Cache() object.";
 PyTypeObject PkgDepCacheType =
 {
    PyObject_HEAD_INIT(&PyType_Type)
    #if PY_MAJOR_VERSION < 3
    0,                                   // ob_size
    #endif
-   "pkgDepCache",                       // tp_name
+   "apt_pkg.DepCache",                  // tp_name
    sizeof(CppOwnedPyObject<pkgDepCache *>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
@@ -617,7 +676,7 @@ PyTypeObject PkgDepCacheType =
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    Py_TPFLAGS_DEFAULT,                  // tp_flags
-   "pkgDepCache Object",                // tp_doc
+   doc_PkgDepCache,                     // tp_doc
    0,                                   // tp_traverse
    0,                                   // tp_clear
    0,                                   // tp_richcompare
@@ -627,32 +686,22 @@ PyTypeObject PkgDepCacheType =
    PkgDepCacheMethods,                  // tp_methods
    0,                                   // tp_members
    PkgDepCacheGetSet,                   // tp_getset
+   0,                                   // tp_base
+   0,                                   // tp_dict
+   0,                                   // tp_descr_get
+   0,                                   // tp_descr_set
+   0,                                   // tp_dictoffset
+   0,                                   // tp_init
+   0,                                   // tp_alloc
+   PkgDepCacheNew,                      // tp_new
 };
 
-
+#ifdef COMPAT_0_7
 PyObject *GetDepCache(PyObject *Self,PyObject *Args)
 {
-   PyObject *Owner;
-   if (PyArg_ParseTuple(Args,"O!",&PkgCacheType,&Owner) == 0)
-      return 0;
-
-
-   // the owner of the Python cache object is a cachefile object, get it
-   PyObject *CacheFilePy = GetOwner<pkgCache*>(Owner);
-   // get the pkgCacheFile from the cachefile
-   pkgCacheFile *CacheF = GetCpp<pkgCacheFile*>(CacheFilePy);
-   // and now the depcache
-   pkgDepCache *depcache = (pkgDepCache *)(*CacheF);
-
-   CppOwnedPyObject<pkgDepCache*> *DepCachePyObj;
-   DepCachePyObj = CppOwnedPyObject_NEW<pkgDepCache*>(Owner,
-						      &PkgDepCacheType,
-						      depcache);
-   HandleErrors(DepCachePyObj);
-
-   return DepCachePyObj;
+    return PkgDepCacheNew(&PkgDepCacheType,Args,0);
 }
-
+#endif
 
 
 
@@ -661,26 +710,30 @@ PyObject *GetDepCache(PyObject *Self,PyObject *Args)
 
 // pkgProblemResolver Class						/*{{{*/
 // ---------------------------------------------------------------------
-
-
-PyObject *GetPkgProblemResolver(PyObject *Self,PyObject *Args)
+static PyObject *PkgProblemResolverNew(PyTypeObject *type,PyObject *Args,PyObject *kwds)
 {
    PyObject *Owner;
-   if (PyArg_ParseTuple(Args,"O!",&PkgDepCacheType,&Owner) == 0)
+   static char *kwlist[] = {"depcache",0};
+   if (PyArg_ParseTupleAndKeywords(Args,kwds,"O!",kwlist,&PkgDepCacheType,
+                                   &Owner) == 0)
       return 0;
 
    pkgDepCache *depcache = GetCpp<pkgDepCache*>(Owner);
    pkgProblemResolver *fixer = new pkgProblemResolver(depcache);
    CppOwnedPyObject<pkgProblemResolver*> *PkgProblemResolverPyObj;
    PkgProblemResolverPyObj = CppOwnedPyObject_NEW<pkgProblemResolver*>(Owner,
-						      &PkgProblemResolverType,
+						      type,
 						      fixer);
    HandleErrors(PkgProblemResolverPyObj);
 
    return PkgProblemResolverPyObj;
-
 }
 
+#ifdef COMPAT_0_7
+PyObject *GetPkgProblemResolver(PyObject *Self,PyObject *Args) {
+    return PkgProblemResolverNew(&PkgProblemResolverType,Args,0);
+}
+#endif
 
 static PyObject *PkgProblemResolverResolve(PyObject *Self,PyObject *Args)
 {
@@ -761,14 +814,22 @@ static PyObject *PkgProblemResolverInstallProtect(PyObject *Self,PyObject *Args)
 static PyMethodDef PkgProblemResolverMethods[] =
 {
    // config
+   {"protect", PkgProblemResolverProtect, METH_VARARGS, "protect(PkgIterator)"},
+   {"remove", PkgProblemResolverRemove, METH_VARARGS, "remove(PkgIterator)"},
+   {"clear", PkgProblemResolverClear, METH_VARARGS, "clear(PkgIterator)"},
+   {"install_protect", PkgProblemResolverInstallProtect, METH_VARARGS, "install_protect()"},
+
+   // Actions
+   {"resolve", PkgProblemResolverResolve, METH_VARARGS, "Try to intelligently resolve problems by installing and removing packages"},
+   {"resolve_by_keep", PkgProblemResolverResolveByKeep, METH_VARARGS, "Try to resolv problems only by using keep"},
+   #ifdef COMPAT_0_7
    {"Protect", PkgProblemResolverProtect, METH_VARARGS, "Protect(PkgIterator)"},
    {"Remove", PkgProblemResolverRemove, METH_VARARGS, "Remove(PkgIterator)"},
    {"Clear", PkgProblemResolverClear, METH_VARARGS, "Clear(PkgIterator)"},
    {"InstallProtect", PkgProblemResolverInstallProtect, METH_VARARGS, "ProtectInstalled()"},
-
-   // Actions
    {"Resolve", PkgProblemResolverResolve, METH_VARARGS, "Try to intelligently resolve problems by installing and removing packages"},
    {"ResolveByKeep", PkgProblemResolverResolveByKeep, METH_VARARGS, "Try to resolv problems only by using keep"},
+   #endif
    {}
 };
 
@@ -778,7 +839,7 @@ PyTypeObject PkgProblemResolverType =
    #if PY_MAJOR_VERSION < 3
    0,			                // ob_size
    #endif
-   "pkgProblemResolver",                       // tp_name
+   "apt_pkg.ProblemResolver",                       // tp_name
    sizeof(CppOwnedPyObject<pkgProblemResolver *>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
@@ -806,6 +867,16 @@ PyTypeObject PkgProblemResolverType =
    0,                                   // tp_iter
    0,                                   // tp_iternext
    PkgProblemResolverMethods,           // tp_methods
+   0,                                   // tp_members
+   0,                                   // tp_getset
+   0,                                   // tp_base
+   0,                                   // tp_dict
+   0,                                   // tp_descr_get
+   0,                                   // tp_descr_set
+   0,                                   // tp_dictoffset
+   0,                                   // tp_init
+   0,                                   // tp_alloc
+   PkgProblemResolverNew,               // tp_new
 };
 
 									/*}}}*/
@@ -824,11 +895,60 @@ static PyObject *PkgActionGroupRelease(PyObject *Self,PyObject *Args)
    return HandleErrors(Py_None);
 }
 
+static PyObject *PkgActionGroupEnter(PyObject *Self,PyObject *Args) {
+   if (PyArg_ParseTuple(Args,"") == 0)
+      return 0;
+    return Self;
+}
+static PyObject *PkgActionGroupExit(PyObject *Self,PyObject *Args) {
+   pkgDepCache::ActionGroup *ag = GetCpp<pkgDepCache::ActionGroup*>(Self);
+   ag->release();
+   Py_RETURN_FALSE;
+}
+
 static PyMethodDef PkgActionGroupMethods[] =
 {
    {"release", PkgActionGroupRelease, METH_VARARGS, "release()"},
+   {"__exit__", PkgActionGroupExit, METH_VARARGS, "__exit__(...) -> "
+               "Release the action group, for 'with' statement."},
+   {"__enter__", PkgActionGroupEnter, METH_VARARGS, "__enter__() -> "
+               "Enter, for the 'with' statement. Does nothing."},
    {}
 };
+
+static PyObject *PkgActionGroupNew(PyTypeObject *type,PyObject *Args,PyObject *kwds)
+{
+   PyObject *Owner;
+   static char *kwlist[] = {"depcache", 0};
+   if (PyArg_ParseTupleAndKeywords(Args,kwds,"O!",kwlist,&PkgDepCacheType,
+                                   &Owner) == 0)
+      return 0;
+
+   pkgDepCache *depcache = GetCpp<pkgDepCache*>(Owner);
+   pkgDepCache::ActionGroup *group = new pkgDepCache::ActionGroup(*depcache);
+   CppOwnedPyObject<pkgDepCache::ActionGroup*> *PkgActionGroupPyObj;
+   PkgActionGroupPyObj = CppOwnedPyObject_NEW<pkgDepCache::ActionGroup*>(Owner,
+						      type,
+						      group);
+   HandleErrors(PkgActionGroupPyObj);
+
+   return PkgActionGroupPyObj;
+
+}
+
+static char *doc_PkgActionGroup = "ActionGroup(depcache)\n\n"
+    "Create a new ActionGroup() object. The parameter *depcache* refers to an\n"
+    "apt_pkg.DepCache() object.\n\n"
+    "ActionGroups disable certain cleanup actions, so modifying many packages\n"
+    "is much faster.\n\n"
+    "ActionGroup() can also be used with the 'with' statement, but be aware\n"
+    "that the ActionGroup() is active as soon as it is created, and not just\n"
+    "when entering the context. This means you can write::\n\n"
+    "    with apt_pkg.ActionGroup(depcache):\n"
+    "        depcache.markInstall(pkg)\n\n"
+    "Once the block of the with statement is left, the action group is \n"
+    "automatically released from the cache.";
+
 
 PyTypeObject PkgActionGroupType =
 {
@@ -836,7 +956,7 @@ PyTypeObject PkgActionGroupType =
    #if PY_MAJOR_VERSION < 3
    0,			                // ob_size
    #endif
-   "pkgActionGroup",                       // tp_name
+   "apt_pkg.ActionGroup",               // tp_name
    sizeof(CppOwnedPyObject<pkgDepCache::ActionGroup*>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
@@ -856,7 +976,7 @@ PyTypeObject PkgActionGroupType =
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    Py_TPFLAGS_DEFAULT,                  // tp_flags
-   "ActionGroup Object",                // tp_doc
+   doc_PkgActionGroup,                  // tp_doc
    0,                                   // tp_traverse
    0,                                   // tp_clear
    0,                                   // tp_richcompare
@@ -864,25 +984,24 @@ PyTypeObject PkgActionGroupType =
    0,                                   // tp_iter
    0,                                   // tp_iternext
    PkgActionGroupMethods,               // tp_methods
+   0,                                   // tp_members
+   0,                                   // tp_getset
+   0,                                   // tp_base
+   0,                                   // tp_dict
+   0,                                   // tp_descr_get
+   0,                                   // tp_descr_set
+   0,                                   // tp_dictoffset
+   0,                                   // tp_init
+   0,                                   // tp_alloc
+   PkgActionGroupNew,                         // tp_new
 };
 
+#ifdef COMPAT_0_7
 PyObject *GetPkgActionGroup(PyObject *Self,PyObject *Args)
 {
-   PyObject *Owner;
-   if (PyArg_ParseTuple(Args,"O!",&PkgDepCacheType,&Owner) == 0)
-      return 0;
-
-   pkgDepCache *depcache = GetCpp<pkgDepCache*>(Owner);
-   pkgDepCache::ActionGroup *group = new pkgDepCache::ActionGroup(*depcache);
-   CppOwnedPyObject<pkgDepCache::ActionGroup*> *PkgActionGroupPyObj;
-   PkgActionGroupPyObj = CppOwnedPyObject_NEW<pkgDepCache::ActionGroup*>(Owner,
-						      &PkgActionGroupType,
-						      group);
-   HandleErrors(PkgActionGroupPyObj);
-
-   return PkgActionGroupPyObj;
-
+    return PkgActionGroupNew(&PkgActionGroupType,Args,0);
 }
+#endif
 
 
 									/*}}}*/

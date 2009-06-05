@@ -28,9 +28,16 @@ import socket
 import subprocess
 import urllib2
 import warnings
+try:
+    from collections import Mapping
+except ImportError:
+    # (for Python < 2.6) pylint: disable-msg=C0103
+    Mapping = object
 
 import apt_pkg
 import apt.progress
+from apt.deprecation import (function_deprecated_by, AttributeDeprecatedBy,
+                             deprecated_args)
 
 __all__ = ('BaseDependency', 'Dependency', 'Origin', 'Package', 'Record',
            'Version')
@@ -56,21 +63,24 @@ class BaseDependency(object):
     """A single dependency.
 
     Attributes defined here:
-        name      - The name of the dependency
-        relation  - The relation (>>,>=,==,<<,<=,)
-        version   - The version depended on
-        preDepend - Boolean value whether this is a pre-dependency.
+        name       - The name of the dependency
+        relation   - The relation (>>,>=,==,<<,<=,)
+        version    - The version depended on
+        pre_depend - Boolean value whether this is a pre-dependency.
     """
 
     def __init__(self, name, rel, ver, pre):
         self.name = name
         self.relation = rel
         self.version = ver
-        self.preDepend = pre
+        self.pre_depend = pre
 
     def __repr__(self):
         return ('<BaseDependency: name:%r relation:%r version:%r preDepend:%r>'
-                % (self.name, self.relation, self.version, self.preDepend))
+                % (self.name, self.relation, self.version, self.pre_depend))
+
+    if apt_pkg._COMPAT_0_7:
+        preDepend = AttributeDeprecatedBy('pre_depend')
 
 
 class Dependency(object):
@@ -103,7 +113,7 @@ class DeprecatedProperty(property):
             warnings.warn("Accessed deprecated property %s.%s, please see the "
                           "Version class for alternatives." %
                            ((obj.__class__.__name__ or type.__name__),
-                           self.fget.func_name), DeprecationWarning, 2)
+                           self.fget.__name__), DeprecationWarning, 2)
         return property.__get__(self, obj, type)
 
 
@@ -119,16 +129,16 @@ class Origin(object):
         trusted   - Boolean value whether this is trustworthy.
     """
 
-    def __init__(self, pkg, VerFileIter):
-        self.archive = VerFileIter.Archive
-        self.component = VerFileIter.Component
-        self.label = VerFileIter.Label
-        self.origin = VerFileIter.Origin
-        self.site = VerFileIter.Site
-        self.not_automatic = VerFileIter.NotAutomatic
+    def __init__(self, pkg, packagefile):
+        self.archive = packagefile.archive
+        self.component = packagefile.component
+        self.label = packagefile.label
+        self.origin = packagefile.origin
+        self.site = packagefile.site
+        self.not_automatic = packagefile.not_automatic
         # check the trust
-        indexfile = pkg._pcache._list.FindIndex(VerFileIter)
-        if indexfile and indexfile.IsTrusted:
+        indexfile = pkg._pcache._list.find_index(packagefile)
+        if indexfile and indexfile.is_trusted:
             self.trusted = True
         else:
             self.trusted = False
@@ -140,7 +150,7 @@ class Origin(object):
                                             self.site, self.trusted)
 
 
-class Record(object):
+class Record(Mapping):
     """Represent a pkgRecord.
 
     It can be accessed like a dictionary and can also give the original package
@@ -148,7 +158,10 @@ class Record(object):
     """
 
     def __init__(self, record_str):
-        self._rec = apt_pkg.ParseSection(record_str)
+        self._rec = apt_pkg.TagSection(record_str)
+
+    def __hash__(self):
+        return hash(self._rec)
 
     def __str__(self):
         return str(self._rec)
@@ -178,6 +191,9 @@ class Record(object):
         """deprecated form of ``key in x``."""
         return key in self._rec
 
+    def __len__(self):
+        return len(self._rec)
+
 
 class Version(object):
     """Representation of a package version.
@@ -190,19 +206,19 @@ class Version(object):
         self._cand = cand
 
     def __eq__(self, other):
-        return self._cand.ID == other._cand.ID
+        return self._cand.id == other._cand.id
 
     def __gt__(self, other):
-        return apt_pkg.VersionCompare(self.version, other.version) > 0
+        return apt_pkg.version_compare(self.version, other.version) > 0
 
     def __lt__(self, other):
-        return apt_pkg.VersionCompare(self.version, other.version) < 0
+        return apt_pkg.version_compare(self.version, other.version) < 0
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __hash__(self):
-        return self._cand.Hash
+        return self._cand.hash
 
     def __repr__(self):
         return '<Version: package:%r version:%r>' % (self.package.name,
@@ -211,58 +227,63 @@ class Version(object):
     @property
     def _records(self):
         """Internal helper that moves the Records to the right position."""
-        if self.package._pcache._records.Lookup(self._cand.FileList[0]):
+        if self.package._pcache._records.lookup(self._cand.file_list[0]):
             return self.package._pcache._records
+
+    @property
+    def _translated_records(self):
+        """Internal helper to get the translated description."""
+        desc_iter = self._cand.translated_description
+        self.package._pcache._records.lookup(desc_iter.file_list.pop(0))
+        return self.package._pcache._records
 
     @property
     def installed_size(self):
         """Return the size of the package when installed."""
-        return self._cand.InstalledSize
+        return self._cand.installed_size
 
     @property
     def homepage(self):
         """Return the homepage for the package."""
-        return self._records.Homepage
+        return self._records.homepage
 
     @property
     def size(self):
         """Return the size of the package."""
-        return self._cand.Size
+        return self._cand.size
 
     @property
     def architecture(self):
         """Return the architecture of the package version."""
-        return self._cand.Arch
+        return self._cand.arch
 
     @property
     def downloadable(self):
         """Return whether the version of the package is downloadable."""
-        return bool(self._cand.Downloadable)
+        return bool(self._cand.downloadable)
 
     @property
     def version(self):
         """Return the version as a string."""
-        return self._cand.VerStr
+        return self._cand.ver_str
 
     @property
     def summary(self):
         """Return the short description (one line summary)."""
-        desc_iter = self._cand.TranslatedDescription
-        self.package._pcache._records.Lookup(desc_iter.FileList.pop(0))
-        return self.package._pcache._records.ShortDesc
+        return self._translated_records.short_desc
 
     @property
     def raw_description(self):
         """return the long description (raw)."""
-        return self._records.LongDesc
+        return self._records.long_desc
 
     @property
     def section(self):
         """Return the section of the package."""
-        return self._cand.Section
+        return self._cand.section
 
     @property
-    def description(self, format=True, useDots=False):
+    def description(self):
         """Return the formatted long description.
 
         Return the formated long description according to the Debian policy
@@ -270,10 +291,8 @@ class Version(object):
         See http://www.debian.org/doc/debian-policy/ch-controlfields.html
         for more information.
         """
-        self.summary # This does the lookup for us.
         desc = ''
-
-        dsc = self.package._pcache._records.LongDesc
+        dsc = self._translated_records.long_desc
         try:
             if not isinstance(dsc, unicode):
                 # Only convert where needed (i.e. Python 2.X)
@@ -314,32 +333,32 @@ class Version(object):
     def source_name(self):
         """Return the name of the source package."""
         try:
-            return self._records.SourcePkg or self.package.name
+            return self._records.source_pkg or self.package.name
         except IndexError:
             return self.package.name
 
     @property
     def priority(self):
         """Return the priority of the package, as string."""
-        return self._cand.PriorityStr
+        return self._cand.priority_str
 
     @property
     def record(self):
         """Return a Record() object for this version."""
-        return Record(self._records.Record)
+        return Record(self._records.record)
 
     @property
     def dependencies(self):
         """Return the dependencies of the package version."""
         depends_list = []
-        depends = self._cand.DependsList
+        depends = self._cand.depends_list
         for t in ["PreDepends", "Depends"]:
             try:
-                for depVerList in depends[t]:
+                for dep_ver_list in depends[t]:
                     base_deps = []
-                    for depOr in depVerList:
-                        base_deps.append(BaseDependency(depOr.TargetPkg.Name,
-                                        depOr.CompType, depOr.TargetVer,
+                    for dep_or in dep_ver_list:
+                        base_deps.append(BaseDependency(dep_or.target_pkg.name,
+                                        dep_or.comp_type, dep_or.target_ver,
                                         (t == "PreDepends")))
                     depends_list.append(Dependency(base_deps))
             except KeyError:
@@ -350,8 +369,8 @@ class Version(object):
     def origins(self):
         """Return a list of origins for the package version."""
         origins = []
-        for (verFileIter, index) in self._cand.FileList:
-            origins.append(Origin(self.package, verFileIter))
+        for (packagefile, index) in self._cand.file_list:
+            origins.append(Origin(self.package, packagefile))
         return origins
 
     @property
@@ -360,7 +379,7 @@ class Version(object):
 
         .. versionadded:: 0.7.10
         """
-        return self._records.FileName
+        return self._records.filename
 
     @property
     def md5(self):
@@ -368,7 +387,7 @@ class Version(object):
 
         .. versionadded:: 0.7.10
         """
-        return self._records.MD5Hash
+        return self._records.md5_hash
 
     @property
     def sha1(self):
@@ -376,7 +395,7 @@ class Version(object):
 
         .. versionadded:: 0.7.10
         """
-        return self._records.SHA1Hash
+        return self._records.sha1_hash
 
     @property
     def sha256(self):
@@ -384,17 +403,17 @@ class Version(object):
 
         .. versionadded:: 0.7.10
         """
-        return self._records.SHA256Hash
+        return self._records.sha256_hash
 
     def _uris(self):
         """Return an iterator over all available urls.
 
         .. versionadded:: 0.7.10
         """
-        for (packagefile, index) in self._cand.FileList:
-            indexfile = self.package._pcache._list.FindIndex(packagefile)
+        for (packagefile, index) in self._cand.file_list:
+            indexfile = self.package._pcache._list.find_index(packagefile)
             if indexfile:
-                yield indexfile.ArchiveURI(self._records.FileName)
+                yield indexfile.archive_uri(self._records.filename)
 
     @property
     def uris(self):
@@ -424,19 +443,19 @@ class Version(object):
 
         .. versionadded:: 0.7.10
         """
-        base = os.path.basename(self._records.FileName)
+        base = os.path.basename(self._records.filename)
         destfile = os.path.join(destdir, base)
-        if _file_is_same(destfile, self.size, self._records.MD5Hash):
+        if _file_is_same(destfile, self.size, self._records.md5_hash):
             print 'Ignoring already existing file:', destfile
             return
-        acq = apt_pkg.GetAcquire(progress or apt.progress.TextFetchProgress())
-        apt_pkg.GetPkgAcqFile(acq, self.uri, self._records.MD5Hash, self.size,
-                              base, destFile=destfile)
-        acq.Run()
-        for item in acq.Items:
-            if item.Status != item.StatDone:
+        acq = apt_pkg.Acquire(progress or apt.progress.TextFetchProgress())
+        apt_pkg.AcquireFile(acq, self.uri, self._records.md5_hash, self.size,
+                              base, destfile=destfile)
+        acq.run()
+        for item in acq.items:
+            if item.status != item.stat_done:
                 raise FetchError("The item %r could not be fetched: %s" %
-                                    (item.DestFile, item.ErrorText))
+                                    (item.destfile, item.error_text))
         return os.path.abspath(destfile)
 
     def fetch_source(self, destdir="", progress=None, unpack=True):
@@ -455,17 +474,17 @@ class Version(object):
         If *unpack* is ``True``, the path to the extracted directory is
         returned. Otherwise, the path to the .dsc file is returned.
         """
-        src = apt_pkg.GetPkgSrcRecords()
-        acq = apt_pkg.GetAcquire(progress or apt.progress.TextFetchProgress())
+        src = apt_pkg.SourceRecords()
+        acq = apt_pkg.Acquire(progress or apt.progress.TextFetchProgress())
 
         dsc = None
-        src.Lookup(self.package.name)
+        src.lookup(self.package.name)
         try:
-            while self.version != src.Version:
-                src.Lookup(self.package.name)
+            while self.version != src.version:
+                src.lookup(self.package.name)
         except AttributeError:
             raise ValueError("No source for %r" % self)
-        for md5, size, path, type in src.Files:
+        for md5, size, path, type in src.files:
             base = os.path.basename(path)
             destfile = os.path.join(destdir, base)
             if type == 'dsc':
@@ -478,17 +497,17 @@ class Version(object):
                         continue
                 finally:
                     fobj.close()
-            apt_pkg.GetPkgAcqFile(acq, src.Index.ArchiveURI(path), md5, size,
-                                  base, destFile=destfile)
-        acq.Run()
+            apt_pkg.AcquireFile(acq, src.index.archive_uri(path), md5, size,
+                                  base, dest_file=destfile)
+        acq.run()
 
-        for item in acq.Items:
-            if item.Status != item.StatDone:
+        for item in acq.items:
+            if item.status != item.stat_done:
                 raise FetchError("The item %r could not be fetched: %s" %
-                                    (item.DestFile, item.ErrorText))
+                                    (item.dest_file, item.error_text))
 
         if unpack:
-            outdir = src.Package + '-' + apt_pkg.UpstreamVersion(src.Version)
+            outdir = src.package + '-' + apt_pkg.upstream_version(src.version)
             outdir = os.path.join(destdir, outdir)
             subprocess.check_call(["dpkg-source", "-x", dsc, outdir])
             return os.path.abspath(outdir)
@@ -511,7 +530,7 @@ class Package(object):
         self._changelog = ""            # Cached changelog
 
     def __repr__(self):
-        return '<Package: name:%r id:%r>' % (self._pkg.Name, self._pkg.ID)
+        return '<Package: name:%r id:%r>' % (self._pkg.name, self._pkg.id)
 
     def candidate(self):
         """Return the candidate version of the package.
@@ -522,15 +541,15 @@ class Package(object):
 
         .. versionadded:: 0.7.9
         """
-        cand = self._pcache._depcache.GetCandidateVer(self._pkg)
+        cand = self._pcache._depcache.get_candidate_ver(self._pkg)
         if cand is not None:
             return Version(self, cand)
 
     def __set_candidate(self, version):
         """Set the candidate version of the package."""
-        self._pcache.cachePreChange()
-        self._pcache._depcache.SetCandidateVer(self._pkg, version._cand)
-        self._pcache.cachePostChange()
+        self._pcache.cache_pre_change()
+        self._pcache._depcache.set_candidate_ver(self._pkg, version._cand)
+        self._pcache.cache_post_change()
 
     candidate = property(candidate, __set_candidate)
 
@@ -540,43 +559,43 @@ class Package(object):
 
         .. versionadded:: 0.7.9
         """
-        if self._pkg.CurrentVer is not None:
-            return Version(self, self._pkg.CurrentVer)
+        if self._pkg.current_ver is not None:
+            return Version(self, self._pkg.current_ver)
 
     @property
     def name(self):
         """Return the name of the package."""
-        return self._pkg.Name
+        return self._pkg.name
 
     @property
     def id(self):
         """Return a uniq ID for the package.
 
         This can be used eg. to store additional information about the pkg."""
-        return self._pkg.ID
+        return self._pkg.id
 
     def __hash__(self):
         """Return the hash of the object.
 
         This returns the same value as ID, which is unique."""
-        return self._pkg.ID
+        return self._pkg.id
 
     @DeprecatedProperty
-    def installedVersion(self):
+    def installedVersion(self): #pylint: disable-msg=C0103
         """Return the installed version as string.
 
         .. deprecated:: 0.7.9"""
         return getattr(self.installed, 'version', None)
 
     @DeprecatedProperty
-    def candidateVersion(self):
+    def candidateVersion(self): #pylint: disable-msg=C0103
         """Return the candidate version as string.
 
         .. deprecated:: 0.7.9"""
         return getattr(self.candidate, "version", None)
 
     @DeprecatedProperty
-    def candidateDependencies(self):
+    def candidateDependencies(self): #pylint: disable-msg=C0103
         """Return a list of candidate dependencies.
 
         .. deprecated:: 0.7.9
@@ -584,7 +603,7 @@ class Package(object):
         return getattr(self.candidate, "dependencies", None)
 
     @DeprecatedProperty
-    def installedDependencies(self):
+    def installedDependencies(self):  #pylint: disable-msg=C0103
         """Return a list of installed dependencies.
 
         .. deprecated:: 0.7.9
@@ -600,7 +619,7 @@ class Package(object):
         return getattr(self.candidate, "architecture", None)
 
     @DeprecatedProperty
-    def candidateDownloadable(self):
+    def candidateDownloadable(self):  #pylint: disable-msg=C0103
         """Return ``True`` if the candidate is downloadable.
 
         .. deprecated:: 0.7.9
@@ -608,7 +627,7 @@ class Package(object):
         return getattr(self.candidate, "downloadable", None)
 
     @DeprecatedProperty
-    def installedDownloadable(self):
+    def installedDownloadable(self):  #pylint: disable-msg=C0103
         """Return ``True`` if the installed version is downloadable.
 
         .. deprecated:: 0.7.9
@@ -616,18 +635,18 @@ class Package(object):
         return getattr(self.installed, 'downloadable', False)
 
     @DeprecatedProperty
-    def sourcePackageName(self):
+    def sourcePackageName(self):  #pylint: disable-msg=C0103
         """Return the source package name as string.
 
         .. deprecated:: 0.7.9
         """
         try:
-            return self.candidate._records.SourcePkg or self._pkg.Name
+            return self.candidate._records.source_pkg or self._pkg.name
         except AttributeError:
             try:
-                return self.installed._records.SourcePkg or self._pkg.Name
+                return self.installed._records.source_pkg or self._pkg.name
             except AttributeError:
-                return self._pkg.Name
+                return self._pkg.name
 
     @DeprecatedProperty
     def homepage(self):
@@ -640,7 +659,7 @@ class Package(object):
     @property
     def section(self):
         """Return the section of the package."""
-        return self._pkg.Section
+        return self._pkg.section
 
     @DeprecatedProperty
     def priority(self):
@@ -651,7 +670,7 @@ class Package(object):
         return getattr(self.candidate, "priority", None)
 
     @DeprecatedProperty
-    def installedPriority(self):
+    def installedPriority(self):  #pylint: disable-msg=C0103
         """Return the priority (of the installed version).
 
         .. deprecated:: 0.7.9
@@ -680,21 +699,21 @@ class Package(object):
         return getattr(self.candidate, "description", None)
 
     @DeprecatedProperty
-    def rawDescription(self):
+    def rawDescription(self):  #pylint: disable-msg=C0103
         """return the long description (raw).
 
         .. deprecated:: 0.7.9"""
         return getattr(self.candidate, "raw_description", None)
 
     @DeprecatedProperty
-    def candidateRecord(self):
+    def candidateRecord(self):  #pylint: disable-msg=C0103
         """Return the Record of the candidate version of the package.
 
         .. deprecated:: 0.7.9"""
         return getattr(self.candidate, "record", None)
 
     @DeprecatedProperty
-    def installedRecord(self):
+    def installedRecord(self):  #pylint: disable-msg=C0103
         """Return the Record of the candidate version of the package.
 
         .. deprecated:: 0.7.9"""
@@ -703,60 +722,61 @@ class Package(object):
     # depcache states
 
     @property
-    def markedInstall(self):
+    def marked_install(self):
         """Return ``True`` if the package is marked for install."""
-        return self._pcache._depcache.MarkedInstall(self._pkg)
+        return self._pcache._depcache.marked_install(self._pkg)
 
     @property
-    def markedUpgrade(self):
+    def marked_upgrade(self):
         """Return ``True`` if the package is marked for upgrade."""
-        return self._pcache._depcache.MarkedUpgrade(self._pkg)
+        return self._pcache._depcache.marked_upgrade(self._pkg)
 
     @property
-    def markedDelete(self):
+    def marked_delete(self):
         """Return ``True`` if the package is marked for delete."""
-        return self._pcache._depcache.MarkedDelete(self._pkg)
+        return self._pcache._depcache.marked_delete(self._pkg)
 
     @property
-    def markedKeep(self):
+    def marked_keep(self):
         """Return ``True`` if the package is marked for keep."""
-        return self._pcache._depcache.MarkedKeep(self._pkg)
+        return self._pcache._depcache.marked_keep(self._pkg)
 
     @property
-    def markedDowngrade(self):
+    def marked_downgrade(self):
         """ Package is marked for downgrade """
-        return self._pcache._depcache.MarkedDowngrade(self._pkg)
+        return self._pcache._depcache.marked_downgrade(self._pkg)
 
     @property
-    def markedReinstall(self):
+    def marked_reinstall(self):
         """Return ``True`` if the package is marked for reinstall."""
-        return self._pcache._depcache.MarkedReinstall(self._pkg)
+        return self._pcache._depcache.marked_reinstall(self._pkg)
 
     @property
-    def isInstalled(self):
+    def is_installed(self):
         """Return ``True`` if the package is installed."""
-        return (self._pkg.CurrentVer is not None)
+        return (self._pkg.current_ver is not None)
 
     @property
-    def isUpgradable(self):
+    def is_upgradable(self):
         """Return ``True`` if the package is upgradable."""
-        return (self.isInstalled and
-                self._pcache._depcache.IsUpgradable(self._pkg))
+        return (self.is_installed and
+                self._pcache._depcache.is_upgradable(self._pkg))
 
     @property
-    def isAutoRemovable(self):
+    def is_auto_removable(self):
         """Return ``True`` if the package is no longer required.
 
         If the package has been installed automatically as a dependency of
         another package, and if no packages depend on it anymore, the package
         is no longer required.
         """
-        return self.isInstalled and self._pcache._depcache.IsGarbage(self._pkg)
+        return self.is_installed and \
+               self._pcache._depcache.is_garbage(self._pkg)
 
     # sizes
 
     @DeprecatedProperty
-    def packageSize(self):
+    def packageSize(self):  #pylint: disable-msg=C0103
         """Return the size of the candidate deb package.
 
         .. deprecated:: 0.7.9
@@ -764,7 +784,7 @@ class Package(object):
         return getattr(self.candidate, "size", None)
 
     @DeprecatedProperty
-    def installedPackageSize(self):
+    def installedPackageSize(self):  #pylint: disable-msg=C0103
         """Return the size of the installed deb package.
 
         .. deprecated:: 0.7.9
@@ -772,7 +792,7 @@ class Package(object):
         return getattr(self.installed, 'size', 0)
 
     @DeprecatedProperty
-    def candidateInstalledSize(self):
+    def candidateInstalledSize(self):  #pylint: disable-msg=C0103
         """Return the size of the candidate installed package.
 
         .. deprecated:: 0.7.9
@@ -780,7 +800,7 @@ class Package(object):
         return getattr(self.candidate, "installed_size", None)
 
     @DeprecatedProperty
-    def installedSize(self):
+    def installedSize(self):  #pylint: disable-msg=C0103
         """Return the size of the currently installed package.
 
 
@@ -789,7 +809,7 @@ class Package(object):
         return getattr(self.installed, 'installed_size', 0)
 
     @property
-    def installedFiles(self):
+    def installed_files(self):
         """Return a list of files installed by the package.
 
         Return a list of unicode names of the files which have
@@ -805,7 +825,7 @@ class Package(object):
         except EnvironmentError:
             return []
 
-    def getChangelog(self, uri=None, cancel_lock=None):
+    def get_changelog(self, uri=None, cancel_lock=None):
         """
         Download the changelog of the package and return it as unicode
         string.
@@ -859,16 +879,16 @@ class Package(object):
             # this feature only works if the correct deb-src are in the
             # sources.list
             # otherwise we fall back to the binary version number
-            src_records = apt_pkg.GetPkgSrcRecords()
-            src_rec = src_records.Lookup(src_pkg)
+            src_records = apt_pkg.SourceRecords()
+            src_rec = src_records.lookup(src_pkg)
             if src_rec:
-                src_ver = src_records.Version
+                src_ver = src_records.version
                 #if apt_pkg.VersionCompare(binver, srcver) > 0:
                 #    srcver = binver
                 if not src_ver:
                     src_ver = bin_ver
                 #print "srcver: %s" % src_ver
-                section = src_records.Section
+                section = src_records.section
                 #print "srcsect: %s" % section
             else:
                 # fail into the error handler
@@ -928,14 +948,14 @@ class Package(object):
                     if match:
                         # strip epoch from installed version
                         # and from changelog too
-                        installed = self.installedVersion
+                        installed = getattr(self.installed, 'version', None)
                         if installed and ":" in installed:
                             installed = installed.split(":", 1)[1]
                         changelog_ver = match.group(1)
                         if changelog_ver and ":" in changelog_ver:
                             changelog_ver = changelog_ver.split(":", 1)[1]
-                        if (installed and apt_pkg.VersionCompare(changelog_ver,
-                                                              installed) <= 0):
+                        if (installed and apt_pkg.version_compare(
+                                          changelog_ver, installed) <= 0):
                             break
                     # EOF (shouldn't really happen)
                     changelog += line
@@ -959,7 +979,7 @@ class Package(object):
         return self._changelog
 
     @DeprecatedProperty
-    def candidateOrigin(self):
+    def candidateOrigin(self):  #pylint: disable-msg=C0103
         """Return a list of `Origin()` objects for the candidate version.
 
         .. deprecated:: 0.7.9
@@ -972,38 +992,47 @@ class Package(object):
 
         .. versionadded:: 0.7.9
         """
-        return [Version(self, ver) for ver in self._pkg.VersionList]
+        return [Version(self, ver) for ver in self._pkg.version_list]
+
+    def get_version(self, version):
+        """Get the Version instance matching the given version string."""
+        for ver in self.versions:
+            if ver.version == version:
+                return ver
+        return None
 
     # depcache actions
 
-    def markKeep(self):
+    def mark_keep(self):
         """Mark a package for keep."""
-        self._pcache.cachePreChange()
-        self._pcache._depcache.MarkKeep(self._pkg)
-        self._pcache.cachePostChange()
+        self._pcache.cache_pre_change()
+        self._pcache._depcache.mark_keep(self._pkg)
+        self._pcache.cache_post_change()
 
-    def markDelete(self, autoFix=True, purge=False):
+    @deprecated_args
+    def mark_delete(self, auto_fix=True, purge=False):
         """Mark a package for install.
 
-        If *autoFix* is ``True``, the resolver will be run, trying to fix
+        If *auto_fix* is ``True``, the resolver will be run, trying to fix
         broken packages.  This is the default.
 
         If *purge* is ``True``, remove the configuration files of the package
         as well.  The default is to keep the configuration.
         """
-        self._pcache.cachePreChange()
-        self._pcache._depcache.MarkDelete(self._pkg, purge)
+        self._pcache.cache_pre_change()
+        self._pcache._depcache.mark_delete(self._pkg, purge)
         # try to fix broken stuffsta
-        if autoFix and self._pcache._depcache.BrokenCount > 0:
-            Fix = apt_pkg.GetPkgProblemResolver(self._pcache._depcache)
-            Fix.Clear(self._pkg)
-            Fix.Protect(self._pkg)
-            Fix.Remove(self._pkg)
-            Fix.InstallProtect()
-            Fix.Resolve()
-        self._pcache.cachePostChange()
+        if auto_fix and self._pcache._depcache.broken_count > 0:
+            fix = apt_pkg.ProblemResolver(self._pcache._depcache)
+            fix.clear(self._pkg)
+            fix.protect(self._pkg)
+            fix.remove(self._pkg)
+            fix.install_protect()
+            fix.resolve()
+        self._pcache.cache_post_change()
 
-    def markInstall(self, autoFix=True, autoInst=True, fromUser=True):
+    @deprecated_args
+    def mark_install(self, auto_fix=True, auto_inst=True, from_user=True):
         """Mark a package for install.
 
         If *autoFix* is ``True``, the resolver will be run, trying to fix
@@ -1017,24 +1046,24 @@ class Package(object):
         want to be able to automatically remove the package at a later stage
         when no other package depends on it.
         """
-        self._pcache.cachePreChange()
-        self._pcache._depcache.MarkInstall(self._pkg, autoInst, fromUser)
+        self._pcache.cache_pre_change()
+        self._pcache._depcache.mark_install(self._pkg, auto_inst, from_user)
         # try to fix broken stuff
-        if autoFix and self._pcache._depcache.BrokenCount > 0:
-            fixer = apt_pkg.GetPkgProblemResolver(self._pcache._depcache)
-            fixer.Clear(self._pkg)
-            fixer.Protect(self._pkg)
-            fixer.Resolve(True)
-        self._pcache.cachePostChange()
+        if auto_fix and self._pcache._depcache.broken_count > 0:
+            fixer = apt_pkg.ProblemResolver(self._pcache._depcache)
+            fixer.clear(self._pkg)
+            fixer.protect(self._pkg)
+            fixer.resolve(True)
+        self._pcache.cache_post_change()
 
-    def markUpgrade(self):
+    def mark_upgrade(self):
         """Mark a package for upgrade."""
-        if self.isUpgradable:
-            self.markInstall()
+        if self.is_upgradable:
+            self.mark_install()
         else:
             # FIXME: we may want to throw a exception here
             sys.stderr.write(("MarkUpgrade() called on a non-upgrable pkg: "
-                              "'%s'\n") % self._pkg.Name)
+                              "'%s'\n") % self._pkg.name)
 
     def commit(self, fprogress, iprogress):
         """Commit the changes.
@@ -1045,14 +1074,53 @@ class Package(object):
         The parameter *iprogress* refers to an InstallProgress() object, as
         found in apt.progress.
         """
-        self._pcache._depcache.Commit(fprogress, iprogress)
+        self._pcache._depcache.commit(fprogress, iprogress)
+
+
+    if not apt_pkg._COMPAT_0_7:
+        del installedVersion
+        del candidateVersion
+        del candidateDependencies
+        del installedDependencies
+        del architecture
+        del candidateDownloadable
+        del installedDownloadable
+        del sourcePackageName
+        del homepage
+        del priority
+        del installedPriority
+        del summary
+        del description
+        del rawDescription
+        del candidateRecord
+        del installedRecord
+        del packageSize
+        del installedPackageSize
+        del candidateInstalledSize
+        del installedSize
+        del candidateOrigin
+    else:
+        markedInstalled = AttributeDeprecatedBy('marked_installed')
+        markedUpgrade = AttributeDeprecatedBy('marked_upgrade')
+        markedDelete = AttributeDeprecatedBy('marked_delete')
+        markedKeep = AttributeDeprecatedBy('marked_keep')
+        markedDowngrade = AttributeDeprecatedBy('marked_downgrade')
+        markedReinstall = AttributeDeprecatedBy('marked_reinstall')
+        isInstalled = AttributeDeprecatedBy('is_installed')
+        isUpgradable = AttributeDeprecatedBy('is_upgradable')
+        isAutoRemovable = AttributeDeprecatedBy('is_auto_removable')
+        installedFiles = AttributeDeprecatedBy('installed_files')
+        getChangelog = function_deprecated_by(get_changelog)
+        markDelete = function_deprecated_by(mark_delete)
+        markInstall = function_deprecated_by(mark_install)
+        markKeep = function_deprecated_by(mark_keep)
+        markUpgrade = function_deprecated_by(mark_upgrade)
 
 
 def _test():
     """Self-test."""
     print "Self-test for the Package modul"
     import random
-    import apt
     apt_pkg.init()
     progress = apt.progress.OpTextProgress()
     cache = apt.Cache(progress)
@@ -1075,21 +1143,21 @@ def _test():
     print "Dependencies: %s" % pkg.installed.dependencies
     for dep in pkg.candidate.dependencies:
         print ",".join("%s (%s) (%s) (%s)" % (o.name, o.version, o.relation,
-                        o.preDepend) for o in dep.or_dependencies)
+                        o.pre_depend) for o in dep.or_dependencies)
     print "arch: %s" % pkg.candidate.architecture
     print "homepage: %s" % pkg.candidate.homepage
     print "rec: ", pkg.candidate.record
 
 
-    print cache["2vcard"].getChangelog()
+    print cache["2vcard"].get_changelog()
     for i in True, False:
         print "Running install on random upgradable pkgs with AutoFix: %s " % i
         for pkg in cache:
-            if pkg.isUpgradable:
+            if pkg.is_upgradable:
                 if random.randint(0, 1) == 1:
-                    pkg.markInstall(i)
-        print "Broken: %s " % cache._depcache.BrokenCount
-        print "InstCount: %s " % cache._depcache.InstCount
+                    pkg.mark_install(i)
+        print "Broken: %s " % cache._depcache.broken_count
+        print "InstCount: %s " % cache._depcache.inst_count
 
     print
     # get a new cache
@@ -1099,11 +1167,11 @@ def _test():
         for name in cache.keys():
             if random.randint(0, 1) == 1:
                 try:
-                    cache[name].markDelete(i)
+                    cache[name].mark_delete(i)
                 except SystemError:
                     print "Error trying to remove: %s " % name
-        print "Broken: %s " % cache._depcache.BrokenCount
-        print "DelCount: %s " % cache._depcache.DelCount
+        print "Broken: %s " % cache._depcache.broken_count
+        print "DelCount: %s " % cache._depcache.del_count
 
 # self-test
 if __name__ == "__main__":

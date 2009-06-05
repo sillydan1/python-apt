@@ -72,9 +72,14 @@ static PyObject *PkgSourceListGetIndexes(PyObject *Self,PyObject *Args)
 
 static PyMethodDef PkgSourceListMethods[] =
 {
+   {"find_index",PkgSourceListFindIndex,METH_VARARGS,doc_PkgSourceListFindIndex},
+   {"read_main_list",PkgSourceListReadMainList,METH_VARARGS,doc_PkgSourceListReadMainList},
+   {"get_indexes",PkgSourceListGetIndexes,METH_VARARGS,doc_PkgSourceListGetIndexes},
+#ifdef COMPAT_0_7
    {"FindIndex",PkgSourceListFindIndex,METH_VARARGS,doc_PkgSourceListFindIndex},
    {"ReadMainList",PkgSourceListReadMainList,METH_VARARGS,doc_PkgSourceListReadMainList},
    {"GetIndexes",PkgSourceListGetIndexes,METH_VARARGS,doc_PkgSourceListGetIndexes},
+#endif
    {}
 };
 
@@ -93,9 +98,20 @@ static PyObject *PkgSourceListGetList(PyObject *Self,void*)
 }
 
 static PyGetSetDef PkgSourceListGetSet[] = {
+    {"list",PkgSourceListGetList,0,"A list of MetaIndex() objects.",0},
+#ifdef COMPAT_0_7
     {"List",PkgSourceListGetList,0,"A list of MetaIndex() objects.",0},
+#endif
     {}
 };
+
+static PyObject *PkgSourceListNew(PyTypeObject *type,PyObject *args,PyObject *kwds)
+{
+   char *kwlist[] = {0};
+   if (PyArg_ParseTupleAndKeywords(args,kwds,"",kwlist) == 0)
+      return 0;
+   return CppPyObject_NEW<pkgSourceList*>(type,new pkgSourceList());
+}
 
 PyTypeObject PkgSourceListType =
 {
@@ -103,7 +119,7 @@ PyTypeObject PkgSourceListType =
    #if PY_MAJOR_VERSION < 3
    0,			                // ob_size
    #endif
-   "pkgSourceList",                          // tp_name
+   "apt_pkg.SourceList",                          // tp_name
    sizeof(CppPyObject<pkgSourceList*>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
@@ -133,10 +149,19 @@ PyTypeObject PkgSourceListType =
    PkgSourceListMethods,                // tp_methods
    0,                                   // tp_members
    PkgSourceListGetSet,                 // tp_getset
+   0,                                   // tp_base
+   0,                                   // tp_dict
+   0,                                   // tp_descr_get
+   0,                                   // tp_descr_set
+   0,                                   // tp_dictoffset
+   0,                                   // tp_init
+   0,                                   // tp_alloc
+   PkgSourceListNew,                    // tp_new
 };
 
+#ifdef COMPAT_0_7
 PyObject *GetPkgSourceList(PyObject *Self,PyObject *Args)
 {
-   return CppPyObject_NEW<pkgSourceList*>(&PkgSourceListType,new pkgSourceList());
+   return PkgSourceListNew(&PkgSourceListType,Args,0);
 }
-
+#endif

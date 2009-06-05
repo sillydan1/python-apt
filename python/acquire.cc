@@ -38,6 +38,21 @@ MkGet(AcquireItemGetStatAuthError,Py_BuildValue("i", pkgAcquire::Item::StatAuthE
 #undef MkGet
 
 static PyGetSetDef AcquireItemGetSet[] = {
+    {"complete",AcquireItemGetComplete},
+    {"desc_uri",AcquireItemGetDescURI},
+    {"destfile",AcquireItemGetDestFile},
+    {"error_text",AcquireItemGetErrorText},
+    {"filesize",AcquireItemGetFileSize},
+    {"is",AcquireItemGetID},
+    {"is_trusted",AcquireItemGetIsTrusted},
+    {"local",AcquireItemGetLocal},
+    {"status",AcquireItemGetStatus},
+    {"stat_idle",AcquireItemGetStatIdle},
+    {"stat_fetching",AcquireItemGetStatFetching},
+    {"stat_done",AcquireItemGetStatDone},
+    {"stat_error",AcquireItemGetStatError},
+    {"stat_auth_error",AcquireItemGetStatAuthError},
+#ifdef COMPAT_0_7
     {"Complete",AcquireItemGetComplete},
     {"DescURI",AcquireItemGetDescURI},
     {"DestFile",AcquireItemGetDestFile},
@@ -52,6 +67,7 @@ static PyGetSetDef AcquireItemGetSet[] = {
     {"StatDone",AcquireItemGetStatDone},
     {"StatError",AcquireItemGetStatError},
     {"StatAuthError",AcquireItemGetStatAuthError},
+#endif
     {}
 };
 
@@ -79,7 +95,7 @@ PyTypeObject AcquireItemType =
    #if PY_MAJOR_VERSION < 3
    0,			                // ob_size
    #endif
-   "pkgAcquire::ItemIterator",         // tp_name
+   "apt_pkg.AcquireItem",         // tp_name
    sizeof(CppOwnedPyObject<pkgAcquire::ItemIterator>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
@@ -140,8 +156,12 @@ static PyObject *PkgAcquireShutdown(PyObject *Self,PyObject *Args)
 
 static PyMethodDef PkgAcquireMethods[] =
 {
+   {"run",PkgAcquireRun,METH_VARARGS,"Run the fetcher"},
+   {"shutdown",PkgAcquireShutdown, METH_VARARGS,"Shutdown the fetcher"},
+   #ifdef COMPAT_0_7
    {"Run",PkgAcquireRun,METH_VARARGS,"Run the fetcher"},
    {"Shutdown",PkgAcquireShutdown, METH_VARARGS,"Shutdown the fetcher"},
+   #endif
    {}
 };
 
@@ -184,6 +204,14 @@ static PyObject *PkgAcquireGetResultCancelled(PyObject *Self,void*) {
 }
 
 static PyGetSetDef PkgAcquireGetSet[] = {
+    {"fetch_needed",PkgAcquireGetFetchNeeded},
+    {"items",PkgAcquireGetItems},
+    {"partial_present",PkgAcquireGetPartialPresent},
+    {"result_cancelled",PkgAcquireGetResultCancelled},
+    {"result_continue",PkgAcquireGetResultContinue},
+    {"result_failed",PkgAcquireGetResultFailed},
+    {"total_needed",PkgAcquireGetTotalNeeded},
+    #ifdef COMPAT_0_7
     {"FetchNeeded",PkgAcquireGetFetchNeeded},
     {"Items",PkgAcquireGetItems},
     {"PartialPresent",PkgAcquireGetPartialPresent},
@@ -191,8 +219,37 @@ static PyGetSetDef PkgAcquireGetSet[] = {
     {"ResultContinue",PkgAcquireGetResultContinue},
     {"ResultFailed",PkgAcquireGetResultFailed},
     {"TotalNeeded",PkgAcquireGetTotalNeeded},
+    #endif
     {}
 };
+
+static PyObject *PkgAcquireNew(PyTypeObject *type,PyObject *Args,PyObject *kwds) {
+   pkgAcquire *fetcher;
+
+   PyObject *pyFetchProgressInst = NULL;
+   static char *kwlist[] = {"progress", 0};
+   if (PyArg_ParseTupleAndKeywords(Args,kwds,"|O",kwlist,&pyFetchProgressInst) == 0)
+      return 0;
+
+   if (pyFetchProgressInst != NULL) {
+      // FIXME: memleak?
+      PyFetchProgress *progress = new PyFetchProgress();
+      progress->setCallbackInst(pyFetchProgressInst);
+      fetcher = new pkgAcquire(progress);
+   } else {
+      fetcher = new pkgAcquire();
+   }
+
+   CppPyObject<pkgAcquire*> *FetcherObj =
+	   CppPyObject_NEW<pkgAcquire*>(type, fetcher);
+
+   return FetcherObj;
+}
+
+static char *doc_PkgAcquire = "Acquire(progress) -> Acquire() object.\n\n"
+    "Create a new acquire object. The parameter *progress* can be used to\n"
+    "specify a apt.progress.FetchProgress() object, which will display the\n"
+    "progress of the fetching.";
 
 PyTypeObject PkgAcquireType =
 {
@@ -200,7 +257,7 @@ PyTypeObject PkgAcquireType =
    #if PY_MAJOR_VERSION < 3
    0,                                   // ob_size
    #endif
-   "Acquire",                           // tp_name
+   "apt_pkg.Acquire",                   // tp_name
    sizeof(CppPyObject<pkgAcquire*>),    // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
@@ -220,7 +277,7 @@ PyTypeObject PkgAcquireType =
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    Py_TPFLAGS_DEFAULT,                  // tp_flags
-   "pkgAcquire Object",                 // tp_doc
+   doc_PkgAcquire,                      // tp_doc
    0,                                   // tp_traverse
    0,                                   // tp_clear
    0,                                   // tp_richcompare
@@ -230,30 +287,59 @@ PyTypeObject PkgAcquireType =
    PkgAcquireMethods,                   // tp_methods
    0,                                   // tp_members
    PkgAcquireGetSet,                    // tp_getset
+   0,                                   // tp_base
+   0,                                   // tp_dict
+   0,                                   // tp_descr_get
+   0,                                   // tp_descr_set
+   0,                                   // tp_dictoffset
+   0,                                   // tp_init
+   0,                                   // tp_alloc
+   PkgAcquireNew,                       // tp_new
 };
 
+#ifdef COMPAT_0_7
 PyObject *GetAcquire(PyObject *Self,PyObject *Args)
 {
-   pkgAcquire *fetcher;
+    return PkgAcquireNew(&PkgAcquireType,Args,0);
+}
+#endif
 
-   PyObject *pyFetchProgressInst = NULL;
-   if (PyArg_ParseTuple(Args,"|O",&pyFetchProgressInst) == 0)
+static PyObject *PkgAcquireFileNew(PyTypeObject *type, PyObject *Args, PyObject * kwds)
+{
+   PyObject *pyfetcher;
+   char *uri, *md5, *descr, *shortDescr, *destDir, *destFile;
+   int size = 0;
+   uri = md5 = descr = shortDescr = destDir = destFile = "";
+
+   char * kwlist[] = {"owner","uri", "md5", "size", "descr", "short_descr",
+                      "destdir", "destfile", NULL};
+
+   if (PyArg_ParseTupleAndKeywords(Args, kwds, "O!s|sissss", kwlist,
+				   &PkgAcquireType, &pyfetcher, &uri, &md5,
+				   &size, &descr, &shortDescr, &destDir, &destFile) == 0)
       return 0;
 
-   if (pyFetchProgressInst != NULL) {
-      // FIXME: memleak?
-      PyFetchProgress *progress = new PyFetchProgress();
-      progress->setCallbackInst(pyFetchProgressInst);
-      fetcher = new pkgAcquire(progress);
-   } else {
-      fetcher = new pkgAcquire();
-   }
+   pkgAcquire *fetcher = GetCpp<pkgAcquire*>(pyfetcher);
+   pkgAcqFile *af = new pkgAcqFile(fetcher,  // owner
+				   uri, // uri
+				   md5,  // md5
+				   size,   // size
+				   descr, // descr
+				   shortDescr,
+				   destDir,
+				   destFile); // short-desc
+   CppPyObject<pkgAcqFile*> *AcqFileObj = CppPyObject_NEW<pkgAcqFile*>(type);
+   AcqFileObj->Object = af;
 
-   CppPyObject<pkgAcquire*> *FetcherObj =
-	   CppPyObject_NEW<pkgAcquire*>(&PkgAcquireType, fetcher);
-
-   return FetcherObj;
+   return AcqFileObj;
 }
+
+
+static char *doc_PkgAcquireFile =
+    "AcquireFile(owner, uri[, md5, size, descr, short_descr, destdir,"
+    "destfile]) -> New AcquireFile() object\n\n"
+    "The parameter *owner* refers to an apt_pkg.Acquire() object. You can use\n"
+    "*destdir* OR *destfile* to specify the destination directory/file.";
 
 PyTypeObject PkgAcquireFileType =
 {
@@ -261,7 +347,7 @@ PyTypeObject PkgAcquireFileType =
    #if PY_MAJOR_VERSION < 3
    0,			                // ob_size
    #endif
-   "pkgAcquireFile",                   // tp_name
+   "apt_pkg.AcquireFile",                   // tp_name
    sizeof(CppPyObject<pkgAcqFile*>),// tp_basicsize
    0,                                   // tp_itemsize
    // Methods
@@ -275,8 +361,33 @@ PyTypeObject PkgAcquireFileType =
    0,                                   // tp_as_sequence
    0,	                                // tp_as_mapping
    0,                                   // tp_hash
+   0,                                   // tp_call
+   0,                                   // tp_str
+   0,                                   // tp_getattro
+   0,                                   // tp_setattro
+   0,                                   // tp_as_buffer
+   Py_TPFLAGS_DEFAULT,                  // tp_flags
+   doc_PkgAcquireFile,                  // tp_doc
+   0,                                   // tp_traverse
+   0,                                   // tp_clear
+   0,                                   // tp_richcompare
+   0,                                   // tp_weaklistoffset
+   0,                                   // tp_iter
+   0,                                   // tp_iternext
+   0,                                   // tp_methods
+   0,                                   // tp_members
+   0,                                   // tp_getset
+   0,                                   // tp_base
+   0,                                   // tp_dict
+   0,                                   // tp_descr_get
+   0,                                   // tp_descr_set
+   0,                                   // tp_dictoffset
+   0,                                   // tp_init
+   0,                                   // tp_alloc
+   PkgAcquireFileNew,                   // tp_new
 };
 
+#ifdef COMPAT_0_7
 char *doc_GetPkgAcqFile =
 "GetPkgAcqFile(pkgAquire, uri[, md5, size, descr, shortDescr, destDir, destFile]) -> PkgAcqFile\n";
 PyObject *GetPkgAcqFile(PyObject *Self, PyObject *Args, PyObject * kwds)
@@ -308,6 +419,4 @@ PyObject *GetPkgAcqFile(PyObject *Self, PyObject *Args, PyObject * kwds)
 
    return AcqFileObj;
 }
-
-
-									/*}}}*/
+#endif
