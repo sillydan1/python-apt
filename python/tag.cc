@@ -239,15 +239,14 @@ static PyObject *TagFileJump(PyObject *Self,PyObject *Args)
 									/*}}}*/
 // ParseSection - Parse a single section from a tag file		/*{{{*/
 // ---------------------------------------------------------------------
-char *doc_ParseSection ="ParseSection(Text) -> SectionObject";
-PyObject *ParseSection(PyObject *self,PyObject *Args)
-{
+static PyObject *TagSecNew(PyTypeObject *type,PyObject *Args,PyObject *kwds) {
    char *Data;
-   if (PyArg_ParseTuple(Args,"s",&Data) == 0)
+   static char *kwlist[] = {"text", 0};
+   if (PyArg_ParseTupleAndKeywords(Args,kwds,"s",kwlist,&Data) == 0)
       return 0;
 
    // Create the object..
-   TagSecData *New = PyObject_NEW(TagSecData,&TagSecType);
+   TagSecData *New = PyObject_NEW(TagSecData,type);
    new (&New->Object) pkgTagSection();
    New->Data = new char[strlen(Data)+2];
    snprintf(New->Data,strlen(Data)+2,"%s\n",Data);
@@ -264,21 +263,30 @@ PyObject *ParseSection(PyObject *self,PyObject *Args)
 
    return New;
 }
+
+#ifdef COMPAT_0_7
+char *doc_ParseSection ="ParseSection(Text) -> TagSection() object. Deprecated.";
+PyObject *ParseSection(PyObject *self,PyObject *Args)
+{
+    return TagSecNew(&TagSecType,Args,0);
+}
+#endif
 									/*}}}*/
 // ParseTagFile - Parse a tagd file					/*{{{*/
 // ---------------------------------------------------------------------
 /* This constructs the parser state. */
-char *doc_ParseTagFile = "ParseTagFile(File) -> TagFile";
-PyObject *ParseTagFile(PyObject *self,PyObject *Args)
+
+static PyObject *TagFileNew(PyTypeObject *type,PyObject *Args,PyObject *kwds)
 {
    PyObject *File;
-   if (PyArg_ParseTuple(Args,"O",&File) == 0)
+   static char *kwlist[] = {"file", 0};
+   if (PyArg_ParseTupleAndKeywords(Args,kwds,"O",kwlist,&File) == 0)
       return 0;
    int fileno = PyObject_AsFileDescriptor(File);
    if (fileno == -1)
       return 0;
 
-   TagFileData *New = PyObject_NEW(TagFileData,&TagFileType);
+   TagFileData *New = PyObject_NEW(TagFileData,type);
    new (&New->Fd) FileFd(fileno,false);
    New->File = File;
    Py_INCREF(New->File);
@@ -291,6 +299,12 @@ PyObject *ParseTagFile(PyObject *self,PyObject *Args)
 
    return HandleErrors(New);
 }
+#ifdef COMPAT_0_7
+char *doc_ParseTagFile = "ParseTagFile(File) -> TagFile() object. Deprecated.";
+PyObject *ParseTagFile(PyObject *self,PyObject *Args) {
+    return TagFileNew(&TagFileType,Args,0);
+}
+#endif
 									/*}}}*/
 // RewriteSection - Rewrite a section..					/*{{{*/
 // ---------------------------------------------------------------------
@@ -367,13 +381,20 @@ PyObject *RewriteSection(PyObject *self,PyObject *Args)
 static PyMethodDef TagSecMethods[] =
 {
    // Query
+   {"find",TagSecFind,METH_VARARGS,doc_Find},
+   {"find_flag",TagSecFindFlag,METH_VARARGS,doc_FindFlag},
+   {"bytes",TagSecBytes,METH_VARARGS,doc_Bytes},
+#ifdef COMPAT_0_7
    {"Find",TagSecFind,METH_VARARGS,doc_Find},
    {"FindFlag",TagSecFindFlag,METH_VARARGS,doc_FindFlag},
    {"Bytes",TagSecBytes,METH_VARARGS,doc_Bytes},
+#endif
 
    // Python Special
    {"keys",TagSecKeys,METH_VARARGS,doc_Keys},
+#if PY_MAJOR_VERSION < 3
    {"has_key",TagSecExists,METH_VARARGS,doc_Exists},
+#endif
    {"get",TagSecFind,METH_VARARGS,doc_Find},
    {}
 };
@@ -381,13 +402,20 @@ static PyMethodDef TagSecMethods[] =
 
 PySequenceMethods TagSecSeqMeth = {0,0,0,0,0,0,0,TagSecContains,0,0};
 PyMappingMethods TagSecMapMeth = {TagSecLength,TagSecMap,0};
+
+
+static char *doc_TagSec = "TagSection(text) -> Create a new object.\n\n"
+   "TagSection() objects provide methods to access rfc822-style formatted\n"
+   "header sections, like those in debian/control or Packages files.\n\n"
+   "TagSection() behave like read-only dictionaries and also provide access\n"
+   "to the functions provided by the C++ class (e.g. Find)";
 PyTypeObject TagSecType =
 {
    PyObject_HEAD_INIT(&PyType_Type)
    #if PY_MAJOR_VERSION < 3
    0,                                   // ob_size
    #endif
-   "TagSection",                        // tp_name
+   "apt_pkg.TagSection",                // tp_name
    sizeof(TagSecData),                  // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
@@ -407,23 +435,38 @@ PyTypeObject TagSecType =
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    Py_TPFLAGS_DEFAULT,                  // tp_flags
-   "TagSection Object",                 // tp_doc
+   doc_TagSec,                          // tp_doc
    0,                                   // tp_traverse
    0,                                   // tp_clear
    0,                                   // tp_richcompare
    0,                                   // tp_weaklistoffset
    0,                                   // tp_iter
    0,                                   // tp_iternext
-   TagSecMethods                        // tp_methods
+   TagSecMethods,                       // tp_methods
+   0,                                   // tp_members
+   0,                                   // tp_getset
+   0,                                   // tp_base
+   0,                                   // tp_dict
+   0,                                   // tp_descr_get
+   0,                                   // tp_descr_set
+   0,                                   // tp_dictoffset
+   0,                                   // tp_init
+   0,                                   // tp_alloc
+   TagSecNew,                           // tp_new
 };
 
 // Method table for the Tag File object
 static PyMethodDef TagFileMethods[] =
 {
    // Query
+   {"step",TagFileStep,METH_VARARGS,doc_Step},
+   {"offset",TagFileOffset,METH_VARARGS,doc_Offset},
+   {"jump",TagFileJump,METH_VARARGS,doc_Jump},
+#ifdef COMPAT_0_7
    {"Step",TagFileStep,METH_VARARGS,doc_Step},
    {"Offset",TagFileOffset,METH_VARARGS,doc_Offset},
    {"Jump",TagFileJump,METH_VARARGS,doc_Jump},
+#endif
 
    {}
 };
@@ -436,9 +479,21 @@ static PyObject *TagFileGetSection(PyObject *Self,void*) {
 }
 
 static PyGetSetDef TagFileGetSet[] = {
+    {"section",TagFileGetSection,0,"Return a TagSection.",0},
+#ifdef COMPAT_0_7
     {"Section",TagFileGetSection,0,"Return a TagSection.",0},
+#endif
     {}
 };
+
+static char *doc_TagFile = "TagFile(file) -> TagFile() object. \n\n"
+   "TagFile() objects provide access to debian control files, which consists\n"
+   "of multiple RFC822-like formatted sections.\n\n"
+   "A file may consists of multiple sections, and you can use Step() to move\n"
+   "forward. The current TagSection() is available via the attribute section"
+   ".\n\n"
+   "The parameter *file* refers to an object providing a fileno() method or\n"
+   "a file descriptor (an integer)";
 
 // Type for a Tag File
 PyTypeObject TagFileType =
@@ -447,7 +502,7 @@ PyTypeObject TagFileType =
    #if PY_MAJOR_VERSION < 3
    0,                                   // ob_size
    #endif
-   "TagFile",                           // tp_name
+   "apt_pkg.TagFile",                   // tp_name
    sizeof(TagFileData),                 // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
@@ -467,7 +522,7 @@ PyTypeObject TagFileType =
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    Py_TPFLAGS_DEFAULT,                  // tp_flags
-   "TagFile Object",                    // tp_doc
+   doc_TagFile,                         // tp_doc
    0,                                   // tp_traverse
    0,                                   // tp_clear
    0,                                   // tp_richcompare
@@ -476,5 +531,14 @@ PyTypeObject TagFileType =
    0,                                   // tp_iternext
    TagFileMethods,                      // tp_methods
    0,                                   // tp_members
-   TagFileGetSet                        // tp_getset
+   TagFileGetSet,                       // tp_getset
+   0,                                   // tp_base
+   0,                                   // tp_dict
+   0,                                   // tp_descr_get
+   0,                                   // tp_descr_set
+   0,                                   // tp_dictoffset
+   0,                                   // tp_init
+   0,                                   // tp_alloc
+   TagFileNew,                          // tp_new
+
 };

@@ -1,3 +1,24 @@
+python-apt (0.7.91) experimental; urgency=low
+
+  [ Julian Andres Klode ]
+  * Rename where needed according to PEP 8 conventions (Closes: #481061)
+  * Where possible, derive apt.package.Record from collections.Mapping.
+  * ActionGroups can be used as a context manager for the 'with' statement.
+  * utils/migrate-0.8.py: Helper to check Python code for deprecated functions,
+    attributes,etc. Has to be run from the python-apt source tree, but can be
+    used for all Python code using python-apt.
+  * debian/control: Only recommend libjs-jquery (Closes: #527543).
+
+  [ Stefano Zacchiroli ]
+  * debian/python-apt.doc-base: register the documentation with the
+    doc-base system (Closes: #525134)
+
+  [ Sebastian Heinlein ]
+  * apt/package.py: Add Package.get_version() which returns a Version instance
+    for the given version string or None (Closes: #523998)
+
+ -- Julian Andres Klode <jak@debian.org>  Fri, 05 Jun 2009 19:36:45 +0200
+
 python-apt (0.7.90) experimental; urgency=low
 
   * Introduce support for Python 3 (Closes: #523645)

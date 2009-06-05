@@ -30,11 +30,13 @@
 
 // newConfiguration - Build a new configuration class			/*{{{*/
 // ---------------------------------------------------------------------
+#ifdef COMPAT_0_7
 static char *doc_newConfiguration = "Construct a configuration instance";
 static PyObject *newConfiguration(PyObject *self,PyObject *args)
 {
    return CppPyObject_NEW<Configuration>(&ConfigurationType);
 }
+#endif
 									/*}}}*/
 
 // Version Wrappers							/*{{{*/
@@ -385,35 +387,64 @@ static PyObject *PkgSystemUnLock(PyObject *Self,PyObject *Args)
 static PyMethodDef methods[] =
 {
    // Constructors
+   #ifdef COMPAT_0_7
    {"newConfiguration",newConfiguration,METH_VARARGS,doc_newConfiguration},
+   #endif
    {"init",Init,METH_VARARGS,doc_Init},
+   {"init_config",InitConfig,METH_VARARGS,doc_InitConfig},
+   {"init_system",InitSystem,METH_VARARGS,doc_InitSystem},
+   #ifdef COMPAT_0_7
    {"InitConfig",InitConfig,METH_VARARGS,doc_InitConfig},
    {"InitSystem",InitSystem,METH_VARARGS,doc_InitSystem},
+   #endif
 
    // Tag File
+   #ifdef COMPAT_0_7
    {"ParseSection",ParseSection,METH_VARARGS,doc_ParseSection},
    {"ParseTagFile",ParseTagFile,METH_VARARGS,doc_ParseTagFile},
    {"RewriteSection",RewriteSection,METH_VARARGS,doc_RewriteSection},
+   #endif
+   {"rewrite_section",RewriteSection,METH_VARARGS,doc_RewriteSection},
 
    // Locking
+   {"get_lock",GetLock,METH_VARARGS,doc_GetLock},
+   {"pkgsystem_lock",PkgSystemLock,METH_VARARGS,doc_PkgSystemLock},
+   {"pkgsystem_unlock",PkgSystemUnLock,METH_VARARGS,doc_PkgSystemUnLock},
+   #ifdef COMPAT_0_7
    {"GetLock",GetLock,METH_VARARGS,doc_GetLock},
    {"PkgSystemLock",PkgSystemLock,METH_VARARGS,doc_PkgSystemLock},
    {"PkgSystemUnLock",PkgSystemUnLock,METH_VARARGS,doc_PkgSystemUnLock},
+   #endif
 
    // Command line
+   {"read_config_file",LoadConfig,METH_VARARGS,doc_LoadConfig},
+   {"read_config_dir",LoadConfigDir,METH_VARARGS,doc_LoadConfigDir},
+   {"read_config_file_isc",LoadConfigISC,METH_VARARGS,doc_LoadConfig},
+   {"parse_commandline",ParseCommandLine,METH_VARARGS,doc_ParseCommandLine},
+   #ifdef COMPAT_0_7
    {"ReadConfigFile",LoadConfig,METH_VARARGS,doc_LoadConfig},
    {"ReadConfigDir",LoadConfigDir,METH_VARARGS,doc_LoadConfigDir},
    {"ReadConfigFileISC",LoadConfigISC,METH_VARARGS,doc_LoadConfig},
    {"ParseCommandLine",ParseCommandLine,METH_VARARGS,doc_ParseCommandLine},
+   #endif
 
    // Versioning
+   {"version_compare",VersionCompare,METH_VARARGS,doc_VersionCompare},
+   {"check_dep",CheckDep,METH_VARARGS,doc_CheckDep},
+   {"upstream_version",UpstreamVersion,METH_VARARGS,doc_UpstreamVersion},
+   #ifdef COMPAT_0_7
    {"VersionCompare",VersionCompare,METH_VARARGS,doc_VersionCompare},
    {"CheckDep",CheckDep,METH_VARARGS,doc_CheckDep},
    {"UpstreamVersion",UpstreamVersion,METH_VARARGS,doc_UpstreamVersion},
+   #endif
 
    // Depends
+   {"parse_depends",ParseDepends,METH_VARARGS,doc_ParseDepends},
+   {"parse_src_depends",ParseSrcDepends,METH_VARARGS,doc_ParseDepends},
+   #ifdef COMPAT_0_7
    {"ParseDepends",ParseDepends,METH_VARARGS,doc_ParseDepends},
    {"ParseSrcDepends",ParseSrcDepends,METH_VARARGS,doc_ParseDepends},
+   #endif
 
    // Stuff
    {"md5sum",md5sum,METH_VARARGS,doc_md5sum},
@@ -421,6 +452,17 @@ static PyMethodDef methods[] =
    {"sha256sum",sha256sum,METH_VARARGS,doc_sha256sum},
 
    // Strings
+   {"check_domain_list",StrCheckDomainList,METH_VARARGS,"CheckDomainList(String,String) -> Bool"},
+   {"quote_string",StrQuoteString,METH_VARARGS,"QuoteString(String,String) -> String"},
+   {"dequote_string",StrDeQuote,METH_VARARGS,"DeQuoteString(String) -> String"},
+   {"size_to_str",StrSizeToStr,METH_VARARGS,"SizeToStr(int) -> String"},
+   {"time_to_str",StrTimeToStr,METH_VARARGS,"TimeToStr(int) -> String"},
+   {"uri_to_filename",StrURItoFileName,METH_VARARGS,"URItoFileName(String) -> String"},
+   {"base64_encode",StrBase64Encode,METH_VARARGS,"Base64Encode(String) -> String"},
+   {"string_to_bool",StrStringToBool,METH_VARARGS,"StringToBool(String) -> int"},
+   {"time_rfc1123",StrTimeRFC1123,METH_VARARGS,"TimeRFC1123(int) -> String"},
+   {"str_to_time",StrStrToTime,METH_VARARGS,"StrToTime(String) -> Int"},
+   #ifdef COMPAT_0_7
    {"CheckDomainList",StrCheckDomainList,METH_VARARGS,"CheckDomainList(String,String) -> Bool"},
    {"QuoteString",StrQuoteString,METH_VARARGS,"QuoteString(String,String) -> String"},
    {"DeQuoteString",StrDeQuote,METH_VARARGS,"DeQuoteString(String) -> String"},
@@ -431,8 +473,10 @@ static PyMethodDef methods[] =
    {"StringToBool",StrStringToBool,METH_VARARGS,"StringToBool(String) -> int"},
    {"TimeRFC1123",StrTimeRFC1123,METH_VARARGS,"TimeRFC1123(int) -> String"},
    {"StrToTime",StrStrToTime,METH_VARARGS,"StrToTime(String) -> Int"},
+   #endif
 
    // Cache
+   #ifdef COMPAT_0_7
    {"GetCache",TmpGetCache,METH_VARARGS,"GetCache() -> PkgCache"},
    {"GetDepCache",GetDepCache,METH_VARARGS,"GetDepCache(Cache) -> DepCache"},
    {"GetPkgRecords",GetPkgRecords,METH_VARARGS,"GetPkgRecords(Cache) -> PkgRecords"},
@@ -452,23 +496,17 @@ static PyMethodDef methods[] =
 
    // PkgManager
    {"GetPackageManager",GetPkgManager,METH_VARARGS,"GetPackageManager(DepCache) -> PackageManager"},
+   #endif
 
    {}
 };
 
-static void AddStr(PyObject *Dict,const char *Itm,const char *Str)
-{
-   PyObject *Obj = PyString_FromString(Str);
-   PyDict_SetItemString(Dict,(char *)Itm,Obj);
-   Py_DECREF(Obj);
-}
 
-static void AddInt(PyObject *Dict,const char *Itm,unsigned long I)
-{
-   PyObject *Obj = Py_BuildValue("i",I);
-   PyDict_SetItemString(Dict,(char *)Itm,Obj);
-   Py_DECREF(Obj);
-}
+#define ADDTYPE(mod,name,type) { \
+    if (PyType_Ready(type) == -1) INIT_ERROR; \
+    Py_INCREF(type); \
+    PyModule_AddObject(mod,name,(PyObject *)type); }
+
 
 #if PY_MAJOR_VERSION >= 3
 struct module_state {
@@ -507,26 +545,8 @@ extern "C" void initapt_pkg()
 #endif
 {
    // Finalize our types to add slots, etc.
-   if (PyType_Ready(&TagSecType) == -1) INIT_ERROR;
-   if (PyType_Ready(&TagFileType) == -1) INIT_ERROR;
-   if (PyType_Ready(&ConfigurationType) == -1) INIT_ERROR;
    if (PyType_Ready(&ConfigurationPtrType) == -1) INIT_ERROR;
    if (PyType_Ready(&ConfigurationSubType) == -1) INIT_ERROR;
-   if (PyType_Ready(&PkgCdromType) == -1) INIT_ERROR;
-   if (PyType_Ready(&PkgProblemResolverType) == -1) INIT_ERROR;
-   if (PyType_Ready(&PkgActionGroupType) == -1) INIT_ERROR;
-   if (PyType_Ready(&PkgSourceListType) == -1) INIT_ERROR;
-   if (PyType_Ready(&PkgCacheType) == -1) INIT_ERROR;
-   if (PyType_Ready(&DependencyType) == -1) INIT_ERROR;
-   if (PyType_Ready(&PkgDepCacheType) == -1) INIT_ERROR;
-   if (PyType_Ready(&PkgAcquireType) == -1) INIT_ERROR;
-   if (PyType_Ready(&PackageIndexFileType) == -1) INIT_ERROR;
-   if (PyType_Ready(&PkgManagerType) == -1) INIT_ERROR;
-   if (PyType_Ready(&PkgSrcRecordsType) == -1) INIT_ERROR;
-   if (PyType_Ready(&PkgRecordsType) == -1) INIT_ERROR;
-   if (PyType_Ready(&AcquireItemType) == -1) INIT_ERROR;
-   if (PyType_Ready(&PackageType) == -1) INIT_ERROR;
-   if (PyType_Ready(&DescriptionType) == -1) INIT_ERROR;
 
    // Initialize the module
    #if PY_MAJOR_VERSION >= 3
@@ -534,61 +554,155 @@ extern "C" void initapt_pkg()
    #else
    PyObject *Module = Py_InitModule("apt_pkg",methods);
    #endif
-   PyObject *Dict = PyModule_GetDict(Module);
 
    // Global variable linked to the global configuration class
    CppPyObject<Configuration *> *Config = CppPyObject_NEW<Configuration *>(&ConfigurationPtrType);
    Config->Object = _config;
-   PyDict_SetItemString(Dict,"Config",Config);
-   Py_DECREF(Config);
+   PyModule_AddObject(Module,"config",Config);
+   #ifdef COMPAT_0_7
+   Py_INCREF(Config);
+   PyModule_AddObject(Module,"Config",Config);
+   #endif
 
+   // Add our classes.
+   /* ============================ tag.cc ============================ */
+   ADDTYPE(Module,"TagSection",&TagSecType);
+   ADDTYPE(Module,"TagFile",&TagFileType);
+   /* ============================ acquire.cc ============================ */
+   ADDTYPE(Module,"Acquire",&PkgAcquireType);
+   ADDTYPE(Module,"AcquireFile",&PkgAcquireFileType);
+   ADDTYPE(Module,"AcquireItem",&AcquireItemType); // NO __new__()
+   /* ============================ cache.cc ============================ */
+   ADDTYPE(Module,"Cache",&PkgCacheType);
+   ADDTYPE(Module,"Dependency",&DependencyType); // NO __new__()
+   ADDTYPE(Module,"Description",&DescriptionType); // NO __new__()
+   ADDTYPE(Module,"PackageFile",&PackageFileType); // NO __new__()
+   //ADDTYPE(Module,"PackageList",&PkgListType);  // NO __new__(), internal
+   //ADDTYPE(Module,"DependencyList",&RDepListType); // NO __new__(), internal
+   ADDTYPE(Module,"Package",&PackageType); // NO __new__()
+   ADDTYPE(Module,"Version",&VersionType); // NO __new__()
+   /* ============================ cdrom.cc ============================ */
+   ADDTYPE(Module,"Cdrom",&PkgCdromType);
+   /* ========================= configuration.cc ========================= */
+   ADDTYPE(Module,"Configuration",&ConfigurationType);
+   //ADDTYPE(Module,"ConfigurationSub",&ConfigurationSubType); // NO __new__()
+   //ADDTYPE(Module,"ConfigurationPtr",&ConfigurationPtrType); // NO __new__()
+   /* ========================= depcache.cc ========================= */
+   ADDTYPE(Module,"ActionGroup",&PkgActionGroupType);
+   ADDTYPE(Module,"DepCache",&PkgDepCacheType);
+   ADDTYPE(Module,"ProblemResolver",&PkgProblemResolverType);
+   /* ========================= indexfile.cc ========================= */
+   ADDTYPE(Module,"PackageIndexFile",&PackageIndexFileType); // NO __new__()
+   /* ========================= metaindex.cc ========================= */
+   ADDTYPE(Module,"MetaIndex",&MetaIndexType); // NO __new__()
+   /* ========================= pkgmanager.cc ========================= */
+   ADDTYPE(Module,"PackageManager",&PkgManagerType);
+   /* ========================= pkgrecords.cc ========================= */
+   ADDTYPE(Module,"PackageRecords",&PkgRecordsType);
+   /* ========================= pkgsrcrecords.cc ========================= */
+   ADDTYPE(Module,"SourceRecords",&PkgSrcRecordsType);
+   /* ========================= sourcelist.cc ========================= */
+   ADDTYPE(Module,"SourceList",&PkgSourceListType);
    // Tag file constants
-   PyObject *Obj;
-   PyDict_SetItemString(Dict,"RewritePackageOrder",
-			Obj = CharCharToList(TFRewritePackageOrder));
-   Py_DECREF(Obj);
-   PyDict_SetItemString(Dict,"RewriteSourceOrder",
-			Obj = CharCharToList(TFRewriteSourceOrder));
-   Py_DECREF(Obj);
+   PyModule_AddObject(Module,"REWRITE_PACKAGE_ORDER",
+                      CharCharToList(TFRewritePackageOrder));
+
+   PyModule_AddObject(Module,"REWRITE_SOURCE_ORDER",
+                      CharCharToList(TFRewriteSourceOrder));
+#ifdef COMPAT_0_7
+   PyModule_AddObject(Module,"RewritePackageOrder",
+                      CharCharToList(TFRewritePackageOrder));
+
+   PyModule_AddObject(Module,"RewriteSourceOrder",
+                      CharCharToList(TFRewriteSourceOrder));
+#endif
 
    // Version..
-   AddStr(Dict,"Version",pkgVersion);
-   AddStr(Dict,"LibVersion",pkgLibVersion);
-   AddStr(Dict,"Date",__DATE__);
-   AddStr(Dict,"Time",__TIME__);
+   PyModule_AddStringConstant(Module,"VERSION",(char *)pkgVersion);
+   PyModule_AddStringConstant(Module,"LIB_VERSION",(char *)pkgLibVersion);
+   PyModule_AddStringConstant(Module,"DATE",__DATE__);
+   PyModule_AddStringConstant(Module,"TIME",__TIME__);
+#ifdef COMPAT_0_7
+   PyModule_AddStringConstant(Module,"Version",(char *)pkgVersion);
+   PyModule_AddStringConstant(Module,"LibVersion",(char *)pkgLibVersion);
+   PyModule_AddStringConstant(Module,"Date",__DATE__);
+   PyModule_AddStringConstant(Module,"Time",__TIME__);
+#endif
 
    // My constants
-   AddInt(Dict,"DepDepends",pkgCache::Dep::Depends);
-   AddInt(Dict,"DepPreDepends",pkgCache::Dep::PreDepends);
-   AddInt(Dict,"DepSuggests",pkgCache::Dep::Suggests);
-   AddInt(Dict,"DepRecommends",pkgCache::Dep::Recommends);
-   AddInt(Dict,"DepConflicts",pkgCache::Dep::Conflicts);
-   AddInt(Dict,"DepReplaces",pkgCache::Dep::Replaces);
-   AddInt(Dict,"DepObsoletes",pkgCache::Dep::Obsoletes);
+   PyModule_AddIntConstant(Module,"DEP_DEPENDS",pkgCache::Dep::Depends);
+   PyModule_AddIntConstant(Module,"DEP_PRE_DEPENDS",pkgCache::Dep::PreDepends);
+   PyModule_AddIntConstant(Module,"DEP_SUGGESTS",pkgCache::Dep::Suggests);
+   PyModule_AddIntConstant(Module,"DEP_RECOMMENDS",pkgCache::Dep::Recommends);
+   PyModule_AddIntConstant(Module,"DEP_CONFLICTS",pkgCache::Dep::Conflicts);
+   PyModule_AddIntConstant(Module,"DEP_REPLACES",pkgCache::Dep::Replaces);
+   PyModule_AddIntConstant(Module,"DEP_OBSOLTES",pkgCache::Dep::Obsoletes);
+#ifdef COMPAT_0_7
+   PyModule_AddIntConstant(Module,"DepDepends",pkgCache::Dep::Depends);
+   PyModule_AddIntConstant(Module,"DepPreDepends",pkgCache::Dep::PreDepends);
+   PyModule_AddIntConstant(Module,"DepSuggests",pkgCache::Dep::Suggests);
+   PyModule_AddIntConstant(Module,"DepRecommends",pkgCache::Dep::Recommends);
+   PyModule_AddIntConstant(Module,"DepConflicts",pkgCache::Dep::Conflicts);
+   PyModule_AddIntConstant(Module,"DepReplaces",pkgCache::Dep::Replaces);
+   PyModule_AddIntConstant(Module,"DepObsoletes",pkgCache::Dep::Obsoletes);
+#endif
 
-   AddInt(Dict,"PriImportant",pkgCache::State::Important);
-   AddInt(Dict,"PriRequired",pkgCache::State::Required);
-   AddInt(Dict,"PriStandard",pkgCache::State::Standard);
-   AddInt(Dict,"PriOptional",pkgCache::State::Optional);
-   AddInt(Dict,"PriExtra",pkgCache::State::Extra);
+   PyModule_AddIntConstant(Module,"PRI_IMPORTANT",pkgCache::State::Important);
+   PyModule_AddIntConstant(Module,"PRI_REQUIRED",pkgCache::State::Required);
+   PyModule_AddIntConstant(Module,"PRI_STANDARD",pkgCache::State::Standard);
+   PyModule_AddIntConstant(Module,"PRI_OPTIONAL",pkgCache::State::Optional);
+   PyModule_AddIntConstant(Module,"PRI_EXTRA",pkgCache::State::Extra);
+#ifdef COMPAT_0_7
+   PyModule_AddIntConstant(Module,"PriImportant",pkgCache::State::Important);
+   PyModule_AddIntConstant(Module,"PriRequired",pkgCache::State::Required);
+   PyModule_AddIntConstant(Module,"PriStandard",pkgCache::State::Standard);
+   PyModule_AddIntConstant(Module,"PriOptional",pkgCache::State::Optional);
+   PyModule_AddIntConstant(Module,"PriExtra",pkgCache::State::Extra);
+#endif
+   // CurState
+   PyModule_AddIntConstant(Module,"CURSTATE_NOT_INSTALLED",pkgCache::State::NotInstalled);
+   PyModule_AddIntConstant(Module,"CURSTATE_UNPACKED",pkgCache::State::UnPacked);
+   PyModule_AddIntConstant(Module,"CURSTATE_HALF_CONFIGURED",pkgCache::State::HalfConfigured);
+   PyModule_AddIntConstant(Module,"CURSTATE_HALF_INSTALLED",pkgCache::State::HalfInstalled);
+   PyModule_AddIntConstant(Module,"CURSTATE_CONFIG_FILES",pkgCache::State::ConfigFiles);
+   PyModule_AddIntConstant(Module,"CURSTATE_INSTALLED",pkgCache::State::Installed);
+   // SelState
+   PyModule_AddIntConstant(Module,"SELSTATE_UNKNOWN",pkgCache::State::Unknown);
+   PyModule_AddIntConstant(Module,"SELSTATE_INSTALL",pkgCache::State::Install);
+   PyModule_AddIntConstant(Module,"SELSTATE_HOLD",pkgCache::State::Hold);
+   PyModule_AddIntConstant(Module,"SELSTATE_DEINSTALL",pkgCache::State::DeInstall);
+   PyModule_AddIntConstant(Module,"SELSTATE_PURGE",pkgCache::State::Purge);
+   // InstState
+   PyModule_AddIntConstant(Module,"INSTSTATE_OK",pkgCache::State::Ok);
+   PyModule_AddIntConstant(Module,"INSTSTATE_REINSTREQ",pkgCache::State::ReInstReq);
+   PyModule_AddIntConstant(Module,"INSTSTATE_HOLD",pkgCache::State::Hold);
+   PyModule_AddIntConstant(Module,"INSTSTATE_HOLD_REINSTREQ",pkgCache::State::HoldReInstReq);
 
-   AddInt(Dict,"CurStateNotInstalled",pkgCache::State::NotInstalled);
-   AddInt(Dict,"CurStateUnPacked",pkgCache::State::UnPacked);
-   AddInt(Dict,"CurStateHalfConfigured",pkgCache::State::HalfConfigured);
-   AddInt(Dict,"CurStateHalfInstalled",pkgCache::State::HalfInstalled);
-   AddInt(Dict,"CurStateConfigFiles",pkgCache::State::ConfigFiles);
-   AddInt(Dict,"CurStateInstalled",pkgCache::State::Installed);
+#ifdef COMPAT_0_7
+   PyModule_AddIntConstant(Module,"CurStateNotInstalled",pkgCache::State::NotInstalled);
+   PyModule_AddIntConstant(Module,"CurStateUnPacked",pkgCache::State::UnPacked);
+   PyModule_AddIntConstant(Module,"CurStateHalfConfigured",pkgCache::State::HalfConfigured);
+   PyModule_AddIntConstant(Module,"CurStateHalfInstalled",pkgCache::State::HalfInstalled);
+   PyModule_AddIntConstant(Module,"CurStateConfigFiles",pkgCache::State::ConfigFiles);
+   PyModule_AddIntConstant(Module,"CurStateInstalled",pkgCache::State::Installed);
 
-   AddInt(Dict,"SelStateUnknown",pkgCache::State::Unknown);
-   AddInt(Dict,"SelStateInstall",pkgCache::State::Install);
-   AddInt(Dict,"SelStateHold",pkgCache::State::Hold);
-   AddInt(Dict,"SelStateDeInstall",pkgCache::State::DeInstall);
-   AddInt(Dict,"SelStatePurge",pkgCache::State::Purge);
+   PyModule_AddIntConstant(Module,"SelStateUnknown",pkgCache::State::Unknown);
+   PyModule_AddIntConstant(Module,"SelStateInstall",pkgCache::State::Install);
+   PyModule_AddIntConstant(Module,"SelStateHold",pkgCache::State::Hold);
+   PyModule_AddIntConstant(Module,"SelStateDeInstall",pkgCache::State::DeInstall);
+   PyModule_AddIntConstant(Module,"SelStatePurge",pkgCache::State::Purge);
 
-   AddInt(Dict,"InstStateOk",pkgCache::State::Ok);
-   AddInt(Dict,"InstStateReInstReq",pkgCache::State::ReInstReq);
-   AddInt(Dict,"InstStateHold",pkgCache::State::Hold);
-   AddInt(Dict,"InstStateHoldReInstReq",pkgCache::State::HoldReInstReq);
+   PyModule_AddIntConstant(Module,"InstStateOk",pkgCache::State::Ok);
+   PyModule_AddIntConstant(Module,"InstStateReInstReq",pkgCache::State::ReInstReq);
+   PyModule_AddIntConstant(Module,"InstStateHold",pkgCache::State::Hold);
+   PyModule_AddIntConstant(Module,"InstStateHoldReInstReq",pkgCache::State::HoldReInstReq);
+#endif
+
+   #ifdef COMPAT_0_7
+   PyModule_AddIntConstant(Module,"_COMPAT_0_7",1);
+   #else
+   PyModule_AddIntConstant(Module,"_COMPAT_0_7",0);
+   #endif
    #if PY_MAJOR_VERSION >= 3
    return Module;
    #endif
