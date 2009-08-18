@@ -24,7 +24,7 @@ static PyObject *PkgManagerNew(PyTypeObject *type,PyObject *Args,PyObject *kwds)
 {
    PyObject *Owner;
    char *kwlist[] = {"depcache",0};
-   if (PyArg_ParseTupleAndKeywords(Args,kwds,"O!",kwlist,&PkgDepCacheType,
+   if (PyArg_ParseTupleAndKeywords(Args,kwds,"O!",kwlist,&PyDepCache_Type,
                                    &Owner) == 0)
       return 0;
 
@@ -39,7 +39,10 @@ static PyObject *PkgManagerNew(PyTypeObject *type,PyObject *Args,PyObject *kwds)
 #ifdef COMPAT_0_7
 PyObject *GetPkgManager(PyObject *Self,PyObject *Args)
 {
-    return PkgManagerNew(&PkgManagerType,Args,0);
+    PyErr_WarnEx(PyExc_DeprecationWarning, "apt_pkg.GetPackageManager() is "
+                 "deprecated. Please see apt_pkg.PackageManager() for the "
+                 "replacement.", 1);
+    return PkgManagerNew(&PyPackageManager_Type,Args,0);
 }
 #endif
 
@@ -50,9 +53,9 @@ static PyObject *PkgManagerGetArchives(PyObject *Self,PyObject *Args)
    PyObject *fetcher, *list, *recs;
 
    if (PyArg_ParseTuple(Args, "O!O!O!",
-			&PkgAcquireType,&fetcher,
-			&PkgSourceListType, &list,
-			&PkgRecordsType, &recs) == 0)
+			&PyAcquire_Type,&fetcher,
+			&PySourceList_Type, &list,
+			&PyPackageRecords_Type, &recs) == 0)
       return 0;
 
    pkgAcquire *s_fetcher = GetCpp<pkgAcquire*>(fetcher);
@@ -106,39 +109,14 @@ static PyMethodDef PkgManagerMethods[] =
 };
 
 
-static PyObject *PkgManagerGetResultCompleted(PyObject *Self,void*) {
-   return Py_BuildValue("i", pkgPackageManager::Completed);
-}
-static PyObject *PkgManagerGetResultFailed(PyObject *Self,void*) {
-   return Py_BuildValue("i", pkgPackageManager::Failed);
-}
-static PyObject *PkgManagerGetResultIncomplete(PyObject *Self,void*) {
-   return Py_BuildValue("i", pkgPackageManager::Incomplete);
-}
-
-static PyGetSetDef PkgManagerGetSet[] = {
-    {"result_completed",PkgManagerGetResultCompleted},
-    {"result_failed",PkgManagerGetResultFailed},
-    {"result_incomplete",PkgManagerGetResultIncomplete},
-#ifdef COMPAT_0_7
-    {"ResultCompleted",PkgManagerGetResultCompleted},
-    {"ResultFailed",PkgManagerGetResultFailed},
-    {"ResultIncomplete",PkgManagerGetResultIncomplete},
-#endif
-    {}
-};
-
-PyTypeObject PkgManagerType =
+PyTypeObject PyPackageManager_Type =
 {
-   PyObject_HEAD_INIT(&PyType_Type)
-   #if PY_MAJOR_VERSION < 3
-   0,                                   // ob_size
-   #endif
+   PyVarObject_HEAD_INIT(&PyType_Type, 0)
    "apt_pkg.PackageManager",           // tp_name
    sizeof(CppPyObject<pkgPackageManager*>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<pkgPackageManager*>,      // tp_dealloc
+   CppDeallocPtr<pkgPackageManager*>,   // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -153,7 +131,8 @@ PyTypeObject PkgManagerType =
    0,                                   // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
-   Py_TPFLAGS_DEFAULT,                  // tp_flags
+   (Py_TPFLAGS_DEFAULT |                // tp_flags
+    Py_TPFLAGS_BASETYPE),
    "PackageManager Object",             // tp_doc
    0,                                   // tp_traverse
    0,                                   // tp_clear
@@ -163,7 +142,7 @@ PyTypeObject PkgManagerType =
    0,                                   // tp_iternext
    PkgManagerMethods,                   // tp_methods
    0,                                   // tp_members
-   PkgManagerGetSet,                    // tp_getset
+   0,                                   // tp_getset
    0,                                   // tp_base
    0,                                   // tp_dict
    0,                                   // tp_descr_get

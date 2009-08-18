@@ -26,20 +26,22 @@ static PyObject *PkgSourceListFindIndex(PyObject *Self,PyObject *Args)
 {
    pkgSourceList *list = GetCpp<pkgSourceList*>(Self);
    PyObject *pyPkgFileIter;
-   PyObject *pyPkgIndexFile;
+   CppOwnedPyObject<pkgIndexFile*> *pyPkgIndexFile;
 
-   if (PyArg_ParseTuple(Args, "O!", &PackageFileType,&pyPkgFileIter) == 0)
+   if (PyArg_ParseTuple(Args, "O!", &PyPackageFile_Type,&pyPkgFileIter) == 0)
       return 0;
 
    pkgCache::PkgFileIterator &i = GetCpp<pkgCache::PkgFileIterator>(pyPkgFileIter);
    pkgIndexFile *index;
    if(list->FindIndex(i, index))
    {
-      pyPkgIndexFile = CppOwnedPyObject_NEW<pkgIndexFile*>(pyPkgFileIter,&PackageIndexFileType,index);
+      pyPkgIndexFile = CppOwnedPyObject_NEW<pkgIndexFile*>(pyPkgFileIter,&PyPackageIndexFile_Type,index);
+      // Do not delete the pkgIndexFile*, it is managed by pkgSourceList.
+      pyPkgIndexFile->NoDelete = true;
       return pyPkgIndexFile;
    }
 
-   //&PackageIndexFileType,&pyPkgIndexFile)
+   //&PyPackageIndexFile_Type,&pyPkgIndexFile)
 
    Py_INCREF(Py_None);
    return Py_None;
@@ -61,7 +63,7 @@ static PyObject *PkgSourceListGetIndexes(PyObject *Self,PyObject *Args)
 
    PyObject *pyFetcher;
    char all = 0;
-   if (PyArg_ParseTuple(Args, "O!|b",&PkgAcquireType,&pyFetcher, &all) == 0)
+   if (PyArg_ParseTuple(Args, "O!|b",&PyAcquire_Type,&pyFetcher, &all) == 0)
       return 0;
 
    pkgAcquire *fetcher = GetCpp<pkgAcquire*>(pyFetcher);
@@ -90,9 +92,12 @@ static PyObject *PkgSourceListGetList(PyObject *Self,void*)
    for (vector<metaIndex *>::const_iterator I = list->begin();
         I != list->end(); I++)
    {
-      PyObject *Obj;
-      Obj = CppPyObject_NEW<metaIndex*>(&MetaIndexType,*I);
+      CppOwnedPyObject<metaIndex*> *Obj;
+      Obj = CppOwnedPyObject_NEW<metaIndex*>(Self, &PyMetaIndex_Type,*I);
+      // Never delete metaIndex*, they are managed by the pkgSourceList.
+      Obj->NoDelete = true;
       PyList_Append(List,Obj);
+      Py_DECREF(Obj);
    }
    return List;
 }
@@ -113,17 +118,14 @@ static PyObject *PkgSourceListNew(PyTypeObject *type,PyObject *args,PyObject *kw
    return CppPyObject_NEW<pkgSourceList*>(type,new pkgSourceList());
 }
 
-PyTypeObject PkgSourceListType =
+PyTypeObject PySourceList_Type =
 {
-   PyObject_HEAD_INIT(&PyType_Type)
-   #if PY_MAJOR_VERSION < 3
-   0,			                // ob_size
-   #endif
+   PyVarObject_HEAD_INIT(&PyType_Type, 0)
    "apt_pkg.SourceList",                          // tp_name
    sizeof(CppPyObject<pkgSourceList*>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppDealloc<pkgSourceList*>,   // tp_dealloc
+   CppDeallocPtr<pkgSourceList*>,       // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -138,7 +140,8 @@ PyTypeObject PkgSourceListType =
    0,                                   // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
-   Py_TPFLAGS_DEFAULT,                  // tp_flags
+   (Py_TPFLAGS_DEFAULT |                // tp_flags
+    Py_TPFLAGS_BASETYPE),
    "pkgSourceList Object",              // tp_doc
    0,                                   // tp_traverse
    0,                                   // tp_clear
@@ -162,6 +165,9 @@ PyTypeObject PkgSourceListType =
 #ifdef COMPAT_0_7
 PyObject *GetPkgSourceList(PyObject *Self,PyObject *Args)
 {
-   return PkgSourceListNew(&PkgSourceListType,Args,0);
+   PyErr_WarnEx(PyExc_DeprecationWarning, "apt_pkg.GetPkgSourceList() is "
+                "deprecated. Please see apt_pkg.SourceList() for the "
+                "replacement.", 1);
+   return PkgSourceListNew(&PySourceList_Type,Args,0);
 }
 #endif

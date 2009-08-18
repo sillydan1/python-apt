@@ -4,10 +4,13 @@
 /* ######################################################################
 
    Tar Inteface
+   * THIS FILE IS COMPLETELY DEPRECATED, AND NOT USED ANYMORE IF BUILT *
+   * WITHOUT COMPATIBILITY. *
 
    ##################################################################### */
 									/*}}}*/
 // Include Files							/*{{{*/
+#ifdef COMPAT_0_7
 #include "generic.h"
 
 #include <apt-pkg/extracttar.h>
@@ -72,7 +75,11 @@ bool ProcessTar::DoItem(Item &Itm,int &Fd)
       case Item::FIFO:
       Type = "FIFO";
       break;
+
+      default:
+      return false;
    }
+
 
    if (PyObject_CallFunction(Function,"sssiiiiiii",Type,Itm.Name,
 			     Itm.LinkTarget,Itm.Mode,Itm.UID,Itm.GID,Itm.Size,
@@ -185,3 +192,4 @@ PyObject *debExtract(PyObject *Self,PyObject *Args)
    return HandleErrors(Py_None);
 }
 									/*}}}*/
+#endif // defined(COMPAT_0_7)

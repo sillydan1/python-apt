@@ -24,9 +24,10 @@ import weakref
 
 import apt_pkg
 from apt import Package
+from apt_pkg import gettext as _
 from apt.deprecation import (AttributeDeprecatedBy, function_deprecated_by,
                              deprecated_args)
-import apt.progress
+import apt.progress.text
 
 
 class FetchCancelledException(IOError):
@@ -50,6 +51,8 @@ class Cache(object):
 
     def __init__(self, progress=None, rootdir=None, memonly=False):
         self._callbacks = {}
+        self._weakref = weakref.WeakValueDictionary()
+        self._set = set()
         if memonly:
             # force apt to build its caches in memory
             apt_pkg.config.set("Dir::Cache::pkgcache", "")
@@ -63,7 +66,34 @@ class Cache(object):
             apt_pkg.config.set("Dir", rootdir)
             apt_pkg.config.set("Dir::State::status",
                                rootdir + "/var/lib/dpkg/status")
+            # create required dirs/files when run with special rootdir
+            # automatically
+            self._check_and_create_required_dirs(rootdir)
+            # Call InitSystem so the change to Dir::State::Status is actually
+            # recognized (LP: #320665)
+            apt_pkg.InitSystem()
         self.open(progress)
+
+    def _check_and_create_required_dirs(self, rootdir):
+        """
+        check if the required apt directories/files are there and if
+        not create them
+        """
+        files = ["/var/lib/dpkg/status",
+                 "/etc/apt/sources.list",
+                ]
+        dirs = ["/var/lib/dpkg",
+                "/etc/apt/",
+                "/var/cache/apt/archives/partial",
+                "/var/lib/apt/lists/partial",
+               ]
+        for d in dirs:
+            if not os.path.exists(rootdir+d):
+                print "creating: ",rootdir+d
+                os.makedirs(rootdir+d)
+        for f in files:
+            if not os.path.exists(rootdir+f):
+                open(rootdir+f,"w")
 
     def _run_callbacks(self, name):
         """ internal helper to run a callback """
@@ -71,22 +101,23 @@ class Cache(object):
             for callback in self._callbacks[name]:
                 callback()
 
-    def open(self, progress):
+    def open(self, progress=None):
         """ Open the package cache, after that it can be used like
             a dictionary
         """
         if progress is None:
-            progress = apt.progress.OpProgress()
+            progress = apt.progress.text.OpProgress()
         self._run_callbacks("cache_pre_open")
+
         self._cache = apt_pkg.Cache(progress)
         self._depcache = apt_pkg.DepCache(self._cache)
         self._records = apt_pkg.PackageRecords(self._cache)
         self._list = apt_pkg.SourceList()
         self._list.read_main_list()
-        self._set = set()
-        self._weakref = weakref.WeakValueDictionary()
+        self._set.clear()
+        self._weakref.clear()
 
-        progress.Op = "Building data structures"
+        progress.op = _("Building data structures")
         i=last=0
         size=len(self._cache.packages)
         for pkg in self._cache.packages:
@@ -367,6 +398,26 @@ class Cache(object):
         don't.
         """
         return apt_pkg.ActionGroup(self._depcache)
+
+    @property
+    def broken_count(self):
+        """Return the number of packages with broken dependencies."""
+        return self._depcache.broken_count
+
+    @property
+    def delete_count(self):
+        """Return the number of packages marked for deletion."""
+        return self._depcache.del_count
+
+    @property
+    def install_count(self):
+        """Return the number of packages marked for installation."""
+        return self._depcache.inst_count
+
+    @property
+    def keep_count(self):
+        """Return the number of packages marked as keep."""
+        return self._depcache.keep_count
 
     if apt_pkg._COMPAT_0_7:
         _runCallbacks = function_deprecated_by(_run_callbacks)

@@ -37,9 +37,12 @@ static PyObject *MetaIndexGetIndexFiles(PyObject *Self,void*) {
     for (vector<pkgIndexFile *>::const_iterator I = indexFiles->begin();
         I != indexFiles->end(); I++)
     {
-        PyObject *Obj;
-        Obj = CppPyObject_NEW<pkgIndexFile*>(&PackageIndexFileType,*I);
+        CppOwnedPyObject<pkgIndexFile*> *Obj;
+        Obj = CppOwnedPyObject_NEW<pkgIndexFile*>(Self, &PyPackageIndexFile_Type,*I);
+        // Do not delete pkgIndexFile*, they are managed by metaIndex.
+        Obj->NoDelete = true;
         PyList_Append(List,Obj);
+        Py_DECREF(Obj);
     }
     return List;
 }
@@ -58,29 +61,25 @@ static PyGetSetDef MetaIndexGetSet[] = {
    {}
 };
 
+#define S(x) (x ? x : "")
 static PyObject *MetaIndexRepr(PyObject *Self)
 {
     metaIndex *meta = GetCpp<metaIndex*>(Self);
-
-    char S[1024];
-    snprintf(S,sizeof(S),"<apt_pkg.MetaIndex object: "
-                    "Type='%s', URI:'%s' Dist='%s' IsTrusted='%i'>",
-             meta->GetType(),  meta->GetURI().c_str(), meta->GetDist().c_str(),
-             meta->IsTrusted());
-    return PyString_FromString(S);
+    return PyString_FromFormat("<%s object: type='%s', uri:'%s' dist='%s' "
+                               "is_trusted='%i'>", Self->ob_type->tp_name,
+                               S(meta->GetType()),  meta->GetURI().c_str(),
+                               meta->GetDist().c_str(), meta->IsTrusted());
 }
+#undef S
 
-PyTypeObject MetaIndexType =
+PyTypeObject PyMetaIndex_Type =
 {
-   PyObject_HEAD_INIT(&PyType_Type)
-   #if PY_MAJOR_VERSION < 3
-   0,                                      // ob_size
-   #endif
+   PyVarObject_HEAD_INIT(&PyType_Type, 0)
    "apt_pkg.MetaIndex",                    // tp_name
    sizeof(CppOwnedPyObject<metaIndex*>),   // tp_basicsize
    0,                                      // tp_itemsize
    // Methods
-   CppOwnedDealloc<metaIndex*>,            // tp_dealloc
+   CppOwnedDeallocPtr<metaIndex*>,         // tp_dealloc
    0,                                      // tp_print
    0,                                      // tp_getattr
    0,                                      // tp_setattr

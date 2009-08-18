@@ -19,7 +19,6 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 #  USA
 """Functionality related to packages."""
-import gettext
 import httplib
 import os
 import sys
@@ -29,23 +28,24 @@ import subprocess
 import urllib2
 import warnings
 try:
-    from collections import Mapping
+    from collections import Mapping, Sequence
 except ImportError:
     # (for Python < 2.6) pylint: disable-msg=C0103
-    Mapping = object
+    Sequence = Mapping = object
+
+try:
+    from collections import Sequence
+except ImportError:
+    Sequence = object
 
 import apt_pkg
-import apt.progress
+import apt.progress.text
+from apt_pkg import gettext as _
 from apt.deprecation import (function_deprecated_by, AttributeDeprecatedBy,
                              deprecated_args)
 
 __all__ = ('BaseDependency', 'Dependency', 'Origin', 'Package', 'Record',
-           'Version')
-
-
-def _(string):
-    """Return the translation of the string."""
-    return gettext.dgettext("python-apt", string)
+           'Version', 'VersionList')
 
 
 def _file_is_same(path, size, md5):
@@ -64,7 +64,7 @@ class BaseDependency(object):
 
     Attributes defined here:
         name       - The name of the dependency
-        relation   - The relation (>>,>=,==,<<,<=,)
+        relation   - The relation (>,>=,==,<,<=,)
         version    - The version depended on
         pre_depend - Boolean value whether this is a pre-dependency.
     """
@@ -108,13 +108,13 @@ class DeprecatedProperty(property):
         property.__init__(self, fget, fset, fdel, doc)
         self.__doc__ = (doc or fget.__doc__ or '')
 
-    def __get__(self, obj, type=None):
+    def __get__(self, obj, type_=None):
         if obj is not None:
             warnings.warn("Accessed deprecated property %s.%s, please see the "
                           "Version class for alternatives." %
-                           ((obj.__class__.__name__ or type.__name__),
+                           ((obj.__class__.__name__ or type_.__name__),
                            self.fget.__name__), DeprecationWarning, 2)
-        return property.__get__(self, obj, type)
+        return property.__get__(self, obj, type_)
 
 
 class Origin(object):
@@ -205,17 +205,47 @@ class Version(object):
         self.package = package
         self._cand = cand
 
+    def _cmp(self, other):
+        try:
+            return apt_pkg.version_compare(self._cand.ver_str, other.version)
+        except AttributeError:
+            return apt_pkg.version_compare(self._cand.ver_str, other)
+
     def __eq__(self, other):
-        return self._cand.id == other._cand.id
+        try:
+            return self._cmp(other) == 0
+        except TypeError:
+            return NotImplemented
+
+    def __ge__(self, other):
+        try:
+            return self._cmp(other) >= 0
+        except TypeError:
+            return NotImplemented
 
     def __gt__(self, other):
-        return apt_pkg.version_compare(self.version, other.version) > 0
+        try:
+            return self._cmp(other) > 0
+        except TypeError:
+            return NotImplemented
+
+    def __le__(self, other):
+        try:
+            return self._cmp(other) <= 0
+        except TypeError:
+            return NotImplemented
 
     def __lt__(self, other):
-        return apt_pkg.version_compare(self.version, other.version) < 0
+        try:
+            return self._cmp(other) < 0
+        except TypeError:
+            return NotImplemented
 
     def __ne__(self, other):
-        return not self.__eq__(other)
+        try:
+            return self._cmp(other) != 0
+        except TypeError:
+            return NotImplemented
 
     def __hash__(self):
         return self._cand.hash
@@ -352,14 +382,14 @@ class Version(object):
         """Return the dependencies of the package version."""
         depends_list = []
         depends = self._cand.depends_list
-        for t in ["PreDepends", "Depends"]:
+        for type_ in ["PreDepends", "Depends"]:
             try:
-                for dep_ver_list in depends[t]:
+                for dep_ver_list in depends[type_]:
                     base_deps = []
                     for dep_or in dep_ver_list:
                         base_deps.append(BaseDependency(dep_or.target_pkg.name,
                                         dep_or.comp_type, dep_or.target_ver,
-                                        (t == "PreDepends")))
+                                        (type_ == "PreDepends")))
                     depends_list.append(Dependency(base_deps))
             except KeyError:
                 pass
@@ -369,7 +399,7 @@ class Version(object):
     def origins(self):
         """Return a list of origins for the package version."""
         origins = []
-        for (packagefile, index) in self._cand.file_list:
+        for (packagefile, _) in self._cand.file_list:
             origins.append(Origin(self.package, packagefile))
         return origins
 
@@ -410,7 +440,7 @@ class Version(object):
 
         .. versionadded:: 0.7.10
         """
-        for (packagefile, index) in self._cand.file_list:
+        for (packagefile, _) in self._cand.file_list:
             indexfile = self.package._pcache._list.find_index(packagefile)
             if indexfile:
                 yield indexfile.archive_uri(self._records.filename)
@@ -429,7 +459,7 @@ class Version(object):
 
         .. versionadded:: 0.7.10
         """
-        return self._uris().next()
+        return iter(self._uris()).next()
 
     def fetch_binary(self, destdir='', progress=None):
         """Fetch the binary version of the package.
@@ -437,9 +467,9 @@ class Version(object):
         The parameter *destdir* specifies the directory where the package will
         be fetched to.
 
-        The parameter *progress* may refer to an apt.progress.FetchProgress()
-        object. If not specified or None, apt.progress.TextFetchProgress() is
-        used.
+        The parameter *progress* may refer to an apt_pkg.AcquireProgress()
+        object. If not specified or None, apt.progress.text.AcquireProgress()
+        is used.
 
         .. versionadded:: 0.7.10
         """
@@ -448,14 +478,15 @@ class Version(object):
         if _file_is_same(destfile, self.size, self._records.md5_hash):
             print 'Ignoring already existing file:', destfile
             return
-        acq = apt_pkg.Acquire(progress or apt.progress.TextFetchProgress())
-        apt_pkg.AcquireFile(acq, self.uri, self._records.md5_hash, self.size,
-                              base, destfile=destfile)
+        acq = apt_pkg.Acquire(progress or apt.progress.text.AcquireProgress())
+        acqfile = apt_pkg.AcquireFile(acq, self.uri, self._records.md5_hash,
+                                      self.size, base, destfile=destfile)
         acq.run()
-        for item in acq.items:
-            if item.status != item.stat_done:
-                raise FetchError("The item %r could not be fetched: %s" %
-                                    (item.destfile, item.error_text))
+
+        if acqfile.status != acqfile.stat_done:
+            raise FetchError("The item %r could not be fetched: %s" %
+                             (acqfile.destfile, acqfile.error_text))
+        print self._records.filename
         return os.path.abspath(destfile)
 
     def fetch_source(self, destdir="", progress=None, unpack=True):
@@ -464,9 +495,9 @@ class Version(object):
         The parameter *destdir* specifies the directory where the source will
         be fetched to.
 
-        The parameter *progress* may refer to an apt.progress.FetchProgress()
-        object. If not specified or None, apt.progress.TextFetchProgress() is
-        used.
+        The parameter *progress* may refer to an apt_pkg.AcquireProgress()
+        object. If not specified or None, apt.progress.text.AcquireProgress()
+        is used.
 
         The parameter *unpack* describes whether the source should be unpacked
         (``True``) or not (``False``). By default, it is unpacked.
@@ -475,7 +506,7 @@ class Version(object):
         returned. Otherwise, the path to the .dsc file is returned.
         """
         src = apt_pkg.SourceRecords()
-        acq = apt_pkg.Acquire(progress or apt.progress.TextFetchProgress())
+        acq = apt_pkg.Acquire(progress or apt.progress.text.AcquireProgress())
 
         dsc = None
         src.lookup(self.package.name)
@@ -484,27 +515,23 @@ class Version(object):
                 src.lookup(self.package.name)
         except AttributeError:
             raise ValueError("No source for %r" % self)
-        for md5, size, path, type in src.files:
+        files = list()
+        for md5, size, path, type_ in src.files:
             base = os.path.basename(path)
             destfile = os.path.join(destdir, base)
-            if type == 'dsc':
+            if type_ == 'dsc':
                 dsc = destfile
-            if os.path.exists(base) and os.path.getsize(base) == size:
-                fobj = open(base)
-                try:
-                    if apt_pkg.md5sum(fobj) == md5:
-                        print 'Ignoring already existing file:', destfile
-                        continue
-                finally:
-                    fobj.close()
-            apt_pkg.AcquireFile(acq, src.index.archive_uri(path), md5, size,
-                                  base, dest_file=destfile)
+            if _file_is_same(destfile, size, md5):
+                print 'Ignoring already existing file:', destfile
+                continue
+            files.append(apt_pkg.AcquireFile(acq, src.index.archive_uri(path),
+                         md5, size, base, destfile=destfile))
         acq.run()
 
         for item in acq.items:
             if item.status != item.stat_done:
                 raise FetchError("The item %r could not be fetched: %s" %
-                                    (item.dest_file, item.error_text))
+                                    (item.destfile, item.error_text))
 
         if unpack:
             outdir = src.package + '-' + apt_pkg.upstream_version(src.version)
@@ -513,6 +540,81 @@ class Version(object):
             return os.path.abspath(outdir)
         else:
             return os.path.abspath(dsc)
+
+
+class VersionList(Sequence):
+    """Provide a mapping & sequence interface to all versions of a package.
+
+    This class can be used like a dictionary, where version strings are the
+    keys. It can also be used as a sequence, where integers are the keys.
+
+    You can also convert this to a dictionary or a list, using the usual way
+    of dict(version_list) or list(version_list). This is useful if you need
+    to access the version objects multiple times, because they do not have to
+    be recreated this way.
+
+    Examples ('package.versions' being a version list):
+        '0.7.92' in package.versions # Check whether 0.7.92 is a valid version.
+        package.versions[0] # Return first version or raise IndexError
+        package.versions[0:2] # Return a new VersionList for objects 0-2
+        package.versions['0.7.92'] # Return version 0.7.92 or raise KeyError
+        package.versions.keys() # All keys, as strings.
+        max(package.versions)
+    """
+
+    def __init__(self, package, slice_=None):
+        self._package = package # apt.package.Package()
+        self._versions = package._pkg.version_list # [apt_pkg.Version(), ...]
+        if slice_:
+            self._versions = self._versions[slice_]
+
+    def __getitem__(self, item):
+        if isinstance(item, slice):
+            return self.__class__(self._package, item)
+        try:
+            # Sequence interface, item is an integer
+            return Version(self._package, self._versions[item])
+        except TypeError:
+            # Dictionary interface item is a string.
+            for ver in self._versions:
+                if ver.ver_str == item:
+                    return Version(self._package, ver)
+        raise KeyError("Version: %r not found." % (item))
+
+    def __repr__(self):
+        return '<VersionList: %r>' % self.keys()
+
+    def __iter__(self):
+        """Return an iterator over all value objects."""
+        return (Version(self._package, ver) for ver in self._versions)
+
+    def __contains__(self, item):
+        if isinstance(item, Version): # Sequence interface
+            item = item.version
+        # Dictionary interface.
+        for ver in self._versions:
+            if ver.ver_str == item:
+                return True
+        return False
+
+    def __eq__(self, other):
+        return list(self) == list(other)
+
+    def __len__(self):
+        return len(self._versions)
+
+    # Mapping interface
+
+    def keys(self):
+        """Return a list of all versions, as strings."""
+        return [ver.ver_str for ver in self._versions]
+
+    def get(self, key, default=None):
+        """Return the key or the default."""
+        try:
+            return self[key]
+        except LookupError:
+            return default
 
 
 class Package(object):
@@ -538,8 +640,6 @@ class Package(object):
         This property is writeable to allow you to set the candidate version
         of the package. Just assign a Version() object, and it will be set as
         the candidate version.
-
-        .. versionadded:: 0.7.9
         """
         cand = self._pcache._depcache.get_candidate_ver(self._pkg)
         if cand is not None:
@@ -773,6 +873,10 @@ class Package(object):
         return self.is_installed and \
                self._pcache._depcache.is_garbage(self._pkg)
 
+    @property
+    def is_auto_installed(self):
+        """Return whether the package is marked as automatically installed."""
+        return self._pcache._depcache.is_auto_installed(self._pkg)
     # sizes
 
     @DeprecatedProperty
@@ -896,9 +1000,10 @@ class Package(object):
         except SystemError:
             src_ver = bin_ver
 
-        l = section.split("/")
-        if len(l) > 1:
-            src_section = l[0]
+        section_split = section.split("/", 1)
+        if len(section_split) > 1:
+            src_section = section_split[0]
+        del section_split
 
         # lib is handled special
         prefix = src_pkg[0]
@@ -906,9 +1011,10 @@ class Package(object):
             prefix = "lib" + src_pkg[3]
 
         # stip epoch
-        l = src_ver.split(":")
-        if len(l) > 1:
-            src_ver = "".join(l[1:])
+        src_ver_split = src_ver.split(":", 1)
+        if len(src_ver_split) > 1:
+            src_ver = "".join(src_ver_split[1:])
+        del src_ver_split
 
         uri = uri % {"src_section": src_section,
                      "prefix": prefix,
@@ -988,18 +1094,11 @@ class Package(object):
 
     @property
     def versions(self):
-        """Return a list of versions.
+        """Return a VersionList() object for all available versions.
 
         .. versionadded:: 0.7.9
         """
-        return [Version(self, ver) for ver in self._pkg.version_list]
-
-    def get_version(self, version):
-        """Get the Version instance matching the given version string."""
-        for ver in self.versions:
-            if ver.version == version:
-                return ver
-        return None
+        return VersionList(self)
 
     # depcache actions
 
@@ -1065,14 +1164,23 @@ class Package(object):
             sys.stderr.write(("MarkUpgrade() called on a non-upgrable pkg: "
                               "'%s'\n") % self._pkg.name)
 
+    def mark_auto(self, auto=True):
+        """Mark a package as automatically installed.
+
+        Call this function to mark a package as automatically installed. If the
+        optional parameter *auto* is set to ``False``, the package will not be
+        marked as automatically installed anymore. The default is ``True``.
+        """
+        self._pcache._depcache.mark_auto(self._pkg, auto)
+
     def commit(self, fprogress, iprogress):
         """Commit the changes.
 
-        The parameter *fprogress* refers to a FetchProgress() object, as
-        found in apt.progress.
+        The parameter *fprogress* refers to a apt_pkg.AcquireProgress() object,
+        like apt.progress.text.AcquireProgress().
 
         The parameter *iprogress* refers to an InstallProgress() object, as
-        found in apt.progress.
+        found in apt.progress.base.
         """
         self._pcache._depcache.commit(fprogress, iprogress)
 
@@ -1101,6 +1209,7 @@ class Package(object):
         del candidateOrigin
     else:
         markedInstalled = AttributeDeprecatedBy('marked_installed')
+        markedInstall = AttributeDeprecatedBy('marked_install')
         markedUpgrade = AttributeDeprecatedBy('marked_upgrade')
         markedDelete = AttributeDeprecatedBy('marked_delete')
         markedKeep = AttributeDeprecatedBy('marked_keep')
@@ -1122,7 +1231,7 @@ def _test():
     print "Self-test for the Package modul"
     import random
     apt_pkg.init()
-    progress = apt.progress.OpTextProgress()
+    progress = apt.progress.text.OpProgress()
     cache = apt.Cache(progress)
     pkg = cache["apt-utils"]
     print "Name: %s " % pkg.name
