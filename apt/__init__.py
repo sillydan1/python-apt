@@ -26,20 +26,12 @@ from apt.cache import Cache
 from apt.cdrom import Cdrom
 
 if apt_pkg._COMPAT_0_7:
-    from apt.progress import (OpProgress, FetchProgress, InstallProgress,
-                              CdromProgress)
-
-
-if apt_pkg._COMPAT_0_7:
-    from apt_pkg import (size_to_str as SizeToStr,
-                         time_to_str as TimeToStr,
+    from apt.progress.old import (OpProgress, FetchProgress, InstallProgress,
+                                  CdromProgress)
+    from apt_pkg import (size_to_str as SizeToStr, time_to_str as TimeToStr,
                          version_compare as VersionCompare)
 
 # init the package system
 apt_pkg.init()
 
-
-#import warnings
-#warnings.warn("apt API not stable yet", FutureWarning)
-#del warnings
 __all__ = ['Cache', 'Cdrom', 'Package']

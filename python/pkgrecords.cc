@@ -27,7 +27,7 @@ static PyObject *PkgRecordsLookup(PyObject *Self,PyObject *Args)
 
    PyObject *PkgFObj;
    long int Index;
-   if (PyArg_ParseTuple(Args,"(O!l)",&PackageFileType,&PkgFObj,&Index) == 0)
+   if (PyArg_ParseTuple(Args,"(O!l)",&PyPackageFile_Type,&PkgFObj,&Index) == 0)
       return 0;
 
    // Get the index and check to make sure it is reasonable
@@ -153,7 +153,7 @@ static PyObject *PkgRecordsNew(PyTypeObject *type,PyObject *Args,PyObject *kwds)
 {
    PyObject *Owner;
    char *kwlist[] = {"cache",0};
-   if (PyArg_ParseTupleAndKeywords(Args,kwds,"O!",kwlist,&PkgCacheType,
+   if (PyArg_ParseTupleAndKeywords(Args,kwds,"O!",kwlist,&PyCache_Type,
                                    &Owner) == 0)
       return 0;
 
@@ -161,12 +161,9 @@ static PyObject *PkgRecordsNew(PyTypeObject *type,PyObject *Args,PyObject *kwds)
 							      GetCpp<pkgCache *>(Owner)));
 }
 
-PyTypeObject PkgRecordsType =
+PyTypeObject PyPackageRecords_Type =
 {
-   PyObject_HEAD_INIT(&PyType_Type)
-   #if PY_MAJOR_VERSION < 3
-   0,			                // ob_size
-   #endif
+   PyVarObject_HEAD_INIT(&PyType_Type, 0)
    "apt_pkg.PackageRecords",                          // tp_name
    sizeof(CppOwnedPyObject<PkgRecordsStruct>),   // tp_basicsize
    0,                                   // tp_itemsize
@@ -186,10 +183,12 @@ PyTypeObject PkgRecordsType =
    0,                                   // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
-   Py_TPFLAGS_DEFAULT,                  // tp_flags
+   (Py_TPFLAGS_DEFAULT |                // tp_flags
+    Py_TPFLAGS_BASETYPE |
+    Py_TPFLAGS_HAVE_GC),
    "Records Object",                    // tp_doc
-   0,                                   // tp_traverse
-   0,                                   // tp_clear
+   CppOwnedTraverse<PkgRecordsStruct>,  // tp_traverse
+   CppOwnedClear<PkgRecordsStruct>,     // tp_clear
    0,                                   // tp_richcompare
    0,                                   // tp_weaklistoffset
    0,                                   // tp_iter
@@ -213,6 +212,9 @@ PyTypeObject PkgRecordsType =
 #ifdef COMPAT_0_7
 PyObject *GetPkgRecords(PyObject *Self,PyObject *Args)
 {
-    return PkgRecordsNew(&PkgRecordsType,Args,0);
+    PyErr_WarnEx(PyExc_DeprecationWarning, "apt_pkg.GetPkgRecords() is "
+                 "deprecated. Please see apt_pkg.Records() for the "
+                 "replacement.", 1);
+    return PkgRecordsNew(&PyPackageRecords_Type,Args,0);
 }
 #endif

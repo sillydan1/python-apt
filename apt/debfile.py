@@ -17,12 +17,12 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 #  USA
 """Classes for working with locally available Debian packages."""
-from gettext import gettext as _
 import os
 import sys
 
 import apt_inst
 import apt_pkg
+from apt_pkg import gettext as _
 
 
 # Constants for comparing the local package file with the version in the cache
@@ -52,11 +52,8 @@ class DebPackage(object):
     def open(self, filename):
         " open given debfile "
         self.filename = filename
-        if not apt_inst.ar_check_member(open(self.filename), "debian-binary"):
-            raise NoDebArchiveException(_("This is not a valid DEB archive, "
-                                          "missing '%s' member" %
-                                          "debian-binary"))
-        control = apt_inst.deb_extract_control(open(self.filename))
+        self._debfile = apt_inst.DebFile(self.filename)
+        control = self._debfile.control.extractdata("control")
         self._sections = apt_pkg.TagSection(control)
         self.pkgname = self._sections["Package"]
 
@@ -67,19 +64,11 @@ class DebPackage(object):
     def filelist(self):
         """return the list of files in the deb."""
         files = []
-
-        def extract_cb(what, name, *_):
-            files.append(name)
-
-        for member in self._supported_data_members:
-            if apt_inst.ar_check_member(open(self.filename), member):
-                try:
-                    apt_inst.deb_extract(open(self.filename), extract_cb,
-                                        member)
-                    break
-                except SystemError:
-                    return [_("List of files for '%s'could not be read" %
-                              self.filename)]
+        try:
+            self._debfile.data.go(lambda item, data: files.append(item.name))
+        except SystemError:
+            return [_("List of files for '%s' could not be read" %
+                          self.filename)]
         return files
 
     def _is_or_group_satisfied(self, or_group):
@@ -417,7 +406,7 @@ class DebPackage(object):
     def install(self, install_progress=None):
         """Install the package."""
         if install_progress is None:
-            return os.system("dpkg -i %s" % self.filename)
+            return os.spawnlp(os.P_WAIT, "dpkg", "dpkg", "-i", self.filename)
         else:
             try:
                 install_progress.start_update()

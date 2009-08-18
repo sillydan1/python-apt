@@ -8,7 +8,7 @@ locally available Debian packages (.deb files) and tar files.
 
 Checking packages
 ------------------
-.. function:: arCheckMember(file, membername)
+.. function:: ar_check_member(file, membername)
 
     Check if the member specified by the parameter *membername* exists in
     the AR file referenced by the parameter *file*, which may be a
@@ -21,7 +21,7 @@ Checking packages
 
 Listing contents
 -----------------
-.. function:: debExtract(file, func, chunk)
+.. function:: deb_extract(file, func, chunk)
 
     Call the function referenced by *func* for each member of the tar file
     *chunk* which is contained in the AR file referenced by the parameter
@@ -30,14 +30,14 @@ Listing contents
 
     An example would be::
 
-        debExtract(open("package.deb"), my_callback, "data.tar.gz")
+        deb_extract(open("package.deb"), my_callback, "data.tar.gz")
 
     See :ref:`emulating-dpkg-contents` for a more detailed example.
 
     .. versionchanged:: 0.8.0
         Added support for file descriptors and objects implementing a :meth:`fileno` method.
 
-.. function:: tarExtract(file,func,comp)
+.. function:: tar_extract(file,func,comp)
 
     Call the function *func* for each member of the tar file *file*.
 
@@ -66,7 +66,7 @@ The parameter *name* refers to the name of the member. In case of links,
 Extracting contents
 -------------------
 
-.. function:: debExtractArchive(file, rootdir)
+.. function:: deb_extract_archive(file, rootdir)
 
     Extract the archive referenced by the :class:`file` object *file*
     into the directory specified by *rootdir*.
@@ -84,7 +84,7 @@ Extracting contents
     .. versionchanged:: 0.8.0
         Added support for file descriptors and objects implementing a :meth:`fileno` method.
 
-.. function:: debExtractControl(file[, member='control'])
+.. function:: deb_extract_control(file[, member='control'])
 
     Return the indicated file as a string from the control tar. The default
     is 'control'.
@@ -95,7 +95,7 @@ Extracting contents
     If you want to print the control file of a given package, you could do
     something like::
 
-        print debExtractControl(open("package.deb"))
+        print deb_extract_control(open("package.deb"))
 
     .. versionchanged:: 0.8.0
         Added support for file descriptors and objects implementing a :meth:`fileno` method.
@@ -108,15 +108,15 @@ Example: Emulating :program:`dpkg` :option:`--extract`
 Here is a code snippet which emulates dpkg -x. It can be run as
 :program:`tool` :option:`pkg.deb` :option:`outdir`.
 
-.. literalinclude:: examples/dpkg-extract.py
+.. literalinclude:: ../examples/dpkg-extract.py
 
 
 .. _emulating-dpkg-contents:
 
 Example: Emulating :program:`dpkg` :option:`--contents`
 -------------------------------------------------------
-.. literalinclude:: examples/dpkg-contents.py
+.. literalinclude:: ../examples/dpkg-contents.py
 
 Example: Emulating :program:`dpkg` :option:`--info`
 ----------------------------------------------------
-.. literalinclude:: examples/dpkg-info.py
+.. literalinclude:: ../examples/dpkg-info.py

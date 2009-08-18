@@ -58,7 +58,6 @@ static PyObject *PkgSrcRecordsRestart(PyObject *Self,PyObject *Args)
 {
    PkgSrcRecordsStruct &Struct = GetCpp<PkgSrcRecordsStruct>(Self);
 
-   char *Name = 0;
    if (PyArg_ParseTuple(Args,"") == 0)
       return 0;
 
@@ -124,8 +123,12 @@ static PyObject *PkgSrcRecordsGetIndex(PyObject *Self,void*) {
    if (Struct.Last == 0)
       return 0;
    const pkgIndexFile &tmp = Struct.Last->Index();
-   return CppOwnedPyObject_NEW<pkgIndexFile*>(Self,&PackageIndexFileType,
+   CppOwnedPyObject<pkgIndexFile*> *PyObj;
+   PyObj = CppOwnedPyObject_NEW<pkgIndexFile*>(Self,&PyPackageIndexFile_Type,
                                               (pkgIndexFile*)&tmp);
+   // Do not delete the pkgIndexFile*, it is managed by PkgSrcRecords::Parser.
+   PyObj->NoDelete=true;
+   return PyObj;
 }
 
 static PyObject *PkgSrcRecordsGetFiles(PyObject *Self,void*) {
@@ -155,6 +158,54 @@ static PyObject *PkgSrcRecordsGetBuildDepends(PyObject *Self,void*) {
    PkgSrcRecordsStruct &Struct = GetStruct(Self,"BuildDepends");
    if (Struct.Last == 0)
       return 0;
+
+   PyObject *Dict = PyDict_New();
+   PyObject *Dep = 0;
+   PyObject *LastDep = 0;
+   PyObject *OrGroup = 0;
+   
+   vector<pkgSrcRecords::Parser::BuildDepRec> bd;
+   if(!Struct.Last->BuildDepends(bd, false /* arch-only*/))
+      return NULL; // error
+   
+   PyObject *v;
+   for(unsigned int i=0;i<bd.size();i++) {
+     
+     Dep = PyString_FromString(pkgSrcRecords::Parser::BuildDepType(bd[i].Type));
+     
+	 LastDep = PyDict_GetItem(Dict,Dep);
+	 if (LastDep == 0)
+	 {
+	    LastDep = PyList_New(0);
+	    PyDict_SetItem(Dict,Dep,LastDep);
+	    Py_DECREF(LastDep);
+	 }
+     Py_DECREF(Dep);
+     OrGroup = PyList_New(0);
+     PyList_Append(LastDep, OrGroup);
+     Py_DECREF(OrGroup);
+
+     // Add at least one package to the group, add more if Or is set.
+     while (1)
+     {
+	    v = Py_BuildValue("(sss)", bd[i].Package.c_str(),
+			bd[i].Version.c_str(), pkgCache::CompType(bd[i].Op));
+	    PyList_Append(OrGroup, v);
+	    Py_DECREF(v);
+	    if (pkgCache::Dep::Or != (bd[i].Op & pkgCache::Dep::Or) || i == bd.size())
+	       break;
+        i++;
+     }
+      
+   }
+   return Dict;
+}
+
+#ifdef COMPAT_0_7
+static PyObject *PkgSrcRecordsGetBuildDepends_old(PyObject *Self,void*) {
+   PkgSrcRecordsStruct &Struct = GetStruct(Self,"BuildDepends");
+   if (Struct.Last == 0)
+      return 0;
    PyObject *List = PyList_New(0);
 
    vector<pkgSrcRecords::Parser::BuildDepRec> bd;
@@ -170,6 +221,7 @@ static PyObject *PkgSrcRecordsGetBuildDepends(PyObject *Self,void*) {
    }
    return List;
 }
+#endif
 
 static PyGetSetDef PkgSrcRecordsGetSet[] = {
    {"binaries",PkgSrcRecordsGetBinaries},
@@ -183,7 +235,7 @@ static PyGetSetDef PkgSrcRecordsGetSet[] = {
    {"version",PkgSrcRecordsGetVersion},
 #ifdef COMPAT_0_7
    {"Binaries",PkgSrcRecordsGetBinaries},
-   {"BuildDepends",PkgSrcRecordsGetBuildDepends},
+   {"BuildDepends",PkgSrcRecordsGetBuildDepends_old,0,"Deprecated function and deprecated output format."},
    {"Files",PkgSrcRecordsGetFiles},
    {"Index",PkgSrcRecordsGetIndex},
    {"Maintainer",PkgSrcRecordsGetMaintainer},
@@ -203,12 +255,9 @@ static PyObject *PkgSrcRecordsNew(PyTypeObject *type,PyObject *args,PyObject *kw
    return HandleErrors(CppPyObject_NEW<PkgSrcRecordsStruct>(type));
 }
 
-PyTypeObject PkgSrcRecordsType =
+PyTypeObject PySourceRecords_Type =
 {
-   PyObject_HEAD_INIT(&PyType_Type)
-   #if PY_MAJOR_VERSION < 3
-   0,			                // ob_size
-   #endif
+   PyVarObject_HEAD_INIT(&PyType_Type, 0)
    "apt_pkg.SourceRecords",     // tp_name
    sizeof(CppPyObject<PkgSrcRecordsStruct>),   // tp_basicsize
    0,                                   // tp_itemsize
@@ -228,7 +277,8 @@ PyTypeObject PkgSrcRecordsType =
    0,                                   // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
-   Py_TPFLAGS_DEFAULT,                  // tp_flags
+   (Py_TPFLAGS_DEFAULT |                // tp_flags
+    Py_TPFLAGS_BASETYPE),
    "SourceRecords Object",              // tp_doc
    0,                                   // tp_traverse
    0,                                   // tp_clear
@@ -254,17 +304,12 @@ PyTypeObject PkgSrcRecordsType =
 #ifdef COMPAT_0_7
 PyObject *GetPkgSrcRecords(PyObject *Self,PyObject *Args)
 {
-#if 0
-   PyObject *Owner;
-   if (PyArg_ParseTuple(Args,"O!",&PkgCacheType,&Owner) == 0)
-      return 0;
-
-   return HandleErrors(CppOwnedPyObject_NEW<PkgSrcRecordsStruct>(Owner,
-			   &PkgSrcRecordsType));
-#endif
+   PyErr_WarnEx(PyExc_DeprecationWarning, "apt_pkg.GetPkgSrcRecords() is "
+                "deprecated. Please see apt_pkg.SourceRecords() for the "
+                "replacement.", 1);
    if (PyArg_ParseTuple(Args,"") == 0)
       return 0;
 
-   return HandleErrors(CppPyObject_NEW<PkgSrcRecordsStruct>(&PkgSrcRecordsType));
+   return HandleErrors(CppPyObject_NEW<PkgSrcRecordsStruct>(&PySourceRecords_Type));
 }
 #endif

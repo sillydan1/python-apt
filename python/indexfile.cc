@@ -22,7 +22,6 @@ static PyObject *PackageIndexFileArchiveURI(PyObject *Self,PyObject *Args)
 
    if (PyArg_ParseTuple(Args, "s",&path) == 0)
       return 0;
-
    return HandleErrors(Safe_FromString(File->ArchiveURI(path).c_str()));
 }
 
@@ -56,20 +55,19 @@ static PyObject *PackageIndexFileGetIsTrusted(PyObject *Self,void*) {
 }
 #undef File
 
+#define S(x) (x ? x : "")
 static PyObject *PackageIndexFileRepr(PyObject *Self)
 {
    pkgIndexFile *File = GetCpp<pkgIndexFile*>(Self);
-
-   char S[1024];
-   snprintf(S,sizeof(S),"<pkIndexFile object: "
+   return PyString_FromFormat("<pkIndexFile object: "
 			"Label:'%s' Describe='%s' Exists='%i' "
-	                "HasPackages='%i' Size='%i'  "
+	                "HasPackages='%i' Size='%lu'  "
  	                "IsTrusted='%i' ArchiveURI='%s'>",
-	    File->GetType()->Label,  File->Describe().c_str(), File->Exists(),
+	    S(File->GetType()->Label),  File->Describe().c_str(), File->Exists(),
 	    File->HasPackages(), File->Size(),
             File->IsTrusted(), File->ArchiveURI("").c_str());
-   return PyString_FromString(S);
 }
+#undef S
 
 static PyGetSetDef PackageIndexFileGetSet[] = {
     {"describe",PackageIndexFileGetDescribe},
@@ -89,17 +87,15 @@ static PyGetSetDef PackageIndexFileGetSet[] = {
     {}
 };
 
-PyTypeObject PackageIndexFileType =
+PyTypeObject PyPackageIndexFile_Type =
 {
-   PyObject_HEAD_INIT(&PyType_Type)
-   #if PY_MAJOR_VERSION < 3
-   0,                                   // ob_size
-   #endif
+   PyVarObject_HEAD_INIT(&PyType_Type, 0)
    "apt_pkg.PackageIndexFile",          // tp_name
    sizeof(CppOwnedPyObject<pkgIndexFile*>),   // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppOwnedDealloc<pkgIndexFile*>,      // tp_dealloc
+   // Not ..Ptr, because the pointer is managed somewhere else.
+   CppOwnedDeallocPtr<pkgIndexFile*>,   // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
@@ -114,10 +110,10 @@ PyTypeObject PackageIndexFileType =
    0,                                   // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
-   Py_TPFLAGS_DEFAULT,                  // tp_flags
-   "pkgIndexFile Object",               // tp_doc
-   0,                                   // tp_traverse
-   0,                                   // tp_clear
+   Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC, // tp_flags
+   "IndexFile Object",               // tp_doc
+   CppOwnedTraverse<pkgIndexFile*>,     // tp_traverse
+   CppOwnedClear<pkgIndexFile*>,        // tp_clear
    0,                                   // tp_richcompare
    0,                                   // tp_weaklistoffset
    0,                                   // tp_iter
