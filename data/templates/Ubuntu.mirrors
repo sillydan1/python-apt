@@ -86,11 +86,10 @@ http://ubuntu.intergenia.de/ubuntu/
 http://archive.ubuntu.uasw.edu/
 ftp://ftp.rrzn.uni-hannover.de/pub/mirror/linux/ubuntu/
 http://ftp.tu-chemnitz.de/pub/linux/ubuntu/
-http://mirror.bauhuette.fh-aachen.de/ubuntu/
 http://ftp.stw-bonn.de/ubuntu/
 http://ftp.uni-erlangen.de/mirrors/ubuntu/
-http://ftp.hosteurope.de/mirror/archive.ubuntu.com/
 http://sunsite.informatik.rwth-aachen.de/ftp/pub/Linux/ubuntu/ubuntu/
+http://ftp.hosteurope.de/mirror/archive.ubuntu.com/
 http://ftp-stud.fht-esslingen.de/Mirrors/ubuntu/
 http://ftp.uni-bayreuth.de/linux/ubuntu/ubuntu/
 http://ftp.uni-muenster.de/pub/mirrors/ftp.ubuntu.com/ubuntu/
@@ -161,7 +160,6 @@ http://dl2.foss-id.web.id/ubuntu/
 http://ubuntu.indika.net.id/
 http://ubuntu.indika.net.id/ubuntu/
 http://repo.undip.ac.id/ubuntu/
-http://ubuntu.pesat.net.id/archive/
 #LOC:IE
 http://ftp.heanet.ie/pub/ubuntu/
 http://ftp.esat.net/mirrors/archive.ubuntu.com/
@@ -170,6 +168,7 @@ http://ie.archive.ubuntu.com/ubuntu/
 http://mirror.isoc.org.il/pub/ubuntu/
 #LOC:IN
 http://ftp.iitm.ac.in/ubuntu/
+http://ubuntuarchive.hnsdc.com/
 http://mirror.cse.iitk.ac.in/ubuntu/
 #LOC:IS
 http://ubuntu.lhi.is/ubuntu/
@@ -295,7 +294,6 @@ http://ftp.science.nus.edu.sg/ubuntu/
 http://ftp.arnes.si/pub/mirrors/ubuntu/
 #LOC:SK
 http://ftp.energotel.sk/pub/linux/ubuntu/
-http://ubuntu.ynet.sk/ubuntu/
 http://ftp.antik.sk/ubuntu/
 #LOC:TH
 http://mirror.in.th/osarchive/ubuntu/
