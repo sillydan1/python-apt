@@ -91,7 +91,6 @@ class Cache(object):
         for f in files:
             if not os.path.exists(rootdir+f):
                 open(rootdir+f,"w")
-       
 
     def _runCallbacks(self, name):
         """ internal helper to run a callback """
@@ -136,6 +135,7 @@ class Cache(object):
             return self._weakref[key]
         except KeyError:
             if key in self._set:
+                key = str(key)
                 pkg = self._weakref[key] = Package(self, self._cache[key])
                 return pkg
             else:
@@ -270,7 +270,7 @@ class Cache(object):
                     providers.append(pkg)
         return providers
 
-    def update(self, fetchProgress=None):
+    def update(self, fetchProgress=None, pulseInterval=0):
         " run the equivalent of apt-get update "
         lockfile = apt_pkg.Config.FindDir("Dir::State::Lists") + "lock"
         lock = apt_pkg.GetLock(lockfile)
@@ -280,7 +280,7 @@ class Cache(object):
         try:
             if fetchProgress is None:
                 fetchProgress = apt.progress.FetchProgress()
-            return self._cache.Update(fetchProgress, self._list)
+            return self._cache.Update(fetchProgress, self._list, pulseInterval)
         finally:
             os.close(lock)
 
@@ -335,6 +335,15 @@ class Cache(object):
             a signal then """
         self._runCallbacks("cache_pre_change")
 
+    def actiongroup(self):
+        """Return an ActionGroup() object for the current cache.
+
+        Action groups can be used to speedup actions. The action group is
+        active as soon as it is created, and disabled when the object is
+        deleted or when release() is called.
+        """
+        return apt_pkg.GetPkgActionGroup(self._depcache)
+
     def connect(self, name, callback):
         """ connect to a signal, currently only used for
             cache_{post,pre}_{changed,open} """
@@ -345,22 +354,56 @@ class Cache(object):
     @property
     def broken_count(self):
         """Return the number of packages with broken dependencies."""
-        return self._depcache.broken_count
+        return self._depcache.BrokenCount
 
     @property
     def delete_count(self):
         """Return the number of packages marked for deletion."""
-        return self._depcache.del_count
+        return self._depcache.DelCount
 
     @property
     def install_count(self):
         """Return the number of packages marked for installation."""
-        return self._depcache.inst_count
+        return self._depcache.InstCount
 
     @property
     def keep_count(self):
         """Return the number of packages marked as keep."""
-        return self._depcache.keep_count
+        return self._depcache.KeepCount
+
+
+class ProblemResolver(object):
+    """Resolve problems due to dependencies and conflicts.
+
+    The first argument 'cache' is an instance of apt.Cache.
+    """
+
+    def __init__(self, cache):
+        self._resolver = apt_pkg.GetPkgProblemResolver(cache._depcache)
+
+    def clear(self, package):
+        """Reset the package to the default state."""
+        self._resolver.Clear(package._pkg)
+
+    def install_protect(self):
+        """mark protected packages for install or removal."""
+        self._resolver.InstallProtect()
+
+    def protect(self, package):
+        """Protect a package so it won't be removed."""
+        self._resolver.Protect(package._pkg)
+
+    def remove(self, package):
+        """Mark a package for removal."""
+        self._resolver.Remove(package._pkg)
+
+    def resolve(self):
+        """Resolve dependencies, try to remove packages where needed."""
+        self._resolver.Resolve()
+
+    def resolve_by_keep(self):
+        """Resolve dependencies, do not try to remove packages."""
+        self._resolver.ResolveByKeep()
 
 
 # ----------------------------- experimental interface
