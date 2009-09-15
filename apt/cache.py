@@ -270,7 +270,7 @@ class Cache(object):
                     providers.append(pkg)
         return providers
 
-    def update(self, fetchProgress=None, pulseInterval=0):
+    def update(self, fetchProgress=None, pulseInterval=0, raiseOnError=False):
         " run the equivalent of apt-get update "
         lockfile = apt_pkg.Config.FindDir("Dir::State::Lists") + "lock"
         lock = apt_pkg.GetLock(lockfile)
@@ -280,7 +280,14 @@ class Cache(object):
         try:
             if fetchProgress is None:
                 fetchProgress = apt.progress.FetchProgress()
-            return self._cache.Update(fetchProgress, self._list, pulseInterval)
+            res = self._cache.Update(fetchProgress, self._list, pulseInterval)
+
+            if res == 2 and raiseOnError:
+                raise FetchCancelledException()
+            elif res == 1 and raiseOnError:
+                raise FetchFailedException()
+            else:
+                return res
         finally:
             os.close(lock)
 
@@ -314,8 +321,12 @@ class Cache(object):
             res = self.installArchives(pm, installProgress)
             if res == pm.ResultCompleted:
                 break
-            if res == pm.ResultFailed:
+            elif res == pm.ResultFailed:
                 raise SystemError("installArchives() failed")
+            elif res == pm.ResultIncomplete:
+                 pass
+            else:
+                 raise SystemError("internal-error: unknown result code from InstallArchives: %s" % res)
             # reload the fetcher for media swaping
             fetcher.Shutdown()
         return (res == pm.ResultCompleted)
@@ -334,6 +345,15 @@ class Cache(object):
         """ called internally if the cache is about to change, emit
             a signal then """
         self._runCallbacks("cache_pre_change")
+
+    def actiongroup(self):
+        """Return an ActionGroup() object for the current cache.
+
+        Action groups can be used to speedup actions. The action group is
+        active as soon as it is created, and disabled when the object is
+        deleted or when release() is called.
+        """
+        return apt_pkg.GetPkgActionGroup(self._depcache)
 
     def connect(self, name, callback):
         """ connect to a signal, currently only used for
