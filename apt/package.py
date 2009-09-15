@@ -478,10 +478,11 @@ class Version(object):
         acq = apt_pkg.GetAcquire(progress or apt.progress.TextFetchProgress())
 
         dsc = None
-        src.Lookup(self.package.name)
+        record = self._records
+        src.Lookup(record.SourcePkg)
         try:
-            while self.version != src.Version:
-                src.Lookup(self.package.name)
+            while record.SourceVer != src.Version:
+                src.Lookup(record.SourcePkg)
         except AttributeError:
             raise ValueError("No source for %r" % self)
         for md5, size, path, type in src.Files:
@@ -651,6 +652,11 @@ class Package(object):
 
         This returns the same value as ID, which is unique."""
         return self._pkg.ID
+
+    @property
+    def essential(self):
+        """Return True if the package is an essential part of the system."""
+        return self._pkg.Essential
 
     @DeprecatedProperty
     def installedVersion(self):
