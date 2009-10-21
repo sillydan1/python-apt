@@ -1,3 +1,9 @@
+python-apt (0.7.13.2ubuntu4) karmic; urgency=low
+
+  * No change rebuild to fix misbuilt binaries on armel.
+
+ -- Loïc Minier <loic.minier@ubuntu.com>  Wed, 21 Oct 2009 14:52:36 +0200
+
 python-apt (0.7.13.2ubuntu3) karmic; urgency=low
 
   * rebuild against latest libapt
