@@ -5,7 +5,7 @@
    Progress - Wrapper for the progress related functions
 
    ##################################################################### */
-
+#include <Python.h>
 #include <iostream>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -90,10 +90,10 @@ void PyOpProgress::Update()
    if(!CheckChange(0.7))
       return;
 
-
    setattr(callbackInst, "op", "s", Op.c_str());
    setattr(callbackInst, "subop", "s", SubOp.c_str());
    setattr(callbackInst, "major_change", "b", MajorChange);
+   setattr(callbackInst, "percent", "f", Percent);
 #ifdef COMPAT_0_7
    setattr(callbackInst, "Op", "s", Op.c_str());
    setattr(callbackInst, "subOp", "s", SubOp.c_str());
@@ -101,7 +101,6 @@ void PyOpProgress::Update()
    PyObject *arglist = Py_BuildValue("(f)", Percent);
    RunSimpleCallback("update", arglist);
 #else
-   setattr(callbackInst, "percent", "f", Percent);
    RunSimpleCallback("update");
 #endif
 }
@@ -129,11 +128,10 @@ bool PyFetchProgress::MediaChange(string Media, string Drive)
        RunSimpleCallback("mediaChange", arglist, &result);
 
    bool res = true;
-   if(!PyArg_Parse(result, "b", &res))
-      std::cerr << "result could not be parsed" << std::endl;
-
-   // FIXME: find out what it should return usually
-   //std::cerr << "res is: " << res << std::endl;
+   if(!PyArg_Parse(result, "b", &res)) {
+      // no return value or None, assume false
+      return false;
+   }
 
    PyCbObj_BEGIN_ALLOW_THREADS
    return res;

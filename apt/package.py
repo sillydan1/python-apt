@@ -66,14 +66,16 @@ class BaseDependency(object):
         name       - The name of the dependency
         relation   - The relation (>,>=,==,<,<=,)
         version    - The version depended on
+        rawtype   - The type of the dependendy (e.g. 'Recommends')
         pre_depend - Boolean value whether this is a pre-dependency.
     """
 
-    def __init__(self, name, rel, ver, pre):
+    def __init__(self, name, rel, ver, pre, rawtype=None):
         self.name = name
         self.relation = rel
         self.version = ver
         self.pre_depend = pre
+        self.rawtype = rawtype
 
     def __repr__(self):
         return ('<BaseDependency: name:%r relation:%r version:%r preDepend:%r>'
@@ -377,23 +379,38 @@ class Version(object):
         """Return a Record() object for this version."""
         return Record(self._records.record)
 
-    @property
-    def dependencies(self):
-        """Return the dependencies of the package version."""
+    def get_dependencies(self, *types):
+        """Return a list of Dependency objects for the given types."""
         depends_list = []
         depends = self._cand.depends_list
-        for type_ in ["PreDepends", "Depends"]:
+        for type_ in types:
             try:
                 for dep_ver_list in depends[type_]:
                     base_deps = []
                     for dep_or in dep_ver_list:
                         base_deps.append(BaseDependency(dep_or.target_pkg.name,
                                         dep_or.comp_type, dep_or.target_ver,
-                                        (type_ == "PreDepends")))
+                                        (type_ == "PreDepends"),
+                                         rawtype=type_))
                     depends_list.append(Dependency(base_deps))
             except KeyError:
                 pass
         return depends_list
+
+    @property
+    def enhances(self):
+        """Return the list of enhances for the package version."""
+        return self.get_dependencies("Enhances")
+
+    @property
+    def dependencies(self):
+        """Return the dependencies of the package version."""
+        return self.get_dependencies("PreDepends", "Depends")
+
+    @property
+    def recommends(self):
+        """Return the recommends of the package version."""
+        return self.get_dependencies("Recommends")
 
     @property
     def origins(self):
@@ -483,7 +500,7 @@ class Version(object):
                                       self.size, base, destfile=destfile)
         acq.run()
 
-        if acqfile.status != acqfile.stat_done:
+        if acqfile.status != acqfile.STAT_DONE:
             raise FetchError("The item %r could not be fetched: %s" %
                              (acqfile.destfile, acqfile.error_text))
         print self._records.filename
@@ -509,10 +526,12 @@ class Version(object):
         acq = apt_pkg.Acquire(progress or apt.progress.text.AcquireProgress())
 
         dsc = None
-        src.lookup(self.package.name)
+        record = self._records
+        src.lookup(record.source_pkg)
+
         try:
-            while self.version != src.version:
-                src.lookup(self.package.name)
+            while record.source_ver != src.version:
+                src.lookup(record.source_pkg)
         except AttributeError:
             raise ValueError("No source for %r" % self)
         files = list()
@@ -529,7 +548,7 @@ class Version(object):
         acq.run()
 
         for item in acq.items:
-            if item.status != item.stat_done:
+            if item.status != item.STAT_DONE:
                 raise FetchError("The item %r could not be fetched: %s" %
                                     (item.destfile, item.error_text))
 
@@ -577,7 +596,7 @@ class VersionList(Sequence):
         except TypeError:
             # Dictionary interface item is a string.
             for ver in self._versions:
-                if ver.ver_str == item:
+                if ver.VerStr == item:
                     return Version(self._package, ver)
         raise KeyError("Version: %r not found." % (item))
 
@@ -593,7 +612,7 @@ class VersionList(Sequence):
             item = item.version
         # Dictionary interface.
         for ver in self._versions:
-            if ver.ver_str == item:
+            if ver.VerStr == item:
                 return True
         return False
 
@@ -679,6 +698,11 @@ class Package(object):
 
         This returns the same value as ID, which is unique."""
         return self._pkg.id
+
+    @property
+    def essential(self):
+        """Return True if the package is an essential part of the system."""
+        return self._pkg.essential
 
     @DeprecatedProperty
     def installedVersion(self): #pylint: disable-msg=C0103
@@ -1100,6 +1124,16 @@ class Package(object):
         """
         return VersionList(self)
 
+    @property
+    def is_inst_broken(self):
+        """Return True if the to-be-installed package is broken."""
+        return self._pcache._depcache.IsInstBroken(self._pkg)
+
+    @property
+    def is_now_broken(self):
+        """Return True if the installed package is broken."""
+        return self._pcache._depcache.IsNowBroken(self._pkg)
+
     # depcache actions
 
     def mark_keep(self):
@@ -1158,7 +1192,8 @@ class Package(object):
     def mark_upgrade(self):
         """Mark a package for upgrade."""
         if self.is_upgradable:
-            self.mark_install()
+            from_user = not self._pcache._depcache.is_auto_installed(self._pkg)
+            self.mark_install(from_user=from_user)
         else:
             # FIXME: we may want to throw a exception here
             sys.stderr.write(("MarkUpgrade() called on a non-upgrable pkg: "
@@ -1250,6 +1285,7 @@ def _test():
     print "InstalledSize: %s " % pkg.candidate.installed_size
     print "PackageSize: %s " % pkg.candidate.size
     print "Dependencies: %s" % pkg.installed.dependencies
+    print "Recommends: %s" % pkg.installed.recommends
     for dep in pkg.candidate.dependencies:
         print ",".join("%s (%s) (%s) (%s)" % (o.name, o.version, o.relation,
                         o.pre_depend) for o in dep.or_dependencies)

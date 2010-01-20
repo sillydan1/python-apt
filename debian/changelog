@@ -1,3 +1,47 @@
+python-apt (0.7.93) unstable; urgency=low
+
+  [ Julian Andres Klode ]
+  * Merge debian-sid and debian-experimental.
+  * Add a tutorial on how to do things which are possible with apt-get,
+    like apt-get --print-uris update (cf. #551164).
+  * Build for Python 2.5, 2.6 and 3.1; 2.6 and 3.1 hit unstable on Jan 16.
+    - Use DH_PYCENTRAL=nomove for now because include-links seems broken
+  * Merge lp:~forest-bond/python-apt/cache-is-virtual-package-catch-key-error
+    - Return False in Cache.is_virtual_package if the package does not exist.
+  * Make all class-level constants have uppercase names.
+  * Rewrite apt.progress.gtk2 documentation by hand and drop python-gtk2
+    build-time dependency.
+  * aptsources:
+    - Make all classes subclasses of object.
+    - distro.py: Support Python 3, decode lsb_release results using utf-8.
+  * apt/progress/base.py:
+    - Fix some parsing of dpkg status fd.
+  * apt/progress/text.py:
+    - Replace one print statement with a .write() call.
+  * Rename apt_pkg.PackageIndexFile to apt_pkg.IndexFile.
+
+  [ Colin Watson ]
+  * apt/progress/__init__.py:
+    - Fix InstallProgress.updateInterface() to cope with read() returning 0
+      on non-blocking file descriptors (LP: #491027).
+  
+  [ Michael Vogt ]
+  * apt/cache.py: 
+    - improved docstring for the cache
+    - add "enhances" property
+  * data/templates/Ubuntu.info.in:
+    - add lucid
+  * python/cache.cc:
+    - add UntranslatedDepType attribute to DependencyType
+    - add DepTypeEnum that returns a value from 
+      {DepDepends, DepPreDepends, ...}
+  * python/apt_pkgmodule.cc:
+    - add DepDpkgBreaks, DepEnhances constants
+  * doc/source/apt_pkg/{cache.rst, index.rst}:
+    - update documentation as well
+
+ -- Julian Andres Klode <jak@debian.org>  Wed, 20 Jan 2010 17:06:20 +0100
+
 python-apt (0.7.92) experimental; urgency=low
 
   * New features:
@@ -77,6 +121,94 @@ python-apt (0.7.90) experimental; urgency=low
     - Initial patch by Sebastian Heinlein
 
  -- Julian Andres Klode <jak@debian.org>  Wed, 15 Apr 2009 13:47:42 +0200
+
+python-apt (0.7.13.4) unstable; urgency=low
+
+  [ Michael Vogt ]
+  * po/zh_CN.po:
+    - updated, thanks to Feng Chao
+  * python/progress.cc:
+    - if the mediaChange() does not return anything or is not implemented
+      send "false" to libapt
+
+  [ Julian Andres Klode ]
+  * apt/package.py: Fix dictionary access of VersionList, patch
+    by Sebastian Heinlein (Closes: #554895).
+
+ -- Julian Andres Klode <jak@debian.org>  Sun, 29 Nov 2009 20:26:31 +0100
+
+python-apt (0.7.13.3) unstable; urgency=low
+
+  [ Michael Vogt ]
+  * apt/cache.py:
+    - add actiongroup() method (backport from 0.7.92)
+    - re-work the logic in commit() to fail if installArchives() returns
+      a unexpected result
+  * apt/progress/__init__.py:
+    - catch exceptions in pm.DoInstall()
+
+  [ Sebastian Heinlein ]
+  * apt/package.py:
+    - Export if a package is an essential one (Closes: #543428)
+
+  [ Julian Andres Klode ]
+  * python/depcache.cc:
+    - Make ActionGroups context managers so apt.Cache.actiongroup() has
+      the same behavior as in 0.7.92
+  * apt/cache.py:
+    - Add raiseOnError option to Cache.update() (Closes: #545474)
+  * apt/package.py:
+    - Use the source version instead of the binary version in fetch_source().
+  * apt/progress/__init__.py:
+    - Correctly ignore ECHILD by checking before EINTR (Closes: #546007)
+
+ -- Julian Andres Klode <jak@debian.org>  Tue, 15 Sep 2009 15:18:45 +0200
+
+python-apt (0.7.13.2) unstable; urgency=low
+
+  * apt/cache.py:
+   - Convert argument to str in __getitem__() (Closes: #542965).
+
+ -- Julian Andres Klode <jak@debian.org>  Sat, 22 Aug 2009 22:47:30 +0200
+
+python-apt (0.7.13.1) unstable; urgency=low
+
+  * apt/package.py:
+   - Fix Version.get_dependencies() to not ignore the arguments.
+
+ -- Julian Andres Klode <jak@debian.org>  Fri, 21 Aug 2009 16:59:08 +0200
+
+python-apt (0.7.13.0) unstable; urgency=low
+
+  [ Michael Vogt ]
+  * apt/package.py:
+    - add "recommends" property
+  * apt/cache.py, python/cache.cc:
+    - add optional pulseInterval option to "update()"
+
+  [ Sebastian Heinlein ]
+  * apt/cache.py:
+   - Fix the (inst|keep|broken|del)_count attributes (Closes: #542773).
+
+  [ Julian Andres Klode ]
+  * apt/package.py:
+   - Introduce Version.get_dependencies() which takes one or more types
+     of dependencies and returns a list of Dependency objects.
+   - Do not mark the package as manually installed on upgrade (Closes: #542699)
+   - Add Package.is_now_broken and Package.is_inst_broken.
+  * apt/cache.py:
+   - Introduce ProblemResolver class (Closes: #542705)
+  * python/pkgsrcrecords.cc:
+   - Fix spelling error (begining should be beginning).
+  * po:
+   - Update template and the translations de.po, fr.po (Closes: #467120),
+     ja.po (Closes: #454293).
+  * debian/control:
+   - Update Standards-Version to 3.8.3.
+  * debian/rules:
+   - Build with DH_PYCENTRAL=include-links instead of nomove.
+
+ -- Julian Andres Klode <jak@debian.org>  Fri, 21 Aug 2009 16:22:34 +0200
 
 python-apt (0.7.12.1) unstable; urgency=low
 

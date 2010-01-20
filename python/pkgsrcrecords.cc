@@ -53,7 +53,7 @@ static PyObject *PkgSrcRecordsLookup(PyObject *Self,PyObject *Args)
    return Py_BuildValue("i", 1);
 }
 
-static char *doc_PkgSrcRecordsRestart = "Start Lookup from the begining";
+static char *doc_PkgSrcRecordsRestart = "Start Lookup from the beginning";
 static PyObject *PkgSrcRecordsRestart(PyObject *Self,PyObject *Args)
 {
    PkgSrcRecordsStruct &Struct = GetCpp<PkgSrcRecordsStruct>(Self);
@@ -124,7 +124,7 @@ static PyObject *PkgSrcRecordsGetIndex(PyObject *Self,void*) {
       return 0;
    const pkgIndexFile &tmp = Struct.Last->Index();
    CppOwnedPyObject<pkgIndexFile*> *PyObj;
-   PyObj = CppOwnedPyObject_NEW<pkgIndexFile*>(Self,&PyPackageIndexFile_Type,
+   PyObj = CppOwnedPyObject_NEW<pkgIndexFile*>(Self,&PyIndexFile_Type,
                                               (pkgIndexFile*)&tmp);
    // Do not delete the pkgIndexFile*, it is managed by PkgSrcRecords::Parser.
    PyObj->NoDelete=true;

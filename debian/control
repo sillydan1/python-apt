@@ -3,7 +3,7 @@ Section: python
 Priority: optional
 Maintainer: APT Development Team <deity@lists.debian.org>
 Uploaders: Michael Vogt <mvo@debian.org>, Julian Andres Klode <jak@debian.org>
-Standards-Version: 3.8.2
+Standards-Version: 3.8.3
 XS-Python-Version: 2.5, 2.6, 3.1
 Build-Depends: apt-utils,
                debhelper (>= 7.3.5),
@@ -16,9 +16,7 @@ Build-Depends: apt-utils,
                python3.1-dbg,
                python-central (>= 0.5),
                python-distutils-extra (>= 2.0),
-               python-gtk2 [!kfreebsd-amd64 !kfreebsd-i386],
-               python-sphinx (>= 0.5),
-               python-vte [!kfreebsd-amd64 !kfreebsd-i386]
+               python-sphinx (>= 0.5)
 Vcs-Bzr: http://bzr.debian.org/apt/python-apt/debian-sid
 Vcs-Browser: http://bzr.debian.org/loggerhead/apt/python-apt/debian-sid/changes
 

@@ -41,12 +41,15 @@ Working with the cache
         Return the :class:`Package()` object for the package name given by
         *pkgname*.
 
-    .. method:: update(progress, list)
+    .. method:: update(progress, list[, pulse_interval])
 
         Update the package cache.
 
         The parameter *progress* points to an :class:`apt.progress.FetchProgress()`
         object. The parameter *list* refers to a :class:`SourceList()` object.
+
+        The optional parameter *pulse_interval* describes the interval between
+        the calls to the :meth:`FetchProgress.pulse` method.
 
     .. attribute:: depends_count
 
@@ -279,21 +282,21 @@ Working with the cache
 
         Fix the installation if a package could not be downloaded.
 
-    .. attribute:: result_completed
+    .. attribute:: RESULT_COMPLETED
 
         A constant for checking whether the the result is 'completed'.
 
         Compare it against the return value of :meth:`PackageManager.get_archives`
         or :meth:`PackageManager.do_install`.
 
-    .. attribute:: result_failed
+    .. attribute:: RESULT_FAILED
 
         A constant for checking whether the the result is 'failed'.
 
         Compare it against the return value of :meth:`PackageManager.get_archives`
         or :meth:`PackageManager.do_install`.
 
-    .. attribute:: result_incomplete
+    .. attribute:: RESULT_INCOMPLETE
 
         A constant for checking whether the the result is 'incomplete'.
 
@@ -635,9 +638,54 @@ Example:
 
         The type of the dependency, as string, eg. "Depends".
 
+    .. attribute:: dep_type_enum
+
+        The type of the dependency, as an integer which can be compared to
+        one of the TYPE_* constants below.
+
+    .. attribute:: dep_type_untranslated
+
+        The type of the depndency, as an untranslated string.
+
     .. attribute:: id
 
         The ID of the package, as integer.
+
+    .. attribute:: TYPE_CONFLICTS
+
+        Constant for checking against dep_type_enum
+
+    .. attribute:: TYPE_DEPENDS
+
+        Constant for checking against dep_type_enum
+
+    .. attribute:: TYPE_DPKG_BREAKS
+
+        Constant for checking against dep_type_enum
+
+    .. attribute:: TYPE_ENHANCES
+
+        Constant for checking against dep_type_enum
+
+    .. attribute:: TYPE_OBSOLETES
+
+        Constant for checking against dep_type_enum
+
+    .. attribute:: TYPE_PREDEPENDS
+
+        Constant for checking against dep_type_enum
+        
+    .. attribute:: TYPE_RECOMMENDS
+
+        Constant for checking against dep_type_enum
+        
+    .. attribute:: TYPE_REPLACES
+
+        Constant for checking against dep_type_enum
+        
+    .. attribute:: TYPE_SUGGESTS
+
+        Constant for checking against dep_type_enum
 
 Example: Find all missing dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -683,7 +731,7 @@ Index Files
     .. attribute:: index_files
 
 
-.. class:: PackageIndexFile
+.. class:: IndexFile
 
     .. method:: archive_uri(path)
 
@@ -695,7 +743,7 @@ Index Files
 
     .. attribute:: describe
 
-        A description of the :class:`PackageIndexFile`.
+        A description of the :class:`IndexFile`.
 
     .. attribute:: exists
 
@@ -1062,23 +1110,23 @@ installation.
 
         Integer, representing the status of the item.
 
-    .. attribute:: stat_idle
+    .. attribute:: STAT_IDLE
 
         Constant for comparing :attr:`AcquireItem.status`.
 
-    .. attribute:: stat_fetching
+    .. attribute:: STAT_FETCHING
 
         Constant for comparing :attr:`AcquireItem.status`
 
-    .. attribute:: stat_done
+    .. attribute:: STAT_DONE
 
         Constant for comparing :attr:`AcquireItem.status`
 
-    .. attribute:: stat_error
+    .. attribute:: STAT_ERROR
 
         Constant for comparing :attr:`AcquireItem.status`
 
-    .. attribute:: stat_auth_error
+    .. attribute:: STAT_AUTH_ERROR
 
         Constant for comparing :attr:`AcquireItem.status`
 
@@ -1742,7 +1790,7 @@ Other classes
 
     .. method:: find_index(pkgfile)
 
-        Return a :class:`PackageIndexFile` object for the :class:`PackageFile`
+        Return a :class:`IndexFile` object for the :class:`PackageFile`
         *pkgfile*.
 
     .. method:: read_main_list

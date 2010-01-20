@@ -545,7 +545,7 @@ static struct _PyAptPkgAPIStruct API = {
    &PyMetaIndex_Type,         // metaindex_type
    &PyPackage_Type,           // package_type
    &PyPackageFile_Type,       // packagefile_type
-   &PyPackageIndexFile_Type,  // packageindexfile_type
+   &PyIndexFile_Type,  // packageindexfile_type
    &PyPackageList_Type,       // packagelist_type
    &PyPackageManager_Type,    // packagemanager_type
    &PyPackageRecords_Type,    // packagerecords_type
@@ -638,7 +638,7 @@ extern "C" void initapt_pkg()
    ADDTYPE(Module,"DepCache",&PyDepCache_Type);
    ADDTYPE(Module,"ProblemResolver",&PyProblemResolver_Type);
    /* ========================= indexfile.cc ========================= */
-   ADDTYPE(Module,"PackageIndexFile",&PyPackageIndexFile_Type); // NO __new__()
+   ADDTYPE(Module,"IndexFile",&PyIndexFile_Type); // NO __new__()
    /* ========================= metaindex.cc ========================= */
    ADDTYPE(Module,"MetaIndex",&PyMetaIndex_Type); // NO __new__()
    /* ========================= pkgmanager.cc ========================= */
@@ -666,11 +666,11 @@ extern "C" void initapt_pkg()
 
    // Acquire constants.
    // some constants
-   PyDict_SetItemString(PyAcquire_Type.tp_dict, "result_cancelled",
+   PyDict_SetItemString(PyAcquire_Type.tp_dict, "RESULT_CANCELLED",
                         Py_BuildValue("i", pkgAcquire::Cancelled));
-   PyDict_SetItemString(PyAcquire_Type.tp_dict, "result_continue",
+   PyDict_SetItemString(PyAcquire_Type.tp_dict, "RESULT_CONTINUE",
                         Py_BuildValue("i", pkgAcquire::Continue));
-   PyDict_SetItemString(PyAcquire_Type.tp_dict, "result_failed",
+   PyDict_SetItemString(PyAcquire_Type.tp_dict, "RESULT_FAILED",
                         Py_BuildValue("i", pkgAcquire::Failed));
 #ifdef COMPAT_0_7
    PyDict_SetItemString(PyAcquire_Type.tp_dict, "ResultCancelled",
@@ -680,13 +680,33 @@ extern "C" void initapt_pkg()
    PyDict_SetItemString(PyAcquire_Type.tp_dict, "ResultFailed",
                         Py_BuildValue("i", pkgAcquire::Failed));
 #endif
+    // Dependency constants
+   PyDict_SetItemString(PyDependency_Type.tp_dict, "TYPE_DEPENDS",
+                        Py_BuildValue("i", pkgCache::Dep::Depends));
+   PyDict_SetItemString(PyDependency_Type.tp_dict, "TYPE_PREDEPENDS",
+                        Py_BuildValue("i", pkgCache::Dep::PreDepends));
+   PyDict_SetItemString(PyDependency_Type.tp_dict, "TYPE_SUGGESTS",
+                        Py_BuildValue("i", pkgCache::Dep::Suggests));
+   PyDict_SetItemString(PyDependency_Type.tp_dict, "TYPE_RECOMMENDS",
+                        Py_BuildValue("i", pkgCache::Dep::Suggests));
+   PyDict_SetItemString(PyDependency_Type.tp_dict, "TYPE_CONFLICTS",
+                        Py_BuildValue("i", pkgCache::Dep::Conflicts));
+   PyDict_SetItemString(PyDependency_Type.tp_dict, "TYPE_REPLACES",
+                        Py_BuildValue("i", pkgCache::Dep::Replaces));
+   PyDict_SetItemString(PyDependency_Type.tp_dict, "TYPE_OBSOLETES",
+                        Py_BuildValue("i", pkgCache::Dep::Obsoletes));
+   PyDict_SetItemString(PyDependency_Type.tp_dict, "TYPE_DPKG_BREAKS",
+                        Py_BuildValue("i", pkgCache::Dep::DpkgBreaks));
+   PyDict_SetItemString(PyDependency_Type.tp_dict, "TYPE_ENHANCES",
+                        Py_BuildValue("i", pkgCache::Dep::Enhances));
+
 
    // PackageManager constants
-   PyDict_SetItemString(PyPackageManager_Type.tp_dict, "result_completed",
+   PyDict_SetItemString(PyPackageManager_Type.tp_dict, "RESULT_COMPLETED",
                         Py_BuildValue("i", pkgPackageManager::Completed));
-   PyDict_SetItemString(PyPackageManager_Type.tp_dict, "result_failed",
+   PyDict_SetItemString(PyPackageManager_Type.tp_dict, "RESULT_FAILED",
                         Py_BuildValue("i", pkgPackageManager::Failed));
-   PyDict_SetItemString(PyPackageManager_Type.tp_dict, "result_incomplete",
+   PyDict_SetItemString(PyPackageManager_Type.tp_dict, "RESULT_INCOMPLETE",
                         Py_BuildValue("i", pkgPackageManager::Incomplete));
 
 #ifdef COMPAT_0_7
@@ -699,15 +719,15 @@ extern "C" void initapt_pkg()
 #endif
 
    // AcquireItem Constants.
-   PyDict_SetItemString(PyAcquireItem_Type.tp_dict, "stat_idle",
+   PyDict_SetItemString(PyAcquireItem_Type.tp_dict, "STAT_IDLE",
                         Py_BuildValue("i", pkgAcquire::Item::StatIdle));
-   PyDict_SetItemString(PyAcquireItem_Type.tp_dict, "stat_fetching",
+   PyDict_SetItemString(PyAcquireItem_Type.tp_dict, "STAT_FETCHING",
                         Py_BuildValue("i", pkgAcquire::Item::StatFetching));
-   PyDict_SetItemString(PyAcquireItem_Type.tp_dict, "stat_done",
+   PyDict_SetItemString(PyAcquireItem_Type.tp_dict, "STAT_DONE",
                         Py_BuildValue("i", pkgAcquire::Item::StatDone));
-   PyDict_SetItemString(PyAcquireItem_Type.tp_dict, "stat_error",
+   PyDict_SetItemString(PyAcquireItem_Type.tp_dict, "STAT_ERROR",
                         Py_BuildValue("i", pkgAcquire::Item::StatError));
-   PyDict_SetItemString(PyAcquireItem_Type.tp_dict, "stat_auth_error",
+   PyDict_SetItemString(PyAcquireItem_Type.tp_dict, "STAT_AUTH_ERROR",
                         Py_BuildValue("i", pkgAcquire::Item::StatAuthError));
 
 #ifdef COMPAT_0_7

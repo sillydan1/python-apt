@@ -38,7 +38,7 @@ class NoDistroTemplateException(Exception):
     pass
 
 
-class Distribution:
+class Distribution(object):
 
     def __init__(self, id, codename, description, release):
         """ Container for distribution specific informations """
@@ -446,6 +446,8 @@ def _lsb_release():
               'Release': 'unstable'}
     try:
         out = Popen(['lsb_release', '--all'], stdout=PIPE).communicate()[0]
+        # Convert to unicode string, needed for Python 3.1
+        out = out.decode("utf-8")
         result.update(l.split(":\t") for l in out.split("\n") if ':\t' in l)
     except OSError, exc:
         if exc.errno != errno.ENOENT:
