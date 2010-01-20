@@ -27,6 +27,8 @@ import os
 import re
 import select
 
+import apt_pkg
+
 __all__ = ['AcquireProgress', 'CdromProgress', 'InstallProgress', 'OpProgress']
 
 
@@ -155,7 +157,10 @@ class InstallProgress(object):
         """(Abstract) Called when a conffile question from dpkg is detected."""
 
     def status_change(self, pkg, percent, status):
-        """(Abstract) Called when the status changed."""
+        """(Abstract) Called when the APT status changed."""
+
+    def dpkg_status_change(self, pkg, status):
+        """(Abstract) Called when the dpkg status changed."""
 
     def processing(self, pkg, stage):
         """(Abstract) Sent just before a processing stage starts.
@@ -179,11 +184,19 @@ class InstallProgress(object):
         """
         pid = self.fork()
         if pid == 0:
+            # pm.do_install might raise a exception,
+            # when this happens, we need to catch
+            # it, otherwise os._exit() is not run
+            # and the execution continues in the
+            # parent code leading to very confusing bugs
             try:
                 os._exit(obj.do_install(self.writefd.fileno()))
             except AttributeError:
                 os._exit(os.spawnlp(os.P_WAIT, "dpkg", "dpkg", "--status-fd",
                                     str(self.writefd.fileno()), "-i", obj))
+            except Exception:
+                os._exit(apt_pkg.PackageManager.RESULT_FAILED)
+
         self.child_pid = pid
         res = self.wait_child()
         return os.WEXITSTATUS(res)
@@ -196,10 +209,10 @@ class InstallProgress(object):
         """Update the interface."""
         try:
             line = self.statusfd.readline()
-        except IOError, (errno_, errstr):
+        except IOError, err:
             # resource temporarly unavailable is ignored
-            if errno_ != errno.EAGAIN and errno_ != errno.EWOULDBLOCK:
-                print errstr
+            if err.errno != errno.EAGAIN and err.errno != errno.EWOULDBLOCK:
+                print err.strerror
             return
 
         pkgname = status = status_str = percent = base = ""
@@ -213,12 +226,17 @@ class InstallProgress(object):
                 return
         elif line.startswith('status'):
             try:
-                (base, pkgname, status, status_str) = line.split(": ", 3)
+                (base, pkgname, status, status_str) = line.split(":", 3)
             except ValueError:
-                (base, pkgname, status) = line.split(": ", 2)
+                (base, pkgname, status) = line.split(":", 2)
         elif line.startswith('processing'):
-            (status, status_str, pkgname) = line.split(": ", 2)
+            (status, status_str, pkgname) = line.split(":", 2)
             self.processing(pkgname.strip(), status_str.strip())
+
+        # Always strip the status message
+        pkgname = pkgname.strip()
+        status_str = status_str.strip()
+        status = status.strip()
 
         if status == 'pmerror' or status == 'error':
             self.error(pkgname, status_str)
@@ -227,23 +245,27 @@ class InstallProgress(object):
             if match:
                 self.conffile(match.group(1), match.group(2))
         elif status == "pmstatus":
+            # FIXME: Float comparison
             if float(percent) != self.percent or status_str != self.status:
                 self.status_change(pkgname, float(percent), status_str.strip())
                 self.percent = float(percent)
                 self.status = status_str.strip()
+        elif base == "status":
+            self.dpkg_status_change(pkgname, status)
 
     def wait_child(self):
         """Wait for child progress to exit.
 
         This method is responsible for calling update_interface() from time to
-        time. It exits once the child has exited.
+        time. It exits once the child has exited. The return values is the
+        full status returned from os.waitpid() (not only the return code).
         """
         (pid, res) = (0, 0)
         while True:
             try:
                 select.select([self.statusfd], [], [], self.select_timeout)
             except select.error, err:
-                if err[0] != errno.EINTR:
+                if err.errno != errno.EINTR:
                     raise
 
             self.update_interface()
@@ -252,10 +274,11 @@ class InstallProgress(object):
                 if pid == self.child_pid:
                     break
             except OSError, err:
-                if err[0] != errno.EINTR:
-                    raise
-                if err[0] == errno.ECHILD:
+                if err.errno == errno.ECHILD:
                     break
+                if err.errno != errno.EINTR:
+                    raise
+
         return res
 
 

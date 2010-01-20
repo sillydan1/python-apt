@@ -46,7 +46,14 @@ class Cache(object):
     """Dictionary-like package cache.
 
     This class has all the packages that are available in it's
-    dictionary
+    dictionary. 
+
+    Keyword arguments:
+    progress -- a OpProgress object
+    rootdir -- a alternative root directory. if that is given 
+               the system sources.list and system lists/ files are 
+               not read, only files relative to the given rootdir
+    memonly -- build the cache in memory only
     """
 
     def __init__(self, progress=None, rootdir=None, memonly=False):
@@ -71,7 +78,7 @@ class Cache(object):
             self._check_and_create_required_dirs(rootdir)
             # Call InitSystem so the change to Dir::State::Status is actually
             # recognized (LP: #320665)
-            apt_pkg.InitSystem()
+            apt_pkg.init_system()
         self.open(progress)
 
     def _check_and_create_required_dirs(self, rootdir):
@@ -139,6 +146,7 @@ class Cache(object):
             return self._weakref[key]
         except KeyError:
             if key in self._set:
+                key = str(key)
                 pkg = self._weakref[key] = Package(self, self._cache[key])
                 return pkg
             else:
@@ -215,9 +223,9 @@ class Cache(object):
         transient = False
         err_msg = ""
         for item in fetcher.items:
-            if item.status == item.stat_done:
+            if item.status == item.STAT_DONE:
                 continue
-            if item.stat_idle:
+            if item.STAT_IDLE:
                 transient = True
                 continue
             err_msg += "Failed to fetch %s %s\n" % (item.desc_uri,
@@ -225,7 +233,7 @@ class Cache(object):
             failed = True
 
         # we raise a exception if the download failed or it was cancelt
-        if res == fetcher.result_cancelled:
+        if res == fetcher.RESULT_CANCELLED:
             raise FetchCancelledException(err_msg)
         elif failed:
             raise FetchFailedException(err_msg)
@@ -252,8 +260,12 @@ class Cache(object):
 
     def is_virtual_package(self, pkgname):
         """Return whether the package is a virtual package."""
-        pkg = self._cache[pkgname]
-        return bool(pkg.provides_list and not pkg.version_list)
+        try:
+            pkg = self._cache[pkgname]
+        except KeyError:
+            return False
+        else:
+            return bool(pkg.provides_list and not pkg.version_list)
 
     def get_providing_packages(self, virtual):
         """
@@ -278,7 +290,8 @@ class Cache(object):
         return providers
 
     @deprecated_args
-    def update(self, fetch_progress=None):
+    def update(self, fetch_progress=None, pulse_interval=0,
+               raise_on_error=True):
         """Run the equivalent of apt-get update.
 
         The first parameter *fetch_progress* may be set to an instance of
@@ -287,13 +300,21 @@ class Cache(object):
         """
         lockfile = apt_pkg.config.find_dir("Dir::State::Lists") + "lock"
         lock = apt_pkg.get_lock(lockfile)
+
         if lock < 0:
             raise LockFailedException("Failed to lock %s" % lockfile)
 
         try:
             if fetch_progress is None:
                 fetch_progress = apt.progress.FetchProgress()
-            return self._cache.update(fetch_progress, self._list)
+            res = self._cache.update(fetch_progress, self._list,
+                                      pulse_interval)
+            if res == apt_pkg.Acquire.RESULT_CANCELLED and raise_on_error:
+                raise FetchCancelledException()
+            if res == apt_pkg.Acquire.RESULT_FAILED and raise_on_error:
+                raise FetchFailedException()
+            else:
+                return res
         finally:
             os.close(lock)
 
@@ -348,13 +369,17 @@ class Cache(object):
 
             # then install
             res = self.install_archives(pm, install_progress)
-            if res == pm.result_completed:
+            if res == pm.RESULT_COMPLETED:
                 break
-            if res == pm.result_failed:
+            elif res == pm.RESULT_FAILED:
                 raise SystemError("installArchives() failed")
+            elif res == pm.RESULT_INCOMPLETE:
+                 pass
+            else:
+                 raise SystemError("internal-error: unknown result code from InstallArchives: %s" % res)
             # reload the fetcher for media swaping
             fetcher.shutdown()
-        return (res == pm.result_completed)
+        return (res == pm.RESULT_COMPLETED)
 
     def clear(self):
         """ Unmark all changes """
@@ -432,6 +457,40 @@ class Cache(object):
         installArchives = function_deprecated_by(install_archives)
         cachePostChange = function_deprecated_by(cache_post_change)
         cachePreChange = function_deprecated_by(cache_pre_change)
+
+
+class ProblemResolver(object):
+    """Resolve problems due to dependencies and conflicts.
+
+    The first argument 'cache' is an instance of apt.Cache.
+    """
+
+    def __init__(self, cache):
+        self._resolver = apt_pkg.ProblemResolver(cache._depcache)
+
+    def clear(self, package):
+        """Reset the package to the default state."""
+        self._resolver.clear(package._pkg)
+
+    def install_protect(self):
+        """mark protected packages for install or removal."""
+        self._resolver.install_protect()
+
+    def protect(self, package):
+        """Protect a package so it won't be removed."""
+        self._resolver.protect(package._pkg)
+
+    def remove(self, package):
+        """Mark a package for removal."""
+        self._resolver.remove(package._pkg)
+
+    def resolve(self):
+        """Resolve dependencies, try to remove packages where needed."""
+        self._resolver.resolve()
+
+    def resolve_by_keep(self):
+        """Resolve dependencies, do not try to remove packages."""
+        self._resolver.resolve_by_keep()
 
 
 # ----------------------------- experimental interface

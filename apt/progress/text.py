@@ -41,7 +41,7 @@ class TextProgress(object):
     def _write(self, msg, newline=True, maximize=False):
         """Write the message on the terminal, fill remaining space."""
         self._file.write("\r")
-        print >> self._file, msg,
+        self._file.write(msg)
 
         # Fill remaining stuff with whitespace
         if self._width > len(msg):
@@ -125,7 +125,7 @@ class AcquireProgress(base.AcquireProgress, TextProgress):
     def fail(self, item):
         """Called when an item is failed."""
         base.AcquireProgress.fail(self, item)
-        if item.owner.status == item.owner.stat_done:
+        if item.owner.status == item.owner.STAT_DONE:
             self._write(_("Ign ") + item.description)
         else:
             self._write(_("Err ") + item.description)
