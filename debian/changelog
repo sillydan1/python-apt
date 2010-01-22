@@ -1,3 +1,10 @@
+python-apt (0.7.13.4ubuntu3) lucid; urgency=low
+
+  * apt/utils.py:
+    - add some misc utils like get_release_filename_for_pkg()
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Fri, 22 Jan 2010 12:18:29 +0100
+
 python-apt (0.7.13.4ubuntu2) lucid; urgency=low
 
   [ Michael Vogt ]
