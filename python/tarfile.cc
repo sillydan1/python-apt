@@ -40,8 +40,6 @@ class PyDirStream : public pkgDirStream
 
 public:
     PyObject *callback;
-    // The current member and data.
-    CppOwnedPyObject<Item*> *py_member;
     PyObject *py_data;
     // The requested member or NULL.
     const char *member;
@@ -49,6 +47,8 @@ public:
     bool error;
     // Place where the copy of the data is stored.
     char *copy;
+    // The size of the copy
+    size_t copy_size;
 
     virtual bool DoItem(Item &Itm,int &Fd);
     virtual bool FinishedFile(Item &Itm,int Fd);
@@ -56,14 +56,13 @@ public:
                          unsigned long Size,unsigned long Pos);
 
     PyDirStream(PyObject *callback, const char *member=0) : callback(callback),
-        py_member(0), py_data(0), member(member), error(false), copy(0)
+        py_data(0), member(member), error(false), copy(0)
     {
         Py_XINCREF(callback);
     }
 
     virtual ~PyDirStream() {
         Py_XDECREF(callback);
-        Py_XDECREF(py_member);
         Py_XDECREF(py_data);
         delete[] copy;
     }
@@ -72,9 +71,15 @@ public:
 bool PyDirStream::DoItem(Item &Itm, int &Fd)
 {
     if (!member || strcmp(Itm.Name, member) == 0) {
-        delete[] copy;
-        copy = new char[Itm.Size];
+        // Allocate a new buffer if the old one is too small.
+        if (copy == NULL || copy_size < Itm.Size) {
+            delete[] copy;
+            copy = new char[Itm.Size];
+            copy_size = Itm.Size;
+        }
         Fd = -2;
+    } else {
+        Fd = -1;
     }
     return true;
 }
@@ -91,34 +96,50 @@ bool PyDirStream::FinishedFile(Item &Itm,int Fd)
     if (member && strcmp(Itm.Name, member) != 0)
         // Skip non-matching Items, if a specific one is requested.
         return true;
-        
-    // Clear the old objects and create new ones.
-    Py_XDECREF(py_member);
+
     Py_XDECREF(py_data);
-    py_member = CppOwnedPyObject_NEW<Item*>(0, &PyTarMember_Type, &Itm);
-    py_member->NoDelete = true;
     py_data = PyBytes_FromStringAndSize(copy, Itm.Size);
 
     if (!callback)
         return true;
+
+    // The current member and data.
+    CppPyObject<Item> *py_member;
+    py_member = CppPyObject_NEW<Item>(0, &PyTarMember_Type);
+    // Clone our object, including the strings in it.
+    py_member->Object = Itm;
+    py_member->Object.Name = new char[strlen(Itm.Name)+1];
+    py_member->Object.LinkTarget = new char[strlen(Itm.LinkTarget)+1];
+    strcpy(py_member->Object.Name, Itm.Name);
+    strcpy(py_member->Object.LinkTarget,Itm.LinkTarget);
+    py_member->NoDelete = true;
     error = PyObject_CallFunctionObjArgs(callback, py_member, py_data, 0) == 0;
+    // Clear the old objects and create new ones.
+    Py_XDECREF(py_member);
     return (!error);
+}
+
+void tarmember_dealloc(PyObject *self) {
+    // We cloned those strings, delete them again.
+    delete[] GetCpp<pkgDirStream::Item>(self).Name;
+    delete[] GetCpp<pkgDirStream::Item>(self).LinkTarget;
+    CppDealloc<pkgDirStream::Item>(self);
 }
 
 // The tarfile.TarInfo interface for our TarMember class.
 static PyObject *tarmember_isblk(PyObject *self, PyObject *args)
 {
-    return PyBool_FromLong(GetCpp<pkgDirStream::Item*>(self)->Type ==
+    return PyBool_FromLong(GetCpp<pkgDirStream::Item>(self).Type ==
                            pkgDirStream::Item::BlockDevice);
 }
 static PyObject *tarmember_ischr(PyObject *self, PyObject *args)
 {
-    return PyBool_FromLong(GetCpp<pkgDirStream::Item*>(self)->Type ==
+    return PyBool_FromLong(GetCpp<pkgDirStream::Item>(self).Type ==
                            pkgDirStream::Item::CharDevice);
 }
 static PyObject *tarmember_isdev(PyObject *self, PyObject *args)
 {
-    pkgDirStream::Item::Type_t type = GetCpp<pkgDirStream::Item*>(self)->Type;
+    pkgDirStream::Item::Type_t type = GetCpp<pkgDirStream::Item>(self).Type;
     return PyBool_FromLong(type == pkgDirStream::Item::CharDevice ||
                            type == pkgDirStream::Item::BlockDevice ||
                            type == pkgDirStream::Item::FIFO);
@@ -126,24 +147,24 @@ static PyObject *tarmember_isdev(PyObject *self, PyObject *args)
 
 static PyObject *tarmember_isdir(PyObject *self, PyObject *args)
 {
-    return PyBool_FromLong(GetCpp<pkgDirStream::Item*>(self)->Type ==
+    return PyBool_FromLong(GetCpp<pkgDirStream::Item>(self).Type ==
                            pkgDirStream::Item::Directory);
 }
 
 static PyObject *tarmember_isfifo(PyObject *self, PyObject *args)
 {
-    return PyBool_FromLong(GetCpp<pkgDirStream::Item*>(self)->Type ==
+    return PyBool_FromLong(GetCpp<pkgDirStream::Item>(self).Type ==
                            pkgDirStream::Item::FIFO);
 }
 
 static PyObject *tarmember_isfile(PyObject *self, PyObject *args)
 {
-    return PyBool_FromLong(GetCpp<pkgDirStream::Item*>(self)->Type ==
+    return PyBool_FromLong(GetCpp<pkgDirStream::Item>(self).Type ==
                            pkgDirStream::Item::File);
 }
 static PyObject *tarmember_islnk(PyObject *self, PyObject *args)
 {
-    return PyBool_FromLong(GetCpp<pkgDirStream::Item*>(self)->Type ==
+    return PyBool_FromLong(GetCpp<pkgDirStream::Item>(self).Type ==
                            pkgDirStream::Item::HardLink);
 }
 static PyObject *tarmember_isreg(PyObject *self, PyObject *args)
@@ -152,58 +173,58 @@ static PyObject *tarmember_isreg(PyObject *self, PyObject *args)
 }
 static PyObject *tarmember_issym(PyObject *self, PyObject *args)
 {
-    return PyBool_FromLong(GetCpp<pkgDirStream::Item*>(self)->Type ==
+    return PyBool_FromLong(GetCpp<pkgDirStream::Item>(self).Type ==
                            pkgDirStream::Item::SymbolicLink);
 }
 
 static PyObject *tarmember_get_name(PyObject *self, void *closure)
 {
-    return PyString_FromString(GetCpp<pkgDirStream::Item*>(self)->Name);
+    return PyString_FromString(GetCpp<pkgDirStream::Item>(self).Name);
 }
 
 static PyObject *tarmember_get_linkname(PyObject *self, void *closure)
 {
-    return Safe_FromString(GetCpp<pkgDirStream::Item*>(self)->LinkTarget);
+    return Safe_FromString(GetCpp<pkgDirStream::Item>(self).LinkTarget);
 }
 
 static PyObject *tarmember_get_mode(PyObject *self, void *closure)
 {
-    return Py_BuildValue("k", GetCpp<pkgDirStream::Item*>(self)->Mode);
+    return Py_BuildValue("k", GetCpp<pkgDirStream::Item>(self).Mode);
 }
 
 static PyObject *tarmember_get_uid(PyObject *self, void *closure)
 {
-    return Py_BuildValue("k", GetCpp<pkgDirStream::Item*>(self)->UID);
+    return Py_BuildValue("k", GetCpp<pkgDirStream::Item>(self).UID);
 }
 static PyObject *tarmember_get_gid(PyObject *self, void *closure)
 {
-    return Py_BuildValue("k", GetCpp<pkgDirStream::Item*>(self)->GID);
+    return Py_BuildValue("k", GetCpp<pkgDirStream::Item>(self).GID);
 }
 static PyObject *tarmember_get_size(PyObject *self, void *closure)
 {
-    return Py_BuildValue("k", GetCpp<pkgDirStream::Item*>(self)->Size);
+    return Py_BuildValue("k", GetCpp<pkgDirStream::Item>(self).Size);
 }
 
 static PyObject *tarmember_get_mtime(PyObject *self, void *closure)
 {
-    return Py_BuildValue("k", GetCpp<pkgDirStream::Item*>(self)->MTime);
+    return Py_BuildValue("k", GetCpp<pkgDirStream::Item>(self).MTime);
 }
 
 static PyObject *tarmember_get_major(PyObject *self, void *closure)
 {
-    return Py_BuildValue("k", GetCpp<pkgDirStream::Item*>(self)->Major);
+    return Py_BuildValue("k", GetCpp<pkgDirStream::Item>(self).Major);
 }
 
 static PyObject *tarmember_get_minor(PyObject *self, void *closure)
 {
-    return Py_BuildValue("k", GetCpp<pkgDirStream::Item*>(self)->Minor);
+    return Py_BuildValue("k", GetCpp<pkgDirStream::Item>(self).Minor);
 }
 
 static PyObject *tarmember_repr(PyObject *self)
 {
     return PyString_FromFormat("<%s object: name:'%s'>",
                                self->ob_type->tp_name,
-                               GetCpp<pkgDirStream::Item*>(self)->Name);
+                               GetCpp<pkgDirStream::Item>(self).Name);
 
 }
 
@@ -250,10 +271,10 @@ static const char *tarmember_doc =
 PyTypeObject PyTarMember_Type = {
     PyVarObject_HEAD_INIT(&PyType_Type, 0)
     "apt_inst.TarMember",                // tp_name
-    sizeof(CppOwnedPyObject<pkgDirStream::Item*>),           // tp_basicsize
+    sizeof(CppPyObject<pkgDirStream::Item>),           // tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    CppOwnedDealloc<pkgDirStream::Item*>, // tp_dealloc
+    tarmember_dealloc,                   // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
@@ -271,8 +292,8 @@ PyTypeObject PyTarMember_Type = {
     Py_TPFLAGS_DEFAULT |                 // tp_flags
     Py_TPFLAGS_HAVE_GC,
     tarmember_doc,                       // tp_doc
-    CppOwnedTraverse<pkgDirStream::Item*>,       // tp_traverse
-    CppOwnedClear<pkgDirStream::Item*>,          // tp_clear
+    CppTraverse<pkgDirStream::Item>,       // tp_traverse
+    CppClear<pkgDirStream::Item>,          // tp_clear
     0,                                   // tp_richcompare
     0,                                   // tp_weaklistoffset
     0,                                   // tp_iter
@@ -299,7 +320,7 @@ static PyObject *tarfile_new(PyTypeObject *type,PyObject *args,PyObject *kwds)
                                     &max,&comp) == 0)
         return 0;
 
-    self = (PyTarFileObject*)CppOwnedPyObject_NEW<ExtractTar*>(file,type);
+    self = (PyTarFileObject*)CppPyObject_NEW<ExtractTar*>(file,type);
 
     // We receive a filename.
     if ((filename = (char*)PyObject_AsString(file)))
@@ -366,7 +387,7 @@ static PyObject *tarfile_go(PyObject *self, PyObject *args)
     char *member = 0;
     if (PyArg_ParseTuple(args,"O|s",&callback,&member) == 0)
         return 0;
-    if (strcmp(member, "") == 0) 
+    if (member && strcmp(member, "") == 0)
         member = 0;
     pkgDirStream Extract;
     PyDirStream stream(callback, member);
@@ -431,7 +452,7 @@ PyTypeObject PyTarFile_Type = {
     sizeof(PyTarFileObject),             // tp_basicsize
     0,                                   // tp_itemsize
     // Methods
-    CppOwnedDealloc<ExtractTar*>,        // tp_dealloc
+    CppDealloc<ExtractTar*>,        // tp_dealloc
     0,                                   // tp_print
     0,                                   // tp_getattr
     0,                                   // tp_setattr
@@ -449,8 +470,8 @@ PyTypeObject PyTarFile_Type = {
     Py_TPFLAGS_DEFAULT |                 // tp_flags
     Py_TPFLAGS_HAVE_GC,
     tarfile_doc,                         // tp_doc
-    CppOwnedTraverse<ExtractTar*>,       // tp_traverse
-    CppOwnedClear<ExtractTar*>,          // tp_clear
+    CppTraverse<ExtractTar*>,       // tp_traverse
+    CppClear<ExtractTar*>,          // tp_clear
     0,                                   // tp_richcompare
     0,                                   // tp_weaklistoffset
     0,                                   // tp_iter

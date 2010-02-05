@@ -31,7 +31,7 @@ static PyObject *hashstring_new(PyTypeObject *type,PyObject *Args,
     if (PyArg_ParseTupleAndKeywords(Args, kwds, "s|s:__new__", kwlist, &Type,
                                     &Hash) == 0)
         return 0;
-    CppPyObject<HashString*> *PyObj = CppPyObject_NEW<HashString*>(type);
+    CppPyObject<HashString*> *PyObj = CppPyObject_NEW<HashString*>(NULL, type);
     if (Hash)
         PyObj->Object = new HashString(Type,Hash);
     else // Type is the combined form now (i.e. type:hash)
@@ -87,7 +87,7 @@ static char *hashstring_doc =
     "HashString(type, hash) OR HashString('type:hash')\n\n"
     "Create a new HashString object. The first form allows you to specify\n"
     "a type and a hash, and the second form a single string where type and\n"
-    "hash are seperated by a colon, e.g.::\n\n"
+    "hash are separated by a colon, e.g.::\n\n"
     "   HashString('MD5Sum', '6cc1b6e6655e3555ac47e5b5fe26d04e')\n\n"
     "Valid options for 'type' are: MD5Sum, SHA1, SHA256.";
 PyTypeObject PyHashString_Type = {

@@ -30,7 +30,7 @@ static PyObject *indexrecords_new(PyTypeObject *type,PyObject *Args,
     if (PyArg_ParseTupleAndKeywords(Args, kwds, "", kwlist) == 0)
         return 0;
     indexRecords *records = new indexRecords();
-    CppPyObject<indexRecords*> *New = CppPyObject_NEW<indexRecords*>(type,
+    CppPyObject<indexRecords*> *New = CppPyObject_NEW<indexRecords*>(NULL, type,
                                       records);
     return New;
 }
@@ -60,7 +60,7 @@ static PyObject *indexrecords_lookup(PyObject *self,PyObject *args)
     }
     // Copy the HashString(), to prevent crashes and to not require the
     // indexRecords object to exist.
-    PyObject *py_hash = PyHashString_FromCpp(new HashString(result->Hash));
+    PyObject *py_hash = PyHashString_FromCpp(new HashString(result->Hash), true, NULL);
     PyObject *value = Py_BuildValue("(Oi)",py_hash,result->Size);
     Py_DECREF(py_hash);
     return value;

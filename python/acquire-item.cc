@@ -28,22 +28,6 @@
 
 using namespace std;
 
-
-
-struct PyAcquireItems {
-    CppOwnedPyObject<pkgAcqFile*> *file;
-    CppOwnedPyObject<pkgAcquire::Item*> *item;
-    CppOwnedPyObject<pkgAcquire::ItemDesc*> *desc;
-};
-
-typedef map<pkgAcquire::Item*,PyAcquireItems> item_map;
-
-// Keep a vector to PyAcquireItemObject pointers, so we can set the Object
-// pointers to NULL when deallocating the main object (mostly AcquireFile).
-struct PyAcquireObject : public CppPyObject<pkgAcquire*> {
-    item_map items;
-};
-
 inline pkgAcquire::Item *acquireitem_tocpp(PyObject *self)
 {
     pkgAcquire::Item *itm = GetCpp<pkgAcquire::Item*>(self);
@@ -163,50 +147,25 @@ static PyObject *acquireitem_repr(PyObject *Self)
     pkgAcquire::Item *Itm = acquireitem_tocpp(Self);
     if (Itm == 0)
         return 0;
-
     return PyString_FromFormat("<%s object: "
                                "Status: %i Complete: %i Local: %i IsTrusted: %i "
                                "FileSize: %lu DestFile:'%s' "
                                "DescURI: '%s' ID:%lu ErrorText: '%s'>",
                                Self->ob_type->tp_name,
                                Itm->Status, Itm->Complete, Itm->Local, Itm->IsTrusted(),
-                               Itm->FileSize, Itm->DestFile.c_str(), Itm->DescURI().c_str(),
+                               Itm->FileSize, Itm->DestFile.c_str(),  Itm->DescURI().c_str(),
                                Itm->ID,Itm->ErrorText.c_str());
 }
 
 static void acquireitem_dealloc(PyObject *self)
 {
-    pkgAcquire::Item *item = PyAcquireItem_ToCpp(self);
-    PyAcquireObject *Owner = (PyAcquireObject *)GetOwner<pkgAcquire::Item*>(self);
-    PyAcquireItems item_struct = Owner->items[item];
-    // TODO: Unregister the object in the owner.
-    if (!((CppOwnedPyObject<pkgAcquire::Item*>*)self)->NoDelete) {
-        if (item_struct.file != 0 && item_struct.file != self)
-            item_struct.file->Object = 0;
-        if (item_struct.item != 0 && item_struct.item != self) {
-            item_struct.item->Object = 0;
-            Py_DECREF(item_struct.item);
-        }
-        if (item_struct.desc != 0) {
-            item_struct.desc->Object = 0;
-            Py_DECREF(item_struct.desc);
-        }
-        Owner->items.erase(item);
-    }
-    else {
-        if (item_struct.file == self)
-            item_struct.file = 0;
-        if (item_struct.item == self)
-            item_struct.item = 0;
-    }
-
-    CppOwnedDeallocPtr<pkgAcquire::Item*>(self);
+    CppDeallocPtr<pkgAcquire::Item*>(self);
 }
 
 PyTypeObject PyAcquireItem_Type = {
     PyVarObject_HEAD_INIT(&PyType_Type, 0)
     "apt_pkg.AcquireItem",         // tp_name
-    sizeof(CppOwnedPyObject<pkgAcquire::Item*>),   // tp_basicsize
+    sizeof(CppPyObject<pkgAcquire::Item*>),   // tp_basicsize
     0,                                   // tp_itemsize
     // Methods
     acquireitem_dealloc,                  // tp_dealloc
@@ -224,10 +183,11 @@ PyTypeObject PyAcquireItem_Type = {
     0,                                   // tp_getattro
     0,                                   // tp_setattro
     0,                                   // tp_as_buffer
-    Py_TPFLAGS_DEFAULT,                  // tp_flags
+    Py_TPFLAGS_DEFAULT |
+    Py_TPFLAGS_HAVE_GC,                  // tp_flags
     "AcquireItem Object",                // tp_doc
-    0,                                   // tp_traverse
-    0,                                   // tp_clear
+    CppTraverse<pkgAcquire::Item*>, // tp_traverse
+    CppClear<pkgAcquire::Item*>,    // tp_clear
     0,                                   // tp_richcompare
     0,                                   // tp_weaklistoffset
     0,                                   // tp_iter
@@ -262,11 +222,8 @@ static PyObject *acquirefile_new(PyTypeObject *type, PyObject *Args, PyObject * 
                                     shortDescr,
                                     destDir,
                                     destFile); // short-desc
-    CppOwnedPyObject<pkgAcqFile*> *AcqFileObj = CppOwnedPyObject_NEW<pkgAcqFile*>(pyfetcher, type);
+    CppPyObject<pkgAcqFile*> *AcqFileObj = CppPyObject_NEW<pkgAcqFile*>(pyfetcher, type);
     AcqFileObj->Object = af;
-
-
-    ((PyAcquireObject *)pyfetcher)->items[af].file = AcqFileObj;
     return AcqFileObj;
 }
 
@@ -280,7 +237,7 @@ static char *acquirefile_doc =
 PyTypeObject PyAcquireFile_Type = {
     PyVarObject_HEAD_INIT(&PyType_Type, 0)
     "apt_pkg.AcquireFile",                // tp_name
-    sizeof(CppOwnedPyObject<pkgAcqFile*>),// tp_basicsize
+    sizeof(CppPyObject<pkgAcqFile*>),// tp_basicsize
     0,                                   // tp_itemsize
     // Methods
     acquireitem_dealloc,                 // tp_dealloc
@@ -302,8 +259,8 @@ PyTypeObject PyAcquireFile_Type = {
     Py_TPFLAGS_BASETYPE |
     Py_TPFLAGS_HAVE_GC,
     acquirefile_doc,                     // tp_doc
-    CppOwnedTraverse<pkgAcqFile*>,       // tp_traverse
-    CppOwnedClear<pkgAcqFile*>,          // tp_clear
+    CppTraverse<pkgAcqFile*>,       // tp_traverse
+    CppClear<pkgAcqFile*>,          // tp_clear
     0,                                   // tp_richcompare
     0,                                   // tp_weaklistoffset
     0,                                   // tp_iter
@@ -352,7 +309,7 @@ PyObject *GetPkgAcqFile(PyObject *Self, PyObject *Args, PyObject * kwds)
                                     shortDescr,
                                     destDir,
                                     destFile); // short-desc
-    CppPyObject<pkgAcqFile*> *AcqFileObj = CppPyObject_NEW<pkgAcqFile*>(&PyAcquireFile_Type);
+    CppPyObject<pkgAcqFile*> *AcqFileObj = CppPyObject_NEW<pkgAcqFile*>(NULL, &PyAcquireFile_Type);
     AcqFileObj->Object = af;
     AcqFileObj->NoDelete = true;
 
