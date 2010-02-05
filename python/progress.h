@@ -64,6 +64,7 @@ struct PyFetchProgress : public pkgAcquireStatus, public PyCallbackObj
 {
    protected:
    PyObject *pyAcquire;
+   PyObject *GetDesc(pkgAcquire::ItemDesc *item);
    public:
    enum {
       DLDone, DLQueued, DLFailed, DLHit, DLIgnored
@@ -74,6 +75,8 @@ struct PyFetchProgress : public pkgAcquireStatus, public PyCallbackObj
    virtual bool MediaChange(string Media, string Drive);
 
    void setPyAcquire(PyObject *o) {
+      Py_CLEAR(pyAcquire);
+      Py_INCREF(o);
       pyAcquire = o;
    }
 
@@ -86,7 +89,8 @@ struct PyFetchProgress : public pkgAcquireStatus, public PyCallbackObj
    virtual void Stop();
 
    bool Pulse(pkgAcquire * Owner);
-   PyFetchProgress() : PyCallbackObj() {};
+   PyFetchProgress() : PyCallbackObj(), pyAcquire(0) {};
+   ~PyFetchProgress()  { Py_XDECREF(pyAcquire); };
 };
 
 struct PyInstallProgress : public PyCallbackObj

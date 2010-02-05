@@ -17,7 +17,6 @@
 #include "generic.h"
 #include "apt_pkgmodule.h"
 
-
 /**
  * Set an attribute on an object, after creating the value with
  * Py_BuildValue(fmt, arg). Afterwards, decrease its refcount and return
@@ -118,18 +117,32 @@ void PyOpProgress::Done()
 
 // apt interface
 
+PyObject *PyFetchProgress::GetDesc(pkgAcquire::ItemDesc *item) {
+    if (!pyAcquire && item->Owner && item->Owner->GetOwner()) {
+        pyAcquire = PyAcquire_FromCpp(item->Owner->GetOwner(), false, NULL);
+    }
+    PyObject *pyItem = PyAcquireItem_FromCpp(item->Owner, false, pyAcquire);
+    PyObject *pyDesc = PyAcquireItemDesc_FromCpp(item, false, pyItem);
+    Py_DECREF(pyItem);
+    return pyDesc;
+}
+
 bool PyFetchProgress::MediaChange(string Media, string Drive)
 {
    PyCbObj_END_ALLOW_THREADS
    //std::cout << "MediaChange" << std::endl;
    PyObject *arglist = Py_BuildValue("(ss)", Media.c_str(), Drive.c_str());
    PyObject *result;
-   if(! RunSimpleCallback("media_change", arglist, &result))
-       RunSimpleCallback("mediaChange", arglist, &result);
+
+   if(PyObject_HasAttrString(callbackInst, "media_change"))
+      RunSimpleCallback("media_change", arglist, &result);
+   else
+      RunSimpleCallback("mediaChange", arglist, &result);
 
    bool res = true;
    if(!PyArg_Parse(result, "b", &res)) {
       // no return value or None, assume false
+      PyCbObj_BEGIN_ALLOW_THREADS
       return false;
    }
 
@@ -157,15 +170,17 @@ void PyFetchProgress::UpdateStatus(pkgAcquire::ItemDesc &Itm, int status)
    arglist = Py_BuildValue("(sssi)", Itm.URI.c_str(), Itm.Description.c_str(),
                            Itm.ShortDesc.c_str(), status);
 
-   if(!RunSimpleCallback("update_status", arglist))
-       RunSimpleCallback("updateStatus", arglist);
+   if(PyObject_HasAttrString(callbackInst, "update_status"))
+      RunSimpleCallback("update_status", arglist);
+   else
+      RunSimpleCallback("updateStatus", arglist);
 }
 
 void PyFetchProgress::IMSHit(pkgAcquire::ItemDesc &Itm)
 {
    PyCbObj_END_ALLOW_THREADS
    if (PyObject_HasAttrString(callbackInst, "ims_hit"))
-       RunSimpleCallback("ims_hit", TUPLEIZE(PyAcquire_GetItemDesc(pyAcquire, &Itm)));
+       RunSimpleCallback("ims_hit", TUPLEIZE(GetDesc(&Itm)));
    else
        UpdateStatus(Itm, DLHit);
    PyCbObj_BEGIN_ALLOW_THREADS
@@ -175,7 +190,7 @@ void PyFetchProgress::Fetch(pkgAcquire::ItemDesc &Itm)
 {
    PyCbObj_END_ALLOW_THREADS
    if (PyObject_HasAttrString(callbackInst, "fetch"))
-       RunSimpleCallback("fetch", TUPLEIZE(PyAcquire_GetItemDesc(pyAcquire, &Itm)));
+       RunSimpleCallback("fetch", TUPLEIZE(GetDesc(&Itm)));
    else
        UpdateStatus(Itm, DLQueued);
    PyCbObj_BEGIN_ALLOW_THREADS
@@ -185,7 +200,7 @@ void PyFetchProgress::Done(pkgAcquire::ItemDesc &Itm)
 {
    PyCbObj_END_ALLOW_THREADS
    if (PyObject_HasAttrString(callbackInst, "done"))
-       RunSimpleCallback("done", TUPLEIZE(PyAcquire_GetItemDesc(pyAcquire, &Itm)));
+       RunSimpleCallback("done", TUPLEIZE(GetDesc(&Itm)));
    else
        UpdateStatus(Itm, DLDone);
    PyCbObj_BEGIN_ALLOW_THREADS
@@ -195,13 +210,16 @@ void PyFetchProgress::Fail(pkgAcquire::ItemDesc &Itm)
 {
    PyCbObj_END_ALLOW_THREADS
    if (PyObject_HasAttrString(callbackInst, "fail")) {
-       RunSimpleCallback("fail", TUPLEIZE(PyAcquire_GetItemDesc(pyAcquire, &Itm)));
+       RunSimpleCallback("fail", TUPLEIZE(GetDesc(&Itm)));
+       PyCbObj_BEGIN_ALLOW_THREADS
        return;
    }
 
    // Ignore certain kinds of transient failures (bad code)
-   if (Itm.Owner->Status == pkgAcquire::Item::StatIdle)
+   if (Itm.Owner->Status == pkgAcquire::Item::StatIdle) {
+      PyCbObj_BEGIN_ALLOW_THREADS
       return;
+   }
 
    if (Itm.Owner->Status == pkgAcquire::Item::StatDone)
    {
@@ -210,7 +228,7 @@ void PyFetchProgress::Fail(pkgAcquire::ItemDesc &Itm)
 
 
    if (PyObject_HasAttrString(callbackInst, "fail"))
-       RunSimpleCallback("fail", TUPLEIZE(PyAcquire_GetItemDesc(pyAcquire, &Itm)));
+       RunSimpleCallback("fail", TUPLEIZE(GetDesc(&Itm)));
    else
        UpdateStatus(Itm, DLFailed);
    PyCbObj_BEGIN_ALLOW_THREADS
@@ -257,8 +275,10 @@ bool PyFetchProgress::Pulse(pkgAcquire * Owner)
    pkgAcquireStatus::Pulse(Owner);
 
    //std::cout << "Pulse" << std::endl;
-   if(callbackInst == 0)
+   if(callbackInst == 0) {
+      PyCbObj_BEGIN_ALLOW_THREADS
       return false;
+   }
 
    setattr(callbackInst, "last_bytes", "d", LastBytes);
    setattr(callbackInst, "current_cps", "d", CurrentCPS);
@@ -268,24 +288,15 @@ bool PyFetchProgress::Pulse(pkgAcquire * Owner)
    setattr(callbackInst, "elapsed_time", "k", ElapsedTime);
    setattr(callbackInst, "current_items", "k", CurrentItems);
    setattr(callbackInst, "total_items", "k", TotalItems);
-#ifdef COMPAT_0_7
-   setattr(callbackInst, "currentCPS", "d", CurrentCPS);
-   setattr(callbackInst, "currentBytes", "d", CurrentBytes);
-   setattr(callbackInst, "totalBytes", "d", TotalBytes);
-   setattr(callbackInst, "fetchedBytes", "d", FetchedBytes);
-   setattr(callbackInst, "currentItems", "k", CurrentItems);
-   setattr(callbackInst, "totalItems", "k", TotalItems);
-#endif
 
    // New style
-#ifdef COMPAT_0_7
    if (!PyObject_HasAttrString(callbackInst, "updateStatus")) {
-#else
-    {
-#endif
       PyObject *result1;
       bool res1 = true;
 
+      if (pyAcquire == NULL) {
+         pyAcquire = PyAcquire_FromCpp(Owner, false, NULL);
+      }
       Py_INCREF(pyAcquire);
 
       if (RunSimpleCallback("pulse", TUPLEIZE(pyAcquire) , &result1)) {
@@ -297,11 +308,14 @@ bool PyFetchProgress::Pulse(pkgAcquire * Owner)
      }
      PyCbObj_BEGIN_ALLOW_THREADS
      return true;
-
-
-
    }
 #ifdef COMPAT_0_7
+   setattr(callbackInst, "currentCPS", "d", CurrentCPS);
+   setattr(callbackInst, "currentBytes", "d", CurrentBytes);
+   setattr(callbackInst, "totalBytes", "d", TotalBytes);
+   setattr(callbackInst, "fetchedBytes", "d", FetchedBytes);
+   setattr(callbackInst, "currentItems", "k", CurrentItems);
+   setattr(callbackInst, "totalItems", "k", TotalItems);
    // Go through the list of items and add active items to the
    // activeItems vector.
    map<pkgAcquire::Worker *, pkgAcquire::ItemDesc *> activeItemMap;
@@ -390,6 +404,8 @@ bool PyFetchProgress::Pulse(pkgAcquire * Owner)
    PyCbObj_BEGIN_ALLOW_THREADS
    // fetching can be canceld by returning false
    return res;
+#else
+   return false;
 #endif
 }
 
@@ -491,6 +507,7 @@ pkgPackageManager::OrderResult PyInstallProgress::Run(pkgPackageManager *pm)
       if (result == NULL) {
 	 std::cerr << "waitChild method invalid" << std::endl;
 	 PyErr_Print();
+	 PyCbObj_BEGIN_ALLOW_THREADS
 	 return pkgPackageManager::Failed;
       }
       if(!PyArg_Parse(result, "i", &res) ) {
@@ -536,8 +553,10 @@ bool PyCdromProgress::ChangeCdrom()
 {
    PyObject *arglist = Py_BuildValue("()");
    PyObject *result;
-   if(!RunSimpleCallback("change_cdrom", arglist, &result))
-       RunSimpleCallback("changeCdrom", arglist, &result);
+   if (PyObject_HasAttrString(callbackInst, "change_cdrom"))
+      RunSimpleCallback("change_cdrom", arglist, &result);
+   else
+      RunSimpleCallback("changeCdrom", arglist, &result);
 
    bool res = true;
    if(!PyArg_Parse(result, "b", &res))
@@ -555,7 +574,8 @@ bool PyCdromProgress::AskCdromName(string &Name)
    PyObject *result;
 
    // New style: String on success, None on failure.
-   if (RunSimpleCallback("ask_cdrom_name", arglist, &result)) {
+   if (PyObject_HasAttrString(callbackInst, "ask_cdrom_name")) {
+        RunSimpleCallback("ask_cdrom_name", arglist, &result);
         if(result == Py_None)
             return false;
         if(!PyArg_Parse(result, "s", &new_name))

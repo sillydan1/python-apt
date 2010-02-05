@@ -1,3 +1,42 @@
+python-apt (0.7.93.1) unstable; urgency=low
+
+  [ Julian Andres Klode ]
+  * Fix reference counting for old progress classes (Closes: #566370).
+  * apt/cache.py:
+    - Fix Cache.update() to not raise errors on successful updates.
+  * python/progress.cc:
+    - Fix some threading issues (add some missing PyCbObj_BEGIN_ALLOW_THREADS)
+  * python/acquire-item.cc:
+    - Support items without an owner set.
+  * python/tarfile.cc:
+    - When extracting, only allocate a new buffer if the old one was too small.
+    - Do not segfault if TarFile.go() is called without a member name.
+    - Clone all pkgDirStream::Item's so apt_pkg.TarMember object can be used
+      outside of the callback function passed to go().
+    - If only one member is requested, extract just that one.
+  * Drop the segfault prevention measures from the Acquire code, as they fail
+    to work. A replacement will be added once destruction callbacks are added
+    in APT.
+  * Merge the CppOwnedPyObject C++ class into CppPyObject.
+  * Remove inline functions from the C++ API, export them instead.
+  * Localization
+    - de.po: Update against new template
+  * python/arfile.cc:
+    - Handle the case where ararchive_new returns NULL in debfile_new.
+  * apt/progress/base.py:
+    - select.error objects do not have an errno attribute (Closes: #568005)
+  * doc/client-example.cc: Update against the new API.
+  * Fix typos of separated in multiple files (reported by lintian).
+  * debian/control:
+    - Make python-apt-dev depend on ${misc:Depends} and recommend python-dev.
+    - Set Standards-Version to 3.8.4.
+
+  [ Michael Vogt ]
+  * apt/utils.py:
+    - add some misc utils like get_release_filename_for_pkg()
+
+ -- Julian Andres Klode <jak@debian.org>  Fri, 05 Feb 2010 17:45:39 +0100
+
 python-apt (0.7.93) unstable; urgency=low
 
   [ Julian Andres Klode ]

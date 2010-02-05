@@ -137,7 +137,7 @@ static PyObject *CnfSubTree(PyObject *Self,PyObject *Args)
       return 0;
    }
 
-   return CppOwnedPyObject_NEW<Configuration*>(Self,&PyConfiguration_Type,
+   return CppPyObject_NEW<Configuration*>(Self,&PyConfiguration_Type,
                                                new Configuration(Itm));
 }
 
@@ -280,7 +280,7 @@ PyObject *LoadConfig(PyObject *Self,PyObject *Args)
    char *Name = 0;
    if (PyArg_ParseTuple(Args,"Os",&Self,&Name) == 0)
       return 0;
-   if (Configuration_Check(Self)== 0)
+   if (PyConfiguration_Check(Self)== 0)
    {
       PyErr_SetString(PyExc_TypeError,"argument 1: expected Configuration.");
       return 0;
@@ -298,7 +298,7 @@ PyObject *LoadConfigISC(PyObject *Self,PyObject *Args)
    char *Name = 0;
    if (PyArg_ParseTuple(Args,"Os",&Self,&Name) == 0)
       return 0;
-   if (Configuration_Check(Self)== 0)
+   if (PyConfiguration_Check(Self)== 0)
    {
       PyErr_SetString(PyExc_TypeError,"argument 1: expected Configuration.");
       return 0;
@@ -316,7 +316,7 @@ PyObject *LoadConfigDir(PyObject *Self,PyObject *Args)
    char *Name = 0;
    if (PyArg_ParseTuple(Args,"Os",&Self,&Name) == 0)
       return 0;
-   if (Configuration_Check(Self)== 0)
+   if (PyConfiguration_Check(Self)== 0)
    {
       PyErr_SetString(PyExc_TypeError,"argument 1: expected Configuration.");
       return 0;
@@ -348,7 +348,7 @@ PyObject *ParseCommandLine(PyObject *Self,PyObject *Args)
    if (PyArg_ParseTuple(Args,"OO!O!",&Self,
 			&PyList_Type,&POList,&PyList_Type,&Pargv) == 0)
       return 0;
-   if (Configuration_Check(Self)== 0)
+   if (PyConfiguration_Check(Self)== 0)
    {
       PyErr_SetString(PyExc_TypeError,"argument 1: expected Configuration.");
       return 0;
@@ -473,7 +473,7 @@ static PyObject *CnfNew(PyTypeObject *type, PyObject *args, PyObject *kwds) {
     char *kwlist[] = {NULL};
     if (PyArg_ParseTupleAndKeywords(args,kwds,"",kwlist) == 0)
         return 0;
-    return CppOwnedPyObject_NEW<Configuration*>(NULL, type, new Configuration());
+    return CppPyObject_NEW<Configuration*>(NULL, type, new Configuration());
 }
 
 // Type for a Normal Configuration object
@@ -483,10 +483,10 @@ PyTypeObject PyConfiguration_Type =
 {
    PyVarObject_HEAD_INIT(&PyType_Type, 0)
    "apt_pkg.Configuration",             // tp_name
-   sizeof(CppOwnedPyObject<Configuration*>),  // tp_basicsize
+   sizeof(CppPyObject<Configuration*>),  // tp_basicsize
    0,                                   // tp_itemsize
    // Methods
-   CppOwnedDeallocPtr<Configuration*>,  // tp_dealloc
+   CppDeallocPtr<Configuration*>,  // tp_dealloc
    0,                                   // tp_print
    0,                                   // tp_getattr
    0,                                   // tp_setattr
