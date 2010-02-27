@@ -1,3 +1,50 @@
+python-apt (0.7.93.2) unstable; urgency=low
+
+  [ Julian Andres Klode ]
+  * Fix some places where the old API was still used:
+    - apt/utils.py: Completely ported, previous one was old-API from Ubuntu.
+    - apt/cache.py: Use the new progress classes instead of the old ones.
+    - apt/package.py: Various smaller issues fixed, probably caused by merge.
+  * utils/migrate-0.8.py:
+    - Improve C++ parsing and add apt.progress.old to the modules, reduces
+      false positives.
+    - Ship the list of deprecated things in the apt_pkg and apt_inst modules
+      inside the script itself, so we don't have to parse the source code
+      anymore.
+  * python:
+    - Handle deprecated attributes and methods in the tp_gettattro slot, this
+      allows us to easily warn if a deprecated function is used.
+  * python/tagfile.cc:
+    - Implement the iterator protocol in TagFile.
+  * python/cache.cc:
+    - Implement Cache.__len__() and Cache.__contains__() (Closes: #571443).
+  * data/templates/Debian.info.in:
+    - Replace the MatchURI with one that really matches something.
+  * aptsources/distro.py:
+    - Call lsb_release with -idrc instead of --all.
+  * tests:
+    - Fix aptsources tests to use local data files if available.
+    - test_all.py: Use local modules instead of system ones if possible.
+  * data/templates/*.in: Switch MirrorsFile to relative filenames.
+    - setup.py: Copy the mirror lists to the build directory
+    - aptsources/distinfo.py: Support relative filenames for MirrorsFile.
+  * debian/rules:
+    - Run tests during build time.
+  * debian/python-apt.install:
+    - Install utils/migrate-0.8.py to /usr/share/python-apt/.
+  
+  [ Michael Vogt ]
+  * apt/cache.py:
+    - call install_progress.startUpdate()/finishUpdate() to keep
+      compatibility with older code
+  * apt/progress/base.py:
+    - restore "self.statusfd, self.writefd" type, provide additional
+      self.status_stream and self.write_stream file like objects
+  * python/progress.cc:
+    - try to call compatibility functions first, then new functions
+
+ -- Julian Andres Klode <jak@debian.org>  Sat, 27 Feb 2010 18:33:11 +0100
+
 python-apt (0.7.93.1) unstable; urgency=low
 
   [ Julian Andres Klode ]

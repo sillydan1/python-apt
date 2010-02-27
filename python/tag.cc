@@ -258,6 +258,28 @@ static PyObject *TagFileStep(PyObject *Self,PyObject *Args)
    return HandleErrors(Py_BuildValue("i",1));
 }
 
+// TagFile Wrappers							/*{{{*/
+static PyObject *TagFileNext(PyObject *Self)
+{
+   TagFileData &Obj = *(TagFileData *)Self;
+   // Replace the section.
+   Py_CLEAR(Obj.Section);
+   Obj.Section = (TagSecData*)(&PyTagSection_Type)->tp_alloc(&PyTagSection_Type, 0);
+   new (&Obj.Section->Object) pkgTagSection();
+   Obj.Section->Owner = Self;
+   Py_INCREF(Obj.Section->Owner);
+   Obj.Section->Data = 0;
+   if (Obj.Object.Step(Obj.Section->Object) == false)
+      return HandleErrors(NULL);
+   Py_INCREF(Obj.Section);
+   return HandleErrors(Obj.Section);
+}
+
+static PyObject *TagFileIter(PyObject *Self) {
+    Py_INCREF(Self);
+    return Self;
+}
+
 static char *doc_Offset = "Offset() -> Integer";
 static PyObject *TagFileOffset(PyObject *Self,PyObject *Args)
 {
@@ -436,12 +458,6 @@ static PyMethodDef TagSecMethods[] =
    {"find_raw",TagSecFindRaw,METH_VARARGS,doc_FindRaw},
    {"find_flag",TagSecFindFlag,METH_VARARGS,doc_FindFlag},
    {"bytes",TagSecBytes,METH_VARARGS,doc_Bytes},
-#ifdef COMPAT_0_7
-   {"Find",TagSecFind,METH_VARARGS,doc_Find},
-   {"FindRaw",TagSecFindRaw,METH_VARARGS,doc_FindRaw},
-   {"FindFlag",TagSecFindFlag,METH_VARARGS,doc_FindFlag},
-   {"Bytes",TagSecBytes,METH_VARARGS,doc_Bytes},
-#endif
 
    // Python Special
    {"keys",TagSecKeys,METH_VARARGS,doc_Keys},
@@ -481,7 +497,7 @@ PyTypeObject PyTagSection_Type =
    0,                                   // tp_hash
    0,                                   // tp_call
    TagSecStr,                           // tp_str
-   0,                                   // tp_getattro
+   _PyAptObject_getattro,               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    (Py_TPFLAGS_DEFAULT |                // tp_flags
@@ -514,11 +530,6 @@ static PyMethodDef TagFileMethods[] =
    {"step",TagFileStep,METH_VARARGS,doc_Step},
    {"offset",TagFileOffset,METH_VARARGS,doc_Offset},
    {"jump",TagFileJump,METH_VARARGS,doc_Jump},
-#ifdef COMPAT_0_7
-   {"Step",TagFileStep,METH_VARARGS,doc_Step},
-   {"Offset",TagFileOffset,METH_VARARGS,doc_Offset},
-   {"Jump",TagFileJump,METH_VARARGS,doc_Jump},
-#endif
 
    {}
 };
@@ -532,18 +543,20 @@ static PyObject *TagFileGetSection(PyObject *Self,void*) {
 
 static PyGetSetDef TagFileGetSet[] = {
     {"section",TagFileGetSection,0,"Return a TagSection.",0},
-#ifdef COMPAT_0_7
-    {"Section",TagFileGetSection,0,"Return a TagSection.",0},
-#endif
     {}
 };
+
 
 static char *doc_TagFile = "TagFile(file) -> TagFile() object. \n\n"
    "TagFile() objects provide access to debian control files, which consists\n"
    "of multiple RFC822-like formatted sections.\n\n"
-   "A file may consists of multiple sections, and you can use Step() to move\n"
-   "forward. The current TagSection() is available via the attribute section"
-   ".\n\n"
+   "To provide access to those sections, TagFile objects provide an iterator\n"
+   "which yields TagSection objects for each section.\n\n"
+   "TagFile objects also provide another API which uses a shared TagSection\n"
+   "object in the 'section' member. The functions step() and jump() can be\n"
+   "used to navigate in the file; and offset() tells the current position.\n\n"
+   "It is important to not mix the use of both APIs, because this can have\n"
+   "unwanted effects.\n\n"
    "The parameter *file* refers to an object providing a fileno() method or\n"
    "a file descriptor (an integer)";
 
@@ -567,7 +580,7 @@ PyTypeObject PyTagFile_Type =
    0,                                   // tp_hash
    0,                                   // tp_call
    0,                                   // tp_str
-   0,                                   // tp_getattro
+   _PyAptObject_getattro,               // tp_getattro
    0,                                   // tp_setattro
    0,                                   // tp_as_buffer
    (Py_TPFLAGS_DEFAULT |                // tp_flags
@@ -578,8 +591,8 @@ PyTypeObject PyTagFile_Type =
    TagFileClear,                        // tp_clear
    0,                                   // tp_richcompare
    0,                                   // tp_weaklistoffset
-   0,                                   // tp_iter
-   0,                                   // tp_iternext
+   TagFileIter,                         // tp_iter
+   TagFileNext,                         // tp_iternext
    TagFileMethods,                      // tp_methods
    0,                                   // tp_members
    TagFileGetSet,                       // tp_getset
