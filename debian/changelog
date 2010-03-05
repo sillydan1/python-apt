@@ -1,3 +1,11 @@
+python-apt (0.7.9~exp2ubuntu10.1) jaunty-proposed; urgency=low
+
+  *  data/templates/Ubuntu.info.in: (LP: #531876)
+    - refactor to use ports by default for gutsy and newer releases
+    - Set appropriate exceptions to defaults for warty-jaunty
+
+ -- Emmet Hikory <persia@ubuntu.com>  Sat, 06 Mar 2010 07:19:26 +0900
+
 python-apt (0.7.9~exp2ubuntu10) jaunty; urgency=low
 
   * .bzr-buildpackage/default.conf:
