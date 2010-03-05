@@ -1,3 +1,11 @@
+python-apt (0.7.4ubuntu7.6) hardy-proposed; urgency=low
+
+  * data/templates/Ubuntu.info.in: (LP: #531876)
+    - refactor to use ports by default for gutsy and newer releases
+    - Set appropriate exceptions to defaults for warty-hardy
+
+ -- Emmet Hikory <persia@ubuntu.com>  Sat, 06 Mar 2010 07:42:31 +0900
+
 python-apt (0.7.4ubuntu7.5) hardy-proposed; urgency=low
 
   * aptsources/__init__.py, aptsources/distinfo.py:
