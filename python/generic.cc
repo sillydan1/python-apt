@@ -28,11 +28,11 @@ PyObject *HandleErrors(PyObject *Res)
    if (Res != 0)
       Py_DECREF(Res);
 
-   string Err;
+   std::string Err;
    int errcnt = 0;
    while (_error->empty() == false)
    {
-      string Msg;
+      std::string Msg;
       bool Type = _error->PopMessage(Msg);
       if (errcnt > 0)
          Err.append(", ");
