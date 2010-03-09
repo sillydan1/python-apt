@@ -1,3 +1,10 @@
+python-apt (0.7.13.4ubuntu6) lucid; urgency=low
+
+  * python/generic.cc:
+    - fix build failure with latest gcc
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Tue, 09 Mar 2010 14:23:16 +0100
+
 python-apt (0.7.13.4ubuntu5) lucid; urgency=low
 
   [ Michael Vogt ]
