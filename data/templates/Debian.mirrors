@@ -174,6 +174,7 @@ ftp://ftp2.de.debian.org/debian/
 ftp://ftp5.gwdg.de/pub/linux/debian/debian/
 ftp://mirror.ayous.org/debian/
 ftp://mirror.giantix-server.de/debian/
+ftp://mirror.unitedcolo.de/debian/
 http://artfiles.org/debian/
 http://debian.charite.de/debian/
 http://debian.cruisix.net/debian/
@@ -199,6 +200,7 @@ http://ftp2.de.debian.org/debian/
 http://ftp5.gwdg.de/pub/linux/debian/debian/
 http://mirror.ayous.org/debian/
 http://mirror.giantix-server.de/debian/
+http://mirror.unitedcolo.de/debian/
 #LOC:DK
 ftp://ftp.dk.debian.org/debian/
 ftp://mirrors.telianet.dk/debian/
@@ -284,6 +286,7 @@ http://webb.ens-cachan.fr/debian/
 ftp://ftp.mirrorservice.org/sites/ftp.debian.org/debian/
 ftp://ftp.ticklers.org/debian/
 ftp://ftp.uk.debian.org/debian/
+ftp://mirror.bytemark.co.uk/debian/
 ftp://mirror.ox.ac.uk/debian/
 ftp://mirror.positive-internet.com/debian/
 ftp://mirror.sov.uk.goscomb.net/debian/
@@ -293,6 +296,7 @@ ftp://ukdebian.mirror.anlx.net/debian/
 http://debian.man.ac.uk/debian/
 http://ftp.ticklers.org/debian/
 http://ftp.uk.debian.org/debian/
+http://mirror.bytemark.co.uk/debian/
 http://mirror.ox.ac.uk/debian/
 http://mirror.positive-internet.com/debian/
 http://mirror.sov.uk.goscomb.net/debian/

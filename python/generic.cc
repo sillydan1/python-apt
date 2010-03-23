@@ -31,11 +31,11 @@ PyObject *HandleErrors(PyObject *Res)
       Py_DECREF(Res);
    }
 
-   string Err;
+   std::string Err;
    int errcnt = 0;
    while (_error->empty() == false)
    {
-      string Msg;
+      std::string Msg;
       bool Type = _error->PopMessage(Msg);
       if (errcnt > 0)
          Err.append(", ");
@@ -104,9 +104,15 @@ PyObject *_PyAptObject_getattro(PyObject *self, PyObject *attr) {
             PyErr_WarnEx(PyExc_DeprecationWarning, warning_string, 1);
             delete[] warning_string;
         } else {
+            Py_XINCREF(ptype);
+            Py_XINCREF(pvalue);
+            Py_XINCREF(ptraceback);
             PyErr_Restore(ptype, pvalue, ptraceback);
         }
         Py_DECREF(newattr);
+        Py_XDECREF(ptype);
+        Py_XDECREF(pvalue);
+        Py_XDECREF(ptraceback);
     }
     return value;
 }
