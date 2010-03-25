@@ -229,11 +229,11 @@ http://archive.ubuntu.mnosi.org/ubuntu/
 #LOC:MT
 http://mirror.linux.org.mt/ubuntu/
 #LOC:MX
+http://tezcatl.fciencias.unam.mx/ubuntu/
 http://ubuntu.ujed.mx/ubuntu/
 #LOC:MY
 http://archive.mmu.edu.my/ubuntu/
 http://mirror.oscc.org.my/ubuntu/
-http://mirror.upm.edu.my/ubuntu/
 http://ubuntu.bytecraft.com.my/ubuntu/
 http://ubuntu.mmu.edu.my/ubuntu/
 http://www.mirror.upm.edu.my/ubuntu/
@@ -262,6 +262,7 @@ http://ubuntu.uib.no/archive/
 #LOC:NP
 http://archive.mitra.net.np/ubuntu/
 #LOC:NZ
+http://ftp.citylink.co.nz/ubuntu/
 http://mirror.ihug.co.nz/ubuntu/
 http://ucmirror.canterbury.ac.nz/ubuntu/
 #LOC:PF
@@ -335,7 +336,6 @@ http://ubuntu-archive.sit.kmutt.ac.th/
 http://ftp.ankara.edu.tr/ubuntu/
 http://ftp.linux.org.tr/ubuntu/
 http://ftp.metu.edu.tr/ubuntu/
-http://russell.cs.bilgi.edu.tr/ubuntu/
 http://ubuntu.gnu.gen.tr/ubuntu/
 #LOC:TW
 ftp://ftp.chu.edu.tw/Linux/Ubuntu/archives/
