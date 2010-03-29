@@ -36,7 +36,6 @@ http://mirror.globo.com/ubuntu/archive/
 http://sft.if.usp.br/ubuntu/
 http://ubuntu.interlegis.gov.br/ubuntu/
 http://ubuntu.mirror.pop-sc.rnp.br/ubuntu/
-http://ubuntu.ufba.br/ubuntu/
 http://www.las.ic.unicamp.br/pub/ubuntu/
 #LOC:BY
 http://ftp.byfly.by/ubuntu/
@@ -174,6 +173,7 @@ http://ubuntu.sth.sze.hu/ubuntu/
 http://dl2.foss-id.web.id/ubuntu/
 http://kambing.ui.ac.id/ubuntu/
 http://kebo.vlsm.org/ubuntu/
+http://repo.undip.ac.id/ubuntu/
 http://ubuntu.indika.net.id/ubuntu/
 http://ubuntu.pesat.net.id/archive/
 #LOC:IE
@@ -234,6 +234,7 @@ http://ubuntu.ujed.mx/ubuntu/
 #LOC:MY
 http://archive.mmu.edu.my/ubuntu/
 http://mirror.oscc.org.my/ubuntu/
+http://mirror.upm.edu.my/ubuntu/
 http://ubuntu.bytecraft.com.my/ubuntu/
 http://ubuntu.mmu.edu.my/ubuntu/
 http://www.mirror.upm.edu.my/ubuntu/
@@ -300,7 +301,6 @@ http://ubuntu.etf.bg.ac.rs/ubuntu/
 ftp://ftp.corbina.net/pub/Linux/ubuntu/
 ftp://ftp.mipt.ru/mirror/ubuntu/
 http://89.148.222.236/ubuntu/
-http://ftp.chg.ru/pub/Linux/ubuntu/archive/
 http://ftp.mtu.ru/pub/ubuntu/archive/
 http://linux.nsu.ru/ubuntu/
 http://mirror.rol.ru/ubuntu/
@@ -319,7 +319,6 @@ http://mirrors.se.eu.kernel.org/ubuntu/
 http://ubuntu.mirror.su.se/ubuntu/
 #LOC:SG
 http://ftp.science.nus.edu.sg/ubuntu/
-http://linux.ntuoss.org/ubuntu/
 http://ubuntu.oss.eznetsols.org/ubuntu/
 #LOC:SI
 http://ftp.arnes.si/pub/mirrors/ubuntu/
@@ -336,6 +335,7 @@ http://ubuntu-archive.sit.kmutt.ac.th/
 http://ftp.ankara.edu.tr/ubuntu/
 http://ftp.linux.org.tr/ubuntu/
 http://ftp.metu.edu.tr/ubuntu/
+http://russell.cs.bilgi.edu.tr/ubuntu/
 http://ubuntu.gnu.gen.tr/ubuntu/
 #LOC:TW
 ftp://ftp.chu.edu.tw/Linux/Ubuntu/archives/
@@ -363,7 +363,6 @@ ftp://ftp.egr.msu.edu/pub/ubuntu/archive/
 http://76.73.4.58/ubuntu/
 http://archive.linux.duke.edu/ubuntu/
 http://astromirror.uchicago.edu/ubuntu/
-http://cudlug.cudenver.edu/ubuntu/
 http://ftp.unina.it/pub/linux/distributions/ubuntu/
 http://ftp.usf.edu/pub/ubuntu/
 http://ftp.ussg.iu.edu/linux/ubuntu/
@@ -377,7 +376,6 @@ http://mirror.cs.umn.edu/ubuntu/
 http://mirror.its.uidaho.edu/pub/ubuntu/
 http://mirror.math.ucdavis.edu/ubuntu/
 http://mirror.peer1.net/ubuntu/
-http://mirror.pnl.gov/ubuntu/
 http://mirror.umoss.org/ubuntu/
 http://mirror.uoregon.edu/ubuntu/
 http://mirrors.acm.jhu.edu/ubuntu/
@@ -387,6 +385,7 @@ http://mirrors.cavecreek.net/ubuntu/
 http://mirrors.ccs.neu.edu/ubuntu/
 http://mirrors.cs.wmich.edu/ubuntu/
 http://mirrors.easynews.com/linux/ubuntu/
+http://mirrors.login.com/ubuntu/
 http://mirrors.pavlovmedia.net/ubuntu/
 http://mirrors.rit.edu/ubuntu/
 http://mirrors.us.kernel.org/ubuntu/
