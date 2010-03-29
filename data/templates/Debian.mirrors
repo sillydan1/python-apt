@@ -168,6 +168,7 @@ ftp://ftp.stw-bonn.de/debian/
 ftp://ftp.tu-chemnitz.de/pub/linux/debian/debian/
 ftp://ftp.tu-clausthal.de/pub/linux/debian/
 ftp://ftp.uni-bayreuth.de/debian/
+ftp://ftp.uni-erlangen.de/debian/
 ftp://ftp.uni-kl.de/debian/
 ftp://ftp.uni-koeln.de/debian/
 ftp://ftp2.de.debian.org/debian/
@@ -194,6 +195,7 @@ http://ftp.stw-bonn.de/debian/
 http://ftp.tu-chemnitz.de/pub/linux/debian/debian/
 http://ftp.tu-clausthal.de/pub/linux/debian/
 http://ftp.uni-bayreuth.de/debian/
+http://ftp.uni-erlangen.de/debian/
 http://ftp.uni-kl.de/debian/
 http://ftp.uni-koeln.de/debian/
 http://ftp2.de.debian.org/debian/
@@ -455,7 +457,9 @@ http://mirrors.nl.kernel.org/debian/
 ftp://ftp.no.debian.org/debian/
 http://ftp.no.debian.org/debian/
 #LOC:NZ
+ftp://debian.ihug.co.nz/debian/
 ftp://ftp.nz.debian.org/debian/
+http://debian.ihug.co.nz/debian/
 http://ftp.nz.debian.org/debian/
 #LOC:PF
 ftp://repository.linux.pf/debian/
@@ -501,6 +505,7 @@ http://ftp.ro.debian.org/debian/
 ftp://debian.nsu.ru/debian/
 ftp://ftp.corbina.net/debian/
 ftp://ftp.debian.chuvsu.ru/debian/
+ftp://ftp.mipt.ru/debian/
 ftp://ftp.psn.ru/debian/
 ftp://ftp.ru.debian.org/debian/
 ftp://mirror.svk.su/debian/
