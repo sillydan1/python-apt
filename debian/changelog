@@ -1,3 +1,17 @@
+python-apt (0.7.94.2ubuntu6.1) lucid-proposed; urgency=low
+
+  [ Sebastian Heinlein ]
+  * apt/package.py:
+    - Fix the changelog downloading if there are several source package
+      versions available which provide the binary (LP: #377535).
+      See http://bugs.debian.org/581831 for further details
+
+  [ Michael Vogt ]
+  * debian/control:
+    - update Vcs-Bzr location
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 17 May 2010 15:37:44 +0200
+
 python-apt (0.7.94.2ubuntu6) lucid; urgency=low
 
   Cherry pick fix from the debian branch:

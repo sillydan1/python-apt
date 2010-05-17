@@ -14,8 +14,8 @@ Build-Depends: apt-utils,
                python-central (>= 0.5),
                python-distutils-extra (>= 2.0),
                python-sphinx (>= 0.5)
-Vcs-Bzr: http://bzr.debian.org/apt/python-apt/debian-sid
-Vcs-Browser: http://bzr.debian.org/loggerhead/apt/python-apt/debian-sid/changes
+Vcs-Bzr: https://code.launchpad.net/~ubuntu-core-dev/python-apt/lucid
+Vcs-Browser: http://bazaar.launchpad.net/~ubuntu-core-dev/python-apt/lucid/files
 
 Package: python-apt
 Architecture: any
