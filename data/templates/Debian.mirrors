@@ -157,6 +157,7 @@ ftp://ftp-stud.fht-esslingen.de/debian/
 ftp://ftp.de.debian.org/debian/
 ftp://ftp.freenet.de/debian/
 ftp://ftp.fu-berlin.de/pub/unix/linux/mirrors/debian/
+ftp://ftp.halifax.rwth-aachen.de/debian/
 ftp://ftp.hosteurope.de/pub/linux/debian/
 ftp://ftp.informatik.hu-berlin.de/pub/Linux/debian/
 ftp://ftp.informatik.rwth-aachen.de/pub/Linux/debian/
@@ -187,6 +188,7 @@ http://debian.uni-duisburg-essen.de/debian/
 http://ftp-stud.fht-esslingen.de/debian/
 http://ftp.de.debian.org/debian/
 http://ftp.freenet.de/debian/
+http://ftp.halifax.rwth-aachen.de/debian/
 http://ftp.hosteurope.de/pub/linux/debian/
 http://ftp.informatik.rwth-aachen.de/ftp/pub/Linux/debian/
 http://ftp.informatik.uni-frankfurt.de/debian/
