@@ -1,19 +1,16 @@
 Source: python-apt
 Section: python
 Priority: standard
-Maintainer: APT Development Team <deity@lists.debian.org>
+Maintainer: Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: APT Development Team <deity@lists.debian.org>
 Uploaders: Michael Vogt <mvo@debian.org>, Julian Andres Klode <jak@debian.org>
 Standards-Version: 3.8.4
-XS-Python-Version: 2.5, 2.6, 3.1
+XS-Python-Version: all
 Build-Depends: apt-utils,
                debhelper (>= 7.3.5),
                libapt-pkg-dev (>= 0.7.22~),
-               python2.5-dbg,
-               python2.5-dev,
-               python2.6-dev,
-               python2.6-dbg,
-               python3.1-dev,
-               python3.1-dbg,
+               python-all-dbg,
+               python-all-dev,
                python-central (>= 0.5),
                python-distutils-extra (>= 2.0),
                python-sphinx (>= 0.5)
@@ -22,8 +19,8 @@ Vcs-Browser: http://bzr.debian.org/loggerhead/apt/python-apt/debian-sid/changes
 
 Package: python-apt
 Architecture: any
-Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:Depends}
-Recommends: lsb-release, iso-codes, python2.6
+Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:Depends}, lsb-release
+Recommends: iso-codes
 Breaks: debdelta (<< 0.28~), packagekit-backend-apt (<= 0.4.8-0ubuntu4)
 Provides: ${python:Provides}
 Suggests: python-apt-dbg, python-gtk2, python-vte, python-apt-doc
