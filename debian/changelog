@@ -1,3 +1,10 @@
+python-apt (0.7.94.2ubuntu6.2) lucid-proposed; urgency=low
+
+  * apt/utils.py:
+    - fix end date calculation for releases in june (LP: #602469)
+
+ -- Jean-Baptiste Lallement <jeanbaptiste.lallement@gmail.com>  Tue, 06 Jul 2010 23:46:49 +0200
+
 python-apt (0.7.94.2ubuntu6.1) lucid-proposed; urgency=low
 
   [ Sebastian Heinlein ]
