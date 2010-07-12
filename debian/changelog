@@ -1,3 +1,57 @@
+python-apt (0.7.96.1) unstable; urgency=low
+
+  * tests/test_debfile.py:
+   - properly setup fixture data to make debfile test pass 
+     (closes: #588796)
+
+ -- Michael Vogt <mvo@debian.org>  Mon, 12 Jul 2010 14:14:51 +0200
+
+python-apt (0.7.96) unstable; urgency=low
+
+  [ Michael Vogt ]
+  * data/templates/gNewSense.info.in,
+    data/templates/gNewSense.mirrors:
+    - add gNewSense template and mirrors, thanks to Karl Goetz
+  * data/templates/Ubuntu.info.in, 
+    data/templates/Ubuntu.mirrors:
+    - updated for Ubuntu maverick
+  * doc/source/conf.py:
+    - do not fail on non-digits in the version number
+  * utils/get_debian_mirrors.py:
+    - ignore mirrors without a county
+  * apt/cache.py:
+    - add new "dpkg_journal_dirty" property that can be used to
+      detect a interrupted dpkg (the famous 
+     "E: dpkg was interrupted, you must manually run 'dpkg --configure -a'")
+  * merged lp:~kiwinote/python-apt/merge-gdebi-changes, this port the
+    DebPackage class fixes from gdebi into python-apt so that gdebi can
+    use the class from python-apt directly
+  * apt/debfile.py:
+    - check if the debfiles provides are in conflict with the systems
+      packages
+    - fix py3 compatibility
+  * tests/test_debs/*.deb, tests/test_debfile.py:
+    - add automatic test based on the test debs from gdebi
+  * python/progress.cc:
+    - deal with missing return value from the acquire progress in pulse()
+
+  [ Martin Pitt ]
+  * tests/test_apt_cache.py: Test accessing the record of all packages during
+    iteration. This both ensures that it's well-formatted and structured, and
+    also that accessing it does not take an inordinate amount of time. This
+    exposes a severe performance problem when using gzip compressed package
+    indexes.
+  * apt/cache.py: When iterating over the cache, do so sorted by package name.
+    With this we read the the package lists linearly if we need to access the
+    package records, instead of having to do thousands of random seeks; the
+    latter is disastrous if we use compressed package indexes, and slower than
+    necessary for uncompressed indexes.
+
+  [ Julian Andres Klode ]
+  * Re-enable Python 3 support for latest python-default changes (hack).
+
+ -- Michael Vogt <mvo@debian.org>  Mon, 12 Jul 2010 08:58:42 +0200
+
 python-apt (0.7.95) unstable; urgency=low
 
   [ Julian Andres Klode ]
