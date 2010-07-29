@@ -55,8 +55,8 @@ http://ubuntu.mirror.rafal.ca/ubuntu/
 #LOC:CH
 http://mirror.switch.ch/ftp/mirror/ubuntu/
 #LOC:CL
-http://ftp.tecnoera.com/ubuntu/
 http://mirror.gnucv.cl/ubuntu/
+http://mirror.netlinux.cl/ubuntu/
 #LOC:CN
 http://ftp.sjtu.edu.cn/ubuntu/
 http://mirror.bjtu.edu.cn/ubuntu/
@@ -67,8 +67,6 @@ http://ubuntu.cn99.com/ubuntu/
 http://ubuntu.dormforce.net/ubuntu/
 http://ubuntu.srt.cn/ubuntu/
 http://ubuntu.uestc.edu.cn/ubuntu/
-#LOC:CO
-http://matematicas.unal.edu.co/ubuntu/
 #LOC:CR
 http://mirrors.ucr.ac.cr/ubuntu/
 #LOC:CY
@@ -113,7 +111,6 @@ http://mirrors.telianet.dk/ubuntu/
 #LOC:EE
 http://ftp.estpak.ee/ubuntu/
 #LOC:ES
-http://dafi.inf.um.es/ubuntu/
 http://ftp.caliu.cat/pub/distribucions/ubuntu/archive/
 http://ftp.dat.etsit.upm.es/ubuntu/
 http://ftp.gui.uva.es/sites/ubuntu.com/ubuntu/
@@ -249,6 +246,8 @@ http://mirror.upm.edu.my/ubuntu/
 http://ubuntu.bytecraft.com.my/ubuntu/
 http://ubuntu.mmu.edu.my/ubuntu/
 http://www.mirror.upm.edu.my/ubuntu/
+#LOC:NA
+http://ubuntu-archive.polytechnic.edu.na/ubuntu/
 #LOC:NC
 http://archive.ubuntu.nautile.nc/ubuntu/
 #LOC:NL
@@ -309,6 +308,7 @@ ftp://ftp.corbina.net/pub/Linux/ubuntu/
 ftp://ftp.mipt.ru/mirror/ubuntu/
 http://ftp.chg.ru/pub/Linux/ubuntu/archive/
 http://ftp.mtu.ru/pub/ubuntu/archive/
+http://linux.nsu.ru/ubuntu/
 http://mirror.rol.ru/ubuntu/
 http://mirror.yandex.ru/ubuntu/
 http://mirror2.corbina.ru/ubuntu/
@@ -341,6 +341,7 @@ http://mirror1.ku.ac.th/ubuntu/
 http://mirrors.psu.ac.th/pub/ubuntu/
 http://ubuntu-archive.sit.kmutt.ac.th/
 #LOC:TR
+http://ftp.ankara.edu.tr/ubuntu/
 http://ftp.linux.org.tr/ubuntu/
 http://ftp.metu.edu.tr/ubuntu/
 http://russell.cs.bilgi.edu.tr/ubuntu/
@@ -364,6 +365,7 @@ http://ubuntu.stu.edu.tw/ubuntu/
 http://www.mirror.tw/pub/ubuntu/ubuntu/
 #LOC:UA
 http://mirror.mirohost.net/ubuntu/
+http://mirrors.dnepr.com/ubuntu/
 http://ubuntu.org.ua/ubuntu/
 #LOC:US
 http://76.73.4.58/ubuntu/
@@ -375,7 +377,6 @@ http://ftp.usf.edu/pub/ubuntu/
 http://ftp.ussg.iu.edu/linux/ubuntu/
 http://ftp.utexas.edu/ubuntu/
 http://lug.mtu.edu/ubuntu/
-http://mira.sunsite.utk.edu/ubuntu/
 http://mirror.alfredstate.edu/ubuntu/
 http://mirror.anl.gov/pub/ubuntu/
 http://mirror.cc.columbia.edu/pub/linux/ubuntu/archive/
@@ -389,6 +390,7 @@ http://mirror.peer1.net/ubuntu/
 http://mirror.umoss.org/ubuntu/
 http://mirror.uoregon.edu/ubuntu/
 http://mirror.vcu.edu/pub/gnu+linux/ubuntu/
+http://mirrors.acm.jhu.edu/ubuntu/
 http://mirrors.bloomu.edu/ubuntu/
 http://mirrors.cat.pdx.edu/ubuntu/
 http://mirrors.ccs.neu.edu/ubuntu/
