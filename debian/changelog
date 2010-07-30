@@ -1,3 +1,9 @@
+python-apt (0.7.96.1build1) experimental; urgency=low
+
+  * rebuild against the latest apt ABI in experimental
+
+ -- Michael Vogt <mvo@debian.org>  Fri, 30 Jul 2010 13:48:32 +0200
+
 python-apt (0.7.96.1) unstable; urgency=low
 
   * tests/test_debfile.py:
