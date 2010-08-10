@@ -31,6 +31,7 @@ http://espejo.softwarelibre.gob.bo/archive.ubuntu.com/ubuntu/
 #LOC:BR
 http://espelhos.edugraf.ufsc.br/ubuntu/
 http://mirror.globo.com/ubuntu/archive/
+http://sft.if.usp.br/ubuntu/
 http://ubuntu-archive.locaweb.com.br/ubuntu/
 http://ubuntu.c3sl.ufpr.br/ubuntu/
 http://ubuntu.interlegis.gov.br/ubuntu/
@@ -117,6 +118,7 @@ http://ftp.dat.etsit.upm.es/ubuntu/
 http://ftp.gui.uva.es/sites/ubuntu.com/ubuntu/
 http://ftp.udc.es/ubuntu/
 http://mirror.ousli.org/ubuntu/
+http://softlibre.unizar.es/ubuntu/archive/
 http://sunsite.rediris.es/mirror/ubuntu-archive/
 http://ubuntu.cica.es/ubuntu/
 http://ubuntu.grn.cat/ubuntu/
@@ -132,6 +134,7 @@ http://distrib-coffee.ipsl.jussieu.fr/ubuntu/
 http://ftp.crihan.fr/ubuntu/
 http://ftp.free.org/mirrors/archive.ubuntu.com/ubuntu/
 http://ftp.oleane.net/ubuntu/
+http://ftp.u-picardie.fr/mirror/ubuntu/ubuntu/
 http://mirror.ovh.net/ubuntu/
 http://mirrors.ircam.fr/pub/ubuntu/archive/
 http://ubuntu-archive.mirrors.proxad.net/ubuntu/
@@ -297,6 +300,7 @@ http://ubuntu.qatar.cmu.edu/ubuntu/
 #LOC:RO
 http://ftp.astral.ro/mirrors/ubuntu.com/ubuntu/
 http://ftp.gts.lug.ro/ubuntu/
+http://ftp.roedu.net/mirrors/ubuntulinux.org/ubuntu/
 http://mirror.arlug.ro/pub/ubuntu/ubuntu/
 #LOC:RS
 http://rpm.scl.rs/linux/ubuntu/archive/
@@ -341,7 +345,6 @@ http://ubuntu-archive.sit.kmutt.ac.th/
 #LOC:TR
 http://ftp.ankara.edu.tr/ubuntu/
 http://ftp.linux.org.tr/ubuntu/
-http://ftp.metu.edu.tr/ubuntu/
 http://russell.cs.bilgi.edu.tr/ubuntu/
 http://ubuntu.gnu.gen.tr/ubuntu/
 #LOC:TW
@@ -358,8 +361,8 @@ http://ftp.tku.edu.tw/ubuntu/
 http://ftp.twaren.net/Linux/Ubuntu/ubuntu/
 http://mirror.nttu.edu.tw/ubuntu/
 http://tw.archive.ubuntu.com/ubuntu/
-http://ubuntu.cs.nctu.edu.tw/ubuntu/
 http://ubuntu.stu.edu.tw/ubuntu/
+http://www.mirror.tw/pub/ubuntu/ubuntu/
 #LOC:UA
 http://mirror.mirohost.net/ubuntu/
 http://mirrors.dnepr.com/ubuntu/
@@ -368,7 +371,6 @@ http://ubuntu.org.ua/ubuntu/
 http://76.73.4.58/ubuntu/
 http://archive.linux.duke.edu/ubuntu/
 http://astromirror.uchicago.edu/ubuntu/
-http://cudlug.cudenver.edu/ubuntu/
 http://ftp.egr.msu.edu/pub/ubuntu/archive/
 http://ftp.usf.edu/pub/ubuntu/
 http://ftp.ussg.iu.edu/linux/ubuntu/
