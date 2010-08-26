@@ -48,8 +48,24 @@ class TestDebfilee(unittest.TestCase):
         apt_pkg.config.set("APT::Architecture","i386")
         apt_pkg.config.set("Dir::State::status", 
                            "./data/test_debs/var/lib/dpkg/status")
+        apt_pkg.config.set("Dir::State::lists", 
+                           "./data/test_debs/var/lib/apt/lists")
+        apt_pkg.config.set("Dir::Etc::sourcelist", 
+                           "./data/test_debs/etc/apt/sources.list")
         apt_pkg.init_system()
         self.cache = apt.Cache()
+
+    def testDscFile(self):
+        filename = "hello_2.5-1.dsc"
+        deb = apt.debfile.DscSrcPackage(cache=self.cache)
+        deb.open(os.path.join("data", "test_debs", filename))
+        self.assertTrue(deb.check(), "got failure '%s'" % deb._failure_string)
+        missing = set(['autotools-dev'])
+        self.assertEqual(set(deb.missing_deps), missing)
+        filename = "impossible-build-depends_2.5-1.dsc"
+        deb = apt.debfile.DscSrcPackage(cache=self.cache)
+        deb.open(os.path.join("data", "test_debs", filename))
+        self.assertFalse(deb.check())
 
     def testDebFile(self):
         deb = apt.debfile.DebPackage(cache=self.cache)
