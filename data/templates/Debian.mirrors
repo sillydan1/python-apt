@@ -53,10 +53,12 @@ ftp://ftp.be.debian.org/debian/
 ftp://ftp.belnet.be/debian/
 ftp://ftp.debian.skynet.be/debian/
 ftp://ftp.easynet.be/debian/
+ftp://mirror.eurid.eu/debian/
 http://ftp.be.debian.org/debian/
 http://ftp.belnet.be/debian/
 http://ftp.debian.skynet.be/ftp/debian/
 http://ftp.easynet.be/ftp/debian/
+http://mirror.eurid.eu/debian/
 #LOC:BG
 ftp://debian.ipacct.com/debian/
 ftp://debian.ludost.net/debian/
@@ -73,7 +75,6 @@ http://debian.telecoms.bg/debian/
 http://ftp.bg.debian.org/debian/
 http://ftp.uni-sofia.bg/debian/
 #LOC:BR
-ftp://debian.das.ufsc.br/pub/debian/
 ftp://debian.las.ic.unicamp.br/debian/
 ftp://debs.ifsul.edu.br/debian/
 ftp://ftp.br.debian.org/debian/
@@ -104,7 +105,6 @@ ftp://mirror.its.dal.ca/debian/
 http://debian.mirror.iweb.ca/debian/
 http://debian.mirror.rafal.ca/debian/
 http://debian.savoirfairelinux.net/debian/
-http://debian.yorku.ca/debian/
 http://ftp.ca.debian.org/debian/
 http://ftp3.nrc.ca/debian/
 http://mirror.cpsc.ucalgary.ca/mirror/debian.org/debian/
@@ -176,6 +176,7 @@ ftp://ftp.uni-kl.de/debian/
 ftp://ftp.uni-koeln.de/debian/
 ftp://ftp2.de.debian.org/debian/
 ftp://ftp5.gwdg.de/pub/linux/debian/debian/
+ftp://mirror.1und1.de/debian/
 ftp://mirror.ayous.org/debian/
 ftp://mirror.unitedcolo.de/debian/
 http://artfiles.org/debian/
@@ -203,6 +204,7 @@ http://ftp.uni-kl.de/debian/
 http://ftp.uni-koeln.de/debian/
 http://ftp2.de.debian.org/debian/
 http://ftp5.gwdg.de/pub/linux/debian/debian/
+http://mirror.1und1.de/debian/
 http://mirror.ayous.org/debian/
 http://mirror.unitedcolo.de/debian/
 #LOC:DK
