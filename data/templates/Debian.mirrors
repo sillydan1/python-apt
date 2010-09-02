@@ -654,7 +654,7 @@ ftp://ftp.uwsg.indiana.edu/linux/debian/
 ftp://gladiator.real-time.com/linux/debian/
 ftp://lug.mtu.edu/debian/
 ftp://mirror.anl.gov/pub/debian/
-ftp://mirror.cc.columbia.edudebian/
+ftp://mirror.cc.columbia.edu/debian/
 ftp://mirror.cs.wisc.edu/debian/
 ftp://mirror.fdcservers.net/debian/
 ftp://mirror.its.uidaho.edu/debian/
@@ -695,7 +695,7 @@ http://ftp.uwsg.indiana.edu/linux/debian/
 http://linux.csua.berkeley.edu/debian/
 http://lug.mtu.edu/debian/
 http://mirror.anl.gov/debian/
-http://mirror.cc.columbia.edudebian/
+http://mirror.cc.columbia.edu/debian/
 http://mirror.cs.wisc.edu/debian/
 http://mirror.fdcservers.net/debian/
 http://mirror.hmc.edu/debian/
