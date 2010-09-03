@@ -25,6 +25,7 @@ http://ubuntu.mirrors.skynet.be/ubuntu/
 http://ubuntu.hitsol.net/ubuntu/
 http://ubuntu.ipacct.com/ubuntu/
 http://ubuntu.linux-bg.org/ubuntu/
+http://ubuntu.nano-box.net/ubuntu/
 #LOC:BO
 http://espejo.softwarelibre.gob.bo/archive.ubuntu.com/ubuntu/
 #LOC:BR
@@ -36,9 +37,9 @@ http://ubuntu.c3sl.ufpr.br/ubuntu/
 http://ubuntu.interlegis.gov.br/ubuntu/
 http://ubuntu.mirror.pop-sc.rnp.br/ubuntu/
 http://ubuntu.ufba.br/ubuntu/
-http://www.las.ic.unicamp.br/pub/ubuntu/
 #LOC:BY
 http://ftp.byfly.by/ubuntu/
+http://linux.org.by/ubuntu/
 http://mirror.datacenter.by/ubuntu/
 #LOC:CA
 ftp://ftp.cs.mun.ca/pub/mirror/ubuntu/
@@ -59,7 +60,6 @@ http://mirror.netlinux.cl/ubuntu/
 #LOC:CN
 http://ftp.sjtu.edu.cn/ubuntu/
 http://mirror.bjtu.edu.cn/ubuntu/
-http://mirror.lupaworld.com/ubuntu/
 http://mirrors.163.com/ubuntu/
 http://mirrors.sohu.com/ubuntu/
 http://ubuntu.cn99.com/ubuntu/
@@ -419,6 +419,8 @@ http://www.lug.bu.edu/mirror/ubuntu/
 #LOC:UZ
 http://ubuntu.snet.uz/ubuntu/
 http://ubuntu.uz/ubuntu/
+#LOC:VN
+http://mirror-fpt-telecom.fpt.net/ubuntu/
 #LOC:ZA
 http://ftp.leg.uct.ac.za/ubuntu/
 http://ftp.sun.ac.za/ftp/ubuntu/
