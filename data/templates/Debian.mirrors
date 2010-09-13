@@ -89,9 +89,9 @@ http://linorg.usp.br/debian/
 http://linux.iq.usp.br/debian/
 http://sft.if.usp.br/debian/
 #LOC:BY
-ftp://ftp.mgts.by/debian/
+ftp://ftp.by.debian.org/debian/
 ftp://linux.org.by/debian/
-http://ftp.mgts.by/debian/
+http://ftp.by.debian.org/debian/
 http://linux.org.by/debian/
 #LOC:CA
 ftp://debian.mirror.iweb.ca/debian/
