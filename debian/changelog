@@ -1,3 +1,10 @@
+python-apt (0.7.96.1ubuntu11) maverick; urgency=low
+
+  * Fix return type of DebSize() and UsrSize(), its long long,
+    not float. Thanks to Sebastian Heinlein, LP: #642936
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 20 Sep 2010 10:43:47 +0200
+
 python-apt (0.7.96.1ubuntu10) maverick; urgency=low
 
   * data/templates/Ubuntu.info.in:
