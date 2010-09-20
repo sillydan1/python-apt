@@ -1,7 +1,6 @@
 #LOC:AR
 ftp://debian.torredehanoi.org/debian/
 ftp://ftp.ccc.uba.ar/pub/linux/debian/debian/
-http://debian.logiclinux.com/debian/
 http://debian.torredehanoi.org/debian/
 http://ftp.ccc.uba.ar/pub/linux/debian/debian/
 #LOC:AT
@@ -301,7 +300,6 @@ ftp://ftp.uk.debian.org/debian/
 ftp://mirror.bytemark.co.uk/debian/
 ftp://mirror.ox.ac.uk/debian/
 ftp://mirror.positive-internet.com/debian/
-ftp://mirror.sov.uk.goscomb.net/debian/
 ftp://mirrors.melbourne.co.uk/debian/
 ftp://the.earth.li/debian/
 ftp://ukdebian.mirror.anlx.net/debian/
@@ -311,7 +309,6 @@ http://ftp.uk.debian.org/debian/
 http://mirror.bytemark.co.uk/debian/
 http://mirror.ox.ac.uk/debian/
 http://mirror.positive-internet.com/debian/
-http://mirror.sov.uk.goscomb.net/debian/
 http://mirrors.melbourne.co.uk/debian/
 http://the.earth.li/debian/
 http://ukdebian.mirror.anlx.net/debian/
@@ -373,7 +370,6 @@ http://ftp.is.debian.org/debian/
 #LOC:IT
 ftp://debian.bononia.it/debian/
 ftp://debian.dynamica.it/debian/
-ftp://debian.fastbull.org/debian/
 ftp://debian.fastweb.it/debian/
 ftp://freedom.dicea.unifi.it/pub/linux/debian/
 ftp://ftp.it.debian.org/debian/
@@ -381,11 +377,9 @@ ftp://giano.com.dist.unige.it/debian/
 ftp://mi.mirror.garr.it/mirrors/debian/
 http://debian.bononia.it/debian/
 http://debian.dynamica.it/debian/
-http://debian.fastbull.org/debian/
 http://debian.fastweb.it/debian/
 http://freedom.dicea.unifi.it/ftp/pub/linux/debian/
 http://ftp.it.debian.org/debian/
-http://ftp.unina.it/pub/linux/distributions/debian/
 http://giano.com.dist.unige.it/debian/
 http://mi.mirror.garr.it/mirrors/debian/
 http://mirror.units.it/debian/
