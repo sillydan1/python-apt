@@ -65,8 +65,7 @@ class DebPackage(object):
         self.filename = filename
         self._debfile = apt_inst.DebFile(open(self.filename))
         control = self._debfile.control.extractdata("control")
-        # hm, 'replace' is probably better but python2.6 test fail with that
-        self._sections = apt_pkg.TagSection(control.decode("UTF-8", 'ignore'))
+        self._sections = apt_pkg.TagSection(control)
         self.pkgname = self._sections["Package"]
 
     def __getitem__(self, key):
@@ -347,7 +346,8 @@ class DebPackage(object):
                                     'targetver' : c_or.target_ver }
                                 self._cache.op_progress.done()
                                 return False
-                        if c_or.target_pkg.name in provides:
+                        if (c_or.target_pkg.name in provides and
+                            self.pkgname != pkg.name):
                             self._dbg(2, "would break (conflicts) %s" % provides)
                             self._failure_string += _("Breaks existing package '%(pkgname)s' that conflict: '%(targetpkg)s'. But the '%(debfile)s' provides it via: '%(provides)s'") % {
                                 'provides' : ",".join(provides),
@@ -512,7 +512,7 @@ class DebPackage(object):
         return sorted(content)
 
     @staticmethod
-    def to_hex(self, in_data):
+    def to_hex(in_data):
         hex = ""
         for (i, c) in enumerate(in_data):
             if i%80 == 0:
@@ -521,7 +521,7 @@ class DebPackage(object):
         return hex
 
     @staticmethod
-    def to_strish(self, in_data):
+    def to_strish(in_data):
         s = ""
         for c in in_data:
             if ord(c) < 10 or ord(c) > 127:
@@ -598,6 +598,7 @@ class DscSrcPackage(DebPackage):
         self.filename = filename
         self._depends = []
         self._conflicts = []
+        self._installed_conflicts = set()
         self.pkgname = ""
         self.binaries = []
         if self.filename is not None:
