@@ -104,6 +104,7 @@ ftp://mirror.its.dal.ca/debian/
 http://debian.mirror.iweb.ca/debian/
 http://debian.mirror.rafal.ca/debian/
 http://debian.savoirfairelinux.net/debian/
+http://debian.yorku.ca/debian/
 http://ftp.ca.debian.org/debian/
 http://ftp3.nrc.ca/debian/
 http://mirror.cpsc.ucalgary.ca/mirror/debian.org/debian/
@@ -167,6 +168,7 @@ ftp://ftp.informatik.rwth-aachen.de/pub/Linux/debian/
 ftp://ftp.informatik.uni-frankfurt.de/pub/Mirrors/debian.org/debian/
 ftp://ftp.mpi-sb.mpg.de/pub/linux/debian/
 ftp://ftp.plusline.de/pub/debian/
+ftp://ftp.rfc822.org/debian/
 ftp://ftp.rrzn.uni-hannover.de/debian/debian/
 ftp://ftp.stw-bonn.de/debian/
 ftp://ftp.tu-chemnitz.de/pub/linux/debian/debian/
@@ -196,6 +198,7 @@ http://ftp.hosteurope.de/pub/linux/debian/
 http://ftp.informatik.rwth-aachen.de/ftp/pub/Linux/debian/
 http://ftp.informatik.uni-frankfurt.de/debian/
 http://ftp.plusline.de/debian/
+http://ftp.rfc822.org/debian/
 http://ftp.stw-bonn.de/debian/
 http://ftp.tu-chemnitz.de/pub/linux/debian/debian/
 http://ftp.tu-clausthal.de/pub/linux/debian/
