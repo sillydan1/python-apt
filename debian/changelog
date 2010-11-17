@@ -1,3 +1,9 @@
+python-apt (0.7.100+newapi) experimental; urgency=low
+
+  * [Wheezy] Disable old API and break packages not using the new one.
+
+ -- Julian Andres Klode <jak@debian.org>  Wed, 17 Nov 2010 16:58:17 +0100
+
 python-apt (0.7.100) unstable; urgency=low
 
   * Final 0.7.100 release; targeted at Squeeze.
