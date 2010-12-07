@@ -538,6 +538,7 @@ http://ftp.ru.debian.org/debian/
 http://mirror.yandex.ru/debian/
 http://mirror2.corbina.ru/debian/
 #LOC:SE
+ftp://debian.bsnet.se/debian/
 ftp://debian.lth.se/debian/
 ftp://ftp.df.lth.se/debian/
 ftp://ftp.ds.karen.hj.se/debian/
@@ -545,6 +546,7 @@ ftp://ftp.port80.se/debian/
 ftp://ftp.se.debian.org/debian/
 ftp://ftp.sunet.se/pub/Linux/distributions/debian/
 ftp://mirrors.se.kernel.org/debian/
+http://debian.bsnet.se/debian/
 http://debian.lth.se/debian/
 http://ftp.df.lth.se/debian/
 http://ftp.ds.karen.hj.se/debian/
