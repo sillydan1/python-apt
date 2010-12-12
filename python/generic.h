@@ -79,7 +79,9 @@ typedef int Py_ssize_t;
 
 static inline const char *PyUnicode_AsString(PyObject *op) {
     // Convert to bytes object, using the default encoding.
-    PyObject *bytes = PyUnicode_AsEncodedString(op,0,0);
+    // Use Python-internal API, there is no other way to do this
+    // without a memory leak.
+    PyObject *bytes = _PyUnicode_AsDefaultEncodedString(op, 0);
     return bytes ? PyBytes_AS_STRING(bytes) : 0;
 }
 
@@ -202,8 +204,10 @@ void CppDeallocPtr(PyObject *iObj)
    std::cerr << "=== DEALLOCATING " << iObj->ob_type->tp_name << "*+ ===\n";
    #endif
    CppPyObject<T> *Obj = (CppPyObject<T> *)iObj;
-   if (!((CppPyObject<T>*)Obj)->NoDelete)
+   if (!((CppPyObject<T>*)Obj)->NoDelete)  {
       delete Obj->Object;
+      Obj->Object = NULL;
+   }
    CppClear<T>(iObj);
    iObj->ob_type->tp_free(iObj);
 }
