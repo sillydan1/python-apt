@@ -1,3 +1,10 @@
+python-apt (0.7.100.1ubuntu3) natty; urgency=low
+
+  * python/depcache.cc:
+    - fix another refcount problem
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Wed, 22 Dec 2010 16:39:49 +0100
+
 python-apt (0.7.100.1ubuntu2) natty; urgency=low
 
   * python/depcache.cc:
