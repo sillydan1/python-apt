@@ -1,3 +1,14 @@
+python-apt (0.7.96.1ubuntu11.1) maverick-proposed; urgency=low
+
+  * python/acquire-item.cc:
+    - fix format string for FileSize and PartialSize to be
+      long long instead of float
+    - use strsprint() instead of PyString_FromFormat() because the 
+      later does not support %llu until python 2.7. This fixes the
+      segfault LP: #655154
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 10 Jan 2011 18:54:32 +0100
+
 python-apt (0.7.96.1ubuntu11) maverick; urgency=low
 
   * Fix return type of DebSize() and UsrSize(), its long long,
