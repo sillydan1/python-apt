@@ -1,6 +1,7 @@
 #LOC:AR
 http://ftp.ccc.uba.ar/pub/linux/ubuntu/
 http://mirror.fcaglp.unlp.edu.ar/ubuntu/
+http://ubuntu.innova-red.net/ubuntu/
 http://ubuntu.unc.edu.ar/ubuntu/
 #LOC:AT
 http://gd.tuwien.ac.at/opsys/linux/ubuntu/archive/
@@ -12,6 +13,7 @@ http://ftp.iinet.net.au/pub/ubuntu/
 http://mirror.aarnet.edu.au/pub/ubuntu/archive/
 http://mirror.internode.on.net/pub/ubuntu/ubuntu/
 http://mirror.linux.org.au/ubuntu/
+http://mirror.netspace.net.au/pub/ubuntu/
 http://mirror.optus.net/ubuntu/
 http://mirror.waia.asn.au/ubuntu/
 #LOC:BA
@@ -28,8 +30,7 @@ http://mirror.telepoint.bg/ubuntu/
 http://ubuntu.hitsol.net/ubuntu/
 http://ubuntu.ipacct.com/ubuntu/
 http://ubuntu.linux-bg.org/ubuntu/
-#LOC:BO
-http://espejo.softwarelibre.gob.bo/archive.ubuntu.com/ubuntu/
+http://ubuntu.nano-box.net/ubuntu/
 #LOC:BR
 http://espelhos.edugraf.ufsc.br/ubuntu/
 http://mirror.globo.com/ubuntu/archive/
@@ -194,7 +195,6 @@ http://mirror.isoc.org.il/pub/ubuntu/
 #LOC:IN
 ftp://ftp.iitb.ac.in/distributions/ubuntu/archives/
 http://ftp.iitm.ac.in/ubuntu/
-http://mirror.cse.iitk.ac.in/ubuntu/
 http://ubuntuarchive.hnsdc.com/ubuntu/
 #LOC:IS
 http://speglar.simnet.is/ubuntu/
@@ -376,7 +376,7 @@ http://ubuntu.cs.nctu.edu.tw/ubuntu/
 http://ubuntu.stu.edu.tw/ubuntu/
 #LOC:UA
 http://mirror.mirohost.net/ubuntu/
-http://mirrors.dnepr.com/ubuntu/
+http://mirrors.uaip.org/ubuntu/
 #LOC:US
 ftp://mirror1.cs.washington.edu/ubuntu/
 http://76.73.4.58/ubuntu/
