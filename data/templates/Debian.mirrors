@@ -89,9 +89,9 @@ http://linorg.usp.br/debian/
 http://sft.if.usp.br/debian/
 #LOC:BY
 ftp://ftp.by.debian.org/debian/
-ftp://linux.org.by/debian/
+ftp://mirror.datacenter.by/debian/
 http://ftp.by.debian.org/debian/
-http://linux.org.by/debian/
+http://mirror.datacenter.by/debian/
 #LOC:CA
 ftp://debian.mirror.iweb.ca/debian/
 ftp://debian.mirror.rafal.ca/debian/
@@ -111,6 +111,7 @@ http://mirror.cpsc.ucalgary.ca/mirror/debian.org/debian/
 http://mirror.csclub.uwaterloo.ca/debian/
 http://mirror.its.dal.ca/debian/
 http://mirror.peer1.net/debian/
+http://mirrors.ece.ubc.ca/debian/
 #LOC:CH
 ftp://ftp.ch.debian.org/debian/
 ftp://mirror.switch.ch/mirror/debian/
@@ -124,6 +125,7 @@ http://ftp.cl.debian.org/debian/
 #LOC:CN
 ftp://mirrors.geekbone.org/debian/
 ftp://www.anheng.com.cn/debian/
+http://mirrors.163.com/debian/
 http://mirrors.geekbone.org/debian/
 http://www.anheng.com.cn/debian/
 #LOC:CO
@@ -167,7 +169,6 @@ ftp://ftp.informatik.rwth-aachen.de/pub/Linux/debian/
 ftp://ftp.informatik.uni-frankfurt.de/pub/Mirrors/debian.org/debian/
 ftp://ftp.mpi-sb.mpg.de/pub/linux/debian/
 ftp://ftp.plusline.de/pub/debian/
-ftp://ftp.rfc822.org/debian/
 ftp://ftp.rrzn.uni-hannover.de/debian/debian/
 ftp://ftp.stw-bonn.de/debian/
 ftp://ftp.tu-chemnitz.de/pub/linux/debian/debian/
@@ -197,7 +198,6 @@ http://ftp.hosteurope.de/pub/linux/debian/
 http://ftp.informatik.rwth-aachen.de/ftp/pub/Linux/debian/
 http://ftp.informatik.uni-frankfurt.de/debian/
 http://ftp.plusline.de/debian/
-http://ftp.rfc822.org/debian/
 http://ftp.stw-bonn.de/debian/
 http://ftp.tu-chemnitz.de/pub/linux/debian/debian/
 http://ftp.tu-clausthal.de/pub/linux/debian/
@@ -440,10 +440,10 @@ http://ftp.lt.debian.org/debian/
 ftp://debian.mirror.root.lu/debian/
 http://debian.mirror.root.lu/debian/
 #LOC:LV
+ftp://debian.koyanet.lv/debian/
 ftp://debian.linux.edu.lv/debian/
-ftp://koyanet.lv/debian/
+http://debian.koyanet.lv/debian/
 http://debian.linux.edu.lv/debian/
-http://koyanet.lv/debian/
 #LOC:MD
 ftp://debian.md/debian/
 http://debian.md/debian/
@@ -611,6 +611,7 @@ ftp://ftp.tw.debian.org/debian/
 ftp://ftp.twaren.net/debian/
 ftp://mirror.nttu.edu.tw/debian/
 ftp://opensource.nchc.org.tw/debian/
+ftp://shadow.ind.ntou.edu.tw/debian/
 http://debian.csie.nctu.edu.tw/debian/
 http://debian.csie.ntu.edu.tw/debian/
 http://debian.nctu.edu.tw/debian/
@@ -623,6 +624,7 @@ http://ftp.tw.debian.org/debian/
 http://ftp.twaren.net/debian/
 http://mirror.nttu.edu.tw/debian/
 http://opensource.nchc.org.tw/debian/
+http://shadow.ind.ntou.edu.tw/debian/
 #LOC:UA
 ftp://debian.osdn.org.ua/pub/Debian/debian/
 ftp://ftp.3logic.net/debian/
