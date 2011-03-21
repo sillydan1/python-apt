@@ -330,7 +330,6 @@ http://debian.otenet.gr/debian/
 http://ftp.cc.uoc.gr/mirrors/linux/debian/
 http://ftp.gr.debian.org/debian/
 http://ftp.uoi.gr/debian/
-http://postmortem.csd.auth.gr/debian/
 #LOC:HK
 ftp://ftp.hk.debian.org/debian/
 http://ftp.hk.debian.org/debian/
@@ -524,6 +523,9 @@ ftp://mirrors.xservers.ro/debian/
 http://ftp.lug.ro/debian/
 http://ftp.ro.debian.org/debian/
 http://mirrors.xservers.ro/debian/
+#LOC:RS
+ftp://mirror.orion.rs/debian/
+http://mirror.orion.rs/debian/
 #LOC:RU
 ftp://debian.nsu.ru/debian/
 ftp://ftp.corbina.net/debian/
@@ -593,7 +595,6 @@ ftp://russell.cs.bilgi.edu.tr/debian/
 http://debian.comu.edu.tr/debian/
 http://debian.eso-es.net/debian/
 http://debian.gnu.gen.tr/debian/
-http://debian.turkmesh.com.tr/debian/
 http://ftp.linux.org.tr/debian/
 http://ftp.metu.edu.tr/debian/
 http://ftp.tr.debian.org/debian/
