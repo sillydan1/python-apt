@@ -664,6 +664,7 @@ ftp://mirror.cc.columbia.edu/debian/
 ftp://mirror.cs.wisc.edu/debian/
 ftp://mirror.fdcservers.net/debian/
 ftp://mirror.its.uidaho.edu/debian/
+ftp://mirror.mycre.ws/debian/
 ftp://mirror.rit.edu/debian/
 ftp://mirrors.bloomu.edu/debian/
 ftp://mirrors.geeks.org/debian/
@@ -706,6 +707,7 @@ http://mirror.cs.wisc.edu/debian/
 http://mirror.fdcservers.net/debian/
 http://mirror.hmc.edu/debian/
 http://mirror.its.uidaho.edu/pub/debian/
+http://mirror.mycre.ws/debian/
 http://mirror.rit.edu/debian/
 http://mirror.steadfast.net/debian/
 http://mirrors.acm.jhu.edu/debian/

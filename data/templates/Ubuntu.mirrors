@@ -1,6 +1,6 @@
 #LOC:AR
 http://ftp.ccc.uba.ar/pub/linux/ubuntu/
-http://ubuntu.innova-red.net/ubuntu/
+http://mirror.fcaglp.unlp.edu.ar/ubuntu/
 http://ubuntu.unc.edu.ar/ubuntu/
 #LOC:AT
 http://gd.tuwien.ac.at/opsys/linux/ubuntu/archive/
@@ -113,6 +113,7 @@ http://mirrors.telianet.dk/ubuntu/
 #LOC:EE
 http://ftp.estpak.ee/ubuntu/
 #LOC:ES
+http://dafi.inf.um.es/ubuntu/
 http://ftp.caliu.cat/pub/distribucions/ubuntu/archive/
 http://ftp.dat.etsit.upm.es/ubuntu/
 http://ftp.gui.uva.es/sites/ubuntu.com/ubuntu/
@@ -168,6 +169,7 @@ http://ubuntu.otenet.gr/
 #LOC:HR
 http://hr.archive.ubuntu.com/ubuntu/
 #LOC:HU
+http://ftp.freepark.org/ubuntu/
 http://ftp.kfki.hu/linux/ubuntu/
 http://ubuntu.mirrors.crysys.hu/
 http://ubuntu.sth.sze.hu/ubuntu/
@@ -176,6 +178,7 @@ http://dl2.foss-id.web.id/ubuntu/
 http://kambing.ui.ac.id/ubuntu/
 http://kebo.vlsm.org/ubuntu/
 http://pandawa.ipb.ac.id/ubuntu/
+http://repo.undip.ac.id/ubuntu/
 http://ubuntu.indika.net.id/ubuntu/
 http://ubuntu.pesat.net.id/archive/
 #LOC:IE
@@ -200,7 +203,9 @@ http://ubuntu.mirror.garr.it/mirrors/ubuntu-archive/
 http://ftp.jaist.ac.jp/pub/Linux/ubuntu/
 http://ftp.riken.jp/Linux/ubuntu/
 http://ubuntu-ashisuto.ubuntulinux.jp/ubuntu/
+http://ubuntu.mithril-linux.org/archives/
 http://ubuntutym.u-toyama.ac.jp/ubuntu/
+http://www.ftp.ne.jp/Linux/packages/ubuntu/archive/
 #LOC:KG
 http://mirror.unix.kg/ubuntu/
 #LOC:KR
@@ -235,9 +240,11 @@ http://mirror.linux.org.mt/ubuntu/
 #LOC:MX
 http://tezcatl.fciencias.unam.mx/ubuntu/
 #LOC:MY
+http://archive.mmu.edu.my/ubuntu/
 http://mirror.oscc.org.my/ubuntu/
 http://mirror.upm.edu.my/ubuntu/
 http://ubuntu.bytecraft.com.my/ubuntu/
+http://ubuntu.mmu.edu.my/ubuntu/
 http://www.mirror.upm.edu.my/ubuntu/
 #LOC:NA
 http://ubuntu-archive.polytechnic.edu.na/ubuntu/
@@ -280,7 +287,6 @@ ftp://ftp.ua.pt/pub/ubuntu/
 http://archive.ubuntumirror.dei.uc.pt/ubuntu/
 http://cesium.di.uminho.pt/pub/ubuntu-archive/
 http://darkstar.ist.utl.pt/ubuntu/archive/
-http://deis-mirrors.isec.pt/ubuntu/
 http://ftp.rnl.ist.utl.pt/pub/ubuntu/archive/
 http://mirrors.fe.up.pt/ubuntu/
 http://mirrors.nfsi.pt/ubuntu/
@@ -357,7 +363,6 @@ http://ubuntu.cs.nctu.edu.tw/ubuntu/
 http://ubuntu.stu.edu.tw/ubuntu/
 #LOC:UA
 http://mirror.mirohost.net/ubuntu/
-http://mirrors.uaip.org/ubuntu/
 http://ubuntu.org.ua/ubuntu/
 #LOC:US
 ftp://mirror1.cs.washington.edu/ubuntu/
