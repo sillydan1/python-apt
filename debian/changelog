@@ -1,3 +1,12 @@
+python-apt (0.7.100.2ubuntu2) natty; urgency=low
+
+  [ Barry Warsaw ]
+  * PyFetchProgress::Pulse(): When ignoring a false return value from
+    PyArg_Parse() after running the simple callback pulse(), there can be
+    an exception on the stack, which must be cleared.  (LP: #711225)
+
+ -- Barry Warsaw <barry@ubuntu.com>  Mon, 28 Mar 2011 18:17:11 -0400
+
 python-apt (0.7.100.2ubuntu1) natty; urgency=low
 
   * merged fix for parse_depends() in a multiarch environment
