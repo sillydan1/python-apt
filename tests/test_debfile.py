@@ -47,6 +47,9 @@ class TestDebfilee(unittest.TestCase):
     def setUp(self):
         apt_pkg.init_config()
         apt_pkg.config.set("APT::Architecture","i386")
+        # FIXME: When run via test_all.py, the tests fail without this if it
+        # is set in the system.
+        apt_pkg.config.clear("APT::Architectures")
         apt_pkg.config.set("Dir::State::status", 
                            "./data/test_debs/var/lib/dpkg/status")
         apt_pkg.config.set("Dir::State::lists", 
@@ -111,6 +114,11 @@ Description: testpackage for gdebi - contains usr/bin/binary for file reading
         self.assertEqual(content, needle)
         content = deb.control_content("control")
         self.assertEqual(content, needle)
+
+    def test_xz_data(self):
+        deb = apt.debfile.DebPackage("./data/test_debs/data-tar-xz.deb")
+        self.assertEqual(deb.filelist, ["./", "usr/", "usr/bin/"])
+
 
 if __name__ == "__main__":
     #logging.basicConfig(level=logging.DEBUG)
