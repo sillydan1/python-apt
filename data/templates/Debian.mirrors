@@ -123,8 +123,10 @@ ftp://ftp.cl.debian.org/debian/
 http://debian.utalca.cl/debian/
 http://ftp.cl.debian.org/debian/
 #LOC:CN
+ftp://debian.bjtu.edu.cn/debian/
 ftp://mirrors.geekbone.org/debian/
 ftp://www.anheng.com.cn/debian/
+http://debian.bjtu.edu.cn/debian/
 http://mirrors.163.com/debian/
 http://mirrors.geekbone.org/debian/
 http://www.anheng.com.cn/debian/
@@ -348,11 +350,13 @@ ftp://debian.sth.sze.hu/debian/
 ftp://ftp.bme.hu/debian/
 ftp://ftp.hu.debian.org/debian/
 ftp://ftp.kfki.hu/pub/linux/debian/
+ftp://ftp.uni-pannon.hu/debian/
 http://debian.mirrors.crysys.hu/debian/
 http://debian.sth.sze.hu/debian/
 http://ftp.bme.hu/debian/
 http://ftp.hu.debian.org/debian/
 http://ftp.kfki.hu/linux/debian/
+http://ftp.uni-pannon.hu/debian/
 #LOC:ID
 ftp://kambing.ui.ac.id/debian/
 ftp://kebo.vlsm.org/debian/
