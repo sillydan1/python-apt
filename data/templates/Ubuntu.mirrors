@@ -12,7 +12,6 @@ http://ubuntu.uni-klu.ac.at/ubuntu/
 http://ftp.iinet.net.au/pub/ubuntu/
 http://mirror.aarnet.edu.au/pub/ubuntu/archive/
 http://mirror.internode.on.net/pub/ubuntu/ubuntu/
-http://mirror.linux.org.au/ubuntu/
 http://mirror.netspace.net.au/pub/ubuntu/
 http://mirror.optus.net/ubuntu/
 http://mirror.waia.asn.au/ubuntu/
@@ -68,8 +67,6 @@ http://ubuntu.cn99.com/ubuntu/
 http://ubuntu.dormforce.net/ubuntu/
 http://ubuntu.srt.cn/ubuntu/
 http://ubuntu.uestc.edu.cn/ubuntu/
-#LOC:CO
-http://matematicas.unal.edu.co/ubuntu/
 #LOC:CR
 http://mirrors.ucr.ac.cr/ubuntu/
 #LOC:CY
@@ -114,7 +111,6 @@ http://mirrors.telianet.dk/ubuntu/
 #LOC:EE
 http://ftp.estpak.ee/ubuntu/
 #LOC:ES
-http://dafi.inf.um.es/ubuntu/
 http://ftp.caliu.cat/pub/distribucions/ubuntu/archive/
 http://ftp.dat.etsit.upm.es/ubuntu/
 http://ftp.gui.uva.es/sites/ubuntu.com/ubuntu/
@@ -335,6 +331,7 @@ http://ftp.arnes.si/pub/mirrors/ubuntu/
 http://mirror.lihnidos.org/ubuntu/ubuntu/
 #LOC:SK
 http://ftp.antik.sk/ubuntu/
+http://ftp.energotel.sk/pub/linux/ubuntu/
 http://mirror.ynet.sk/pub/ubuntu/packages/
 http://tux.rainside.sk/ubuntu/
 http://ubuntu.ynet.sk/ubuntu/
@@ -389,6 +386,7 @@ http://mirror.its.uidaho.edu/pub/ubuntu/
 http://mirror.math.ucdavis.edu/ubuntu/
 http://mirror.pnl.gov/ubuntu/
 http://mirror.team-cymru.org/ubuntu/
+http://mirror.umoss.org/ubuntu/
 http://mirror.uoregon.edu/ubuntu/
 http://mirror.vcu.edu/pub/gnu+linux/ubuntu/
 http://mirrors.acm.jhu.edu/ubuntu/
