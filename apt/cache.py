@@ -107,7 +107,7 @@ class Cache(object):
                 os.makedirs(rootdir + d)
         for f in files:
             if not os.path.exists(rootdir + f):
-                open(rootdir + f, "w")
+                open(rootdir + f, "w").close()
 
     def _run_callbacks(self, name):
         """ internal helper to run a callback """
@@ -288,6 +288,30 @@ class Cache(object):
         finally:
             os.close(lock)
 
+    def fetch_archives(self, progress=None, fetcher=None):
+        """Fetch the archives for all packages marked for install/upgrade.
+
+        You can specify either an :class:`apt.progress.base.AcquireProgress()`
+        object for the parameter *progress*, or specify an already
+        existing :class:`apt_pkg.Acquire` object for the parameter *fetcher*.
+
+        The return value of the function is undefined. If an error occured,
+        an exception of type :class:`FetchFailedException` or
+        :class:`FetchCancelledException` is raised.
+
+        .. versionadded:: 0.8.0
+        """
+        if progress is not None and fetcher is not None:
+            raise ValueError("Takes a progress or a an Acquire object")
+        if progress is None:
+            progress = apt.progress.text.AcquireProgress()
+        if fetcher is None:
+            fetcher = apt_pkg.Acquire(progress)
+
+        
+        return self._fetch_archives(fetcher,
+                                    apt_pkg.PackageManager(self._depcache))
+
     def is_virtual_package(self, pkgname):
         """Return whether the package is a virtual package."""
         try:
@@ -338,6 +362,10 @@ class Cache(object):
     def update(self, fetch_progress=None, pulse_interval=0,
                raise_on_error=True, sources_list=None):
         """Run the equivalent of apt-get update.
+
+        You probably want to call open() afterwards, in order to utilise the
+        new cache. Otherwise, the old cache will be used which can lead to
+        strange bugs.
 
         The first parameter *fetch_progress* may be set to an instance of
         apt.progress.FetchProgress, the default is apt.progress.FetchProgress()

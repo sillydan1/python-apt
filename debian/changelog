@@ -1,3 +1,25 @@
+python-apt (0.8.0~exp2) experimental; urgency=low
+
+  * aptsources: Parse multi-arch sources.list files correctly
+  * aptsources: Allow insertion of new multi-arch entries
+  * aptsources: Various cleanup work
+  * all: Fix all instances of ResourceWarning about unclosed files
+  * tests/test_apt_cache.py: Use assertTrue() instead of assert_()
+  * apt_pkg: Raise error when parse_commandline gets empty argv (LP: #707416)
+  * apt_pkg: Fix time_to_str, time_rfc1123 to accept more correct values
+    (time_to_str accepts unsigned long, time_rfc1123 long long, y2k31-correct).
+  * apt.progress: Use long for ETA, natural type for size (LP: #377375)
+  * aptsources/sourceslist.py: s/aptsource.py/sourceslist.py/ (LP: #309603)
+  * doc/examples: Add example on how to get architecture names (LP: #194374)
+  * apt_pkg: Fix unsigned/long-vs-int issues (LP: #610820)
+  * apt.cache: Document that update() may need an open() (Closes: #622342)
+  * apt.cache: Add a fetch_archives() method (Closes: #622347)
+  * doc: Fix a minor formatting error, patch by Jakub Wilk (Closes: #608914)
+  * apt.package: Add 'tasks' to Version, improve doc (Closes: #619574)
+  * doc: Fix documentation of BaseDependency.relation (Closes: #607031)
+
+ -- Julian Andres Klode <jak@debian.org>  Tue, 12 Apr 2011 15:25:38 +0200
+
 python-apt (0.8.0~exp1) experimental; urgency=low
 
   * Disable the old-style API, and break all packages using it
