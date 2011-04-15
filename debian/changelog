@@ -1,3 +1,23 @@
+python-apt (0.7.100.1+squeeze1) stable; urgency=low
+
+  [ Michael Vogt ]
+  * python/apt_pkgmodule.cc:
+    - strip multiarch by default in RealParseDepends
+    - add optional parameter to allow parse_depends() to keep the
+      multiarch parameter
+  * tests/test_deps.py:
+    - add test forapt_pkg.parse_depends(strip_multiarch=True)
+  * python/arfile.cc, apt/debfile.py:
+    - add support for .xz archives
+  * tests/test_debfile.py:
+    - add test for xz compression
+
+  [ Julian Andres Klode ]
+  * tests/test_debfile.py:
+    - Fix mixed tab/spaces indentation in xz test
+
+ -- Julian Andres Klode <jak@debian.org>  Fri, 15 Apr 2011 09:03:42 +0200
+
 python-apt (0.7.100.1) unstable; urgency=low
 
   [ Julian Andres Klode ]
