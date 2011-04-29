@@ -422,6 +422,158 @@ Installing with :class:`PackageManager`
 
         A constant for checking whether the the result of the call to
         :meth:`do_install` is 'incomplete'.
+        
+    All instances of this class also support the following methods:
+    
+    .. note::
+        
+        This methods are provided mainly for subclassing purposes
+        and should not be used in most programs. This class is a
+        subclass of an internal :class:`_PackageManager` which does
+        not provide that methods. As the public C++ API creates such
+        an object without those methods, you should not rely on those
+        methods to be available unless you used the constructor of
+        :class:`PackageManager` to create the object.
+    
+    .. method:: configure(pkg: Package) -> bool 
+
+        Notify the package manager that the :class:`Package` given
+        by *pkg* is to be configured. Must return a ``True`` value
+        or ``None`` to continue, or a value which is ``False`` if
+        evaluated as boolean to abort.
+        
+        .. versionadded:: 0.8.0
+
+    .. method:: install(pkg: Package, filename: str) -> bool 
+
+        Notify the package manager that the :class:`Package` given
+        by *pkg* is to be installed from the .deb located at
+        *filename*. Must return a ``True`` value or ``None`` to
+        continue, or a value which is ``False`` if evaluated as
+        boolean to abort.
+        
+        
+        .. versionadded:: 0.8.0
+
+    .. method:: remove(pkg: Package, purge: bool) -> bool 
+
+        Notify the package manager that the :class:`Package` given
+        by *pkg* is to be removed. If *purge* is ``True``, the package
+        shall be purged. Must return a ``True`` value or ``None`` to
+        continue, or a value which is ``False`` if evaluated as boolean
+        to abort.
+        
+        
+        .. versionadded:: 0.8.0
+ 
+    .. method:: go(status_fd: int) -> bool  
+        
+        Start dpkg, writing status information to the file descriptor
+        given by *status_fd*. Must return a ``True`` value or ``None`` to
+        continue, or a value which is ``False`` if evaluated as boolean
+        to abort.
+        
+        .. versionadded:: 0.8.0
+
+    .. method:: reset()
+
+        Reset the package manager for a new round.
+        
+        .. versionadded:: 0.8.0
+
+        
+Installation ordering with :class:`OrderList`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. class:: OrderList(depcache: DepCache)
+
+	Represent a :ctype:`pkgOrderList`, used for installation
+	ordering. This class provides several methods and attributes,
+	is complicated and should not be used by normal programs.
+	
+	.. versionadded:: 0.8.0
+	
+	This class is a sequence and supports the following operations:
+	
+	.. describe:: list[index]
+	
+		Get the package at the given index in the list. Negative
+		index is supported.
+		
+	.. describe:: len(list)
+	
+		The length of the list.
+		
+	It also supports the append() method from :class:`list`:
+	
+	.. method:: append(pkg: Package)
+	
+		Append a new package to the end of the list. Please note that
+		you may not append a package twice, as only as much packages
+		as in the cache can be added.
+		
+	The class also defines several specific attributes and methods,
+	to be described hereinafter.
+		
+	.. method:: score(pkg: Package)
+	
+		Return the score of the package. Packages are basically
+		ordered by descending score.
+		
+	This class allows flags to be set on packages. Those flags are:
+	
+	.. attribute:: FLAG_ADDED
+	.. attribute:: FLAG_ADD_PENDING
+	.. attribute:: FLAG_IMMEDIATE
+	.. attribute:: FLAG_LOOP
+	.. attribute:: FLAG_UNPACKED
+	.. attribute:: FLAG_CONFIGURED
+	.. attribute:: FLAG_REMOVED
+	.. attribute:: FLAG_STATES_MASK
+	
+		Same as ``FLAG_UNPACKED | FLAG_CONFIGURED | FLAG_REMOVED``
+		
+	.. attribute:: FLAG_IN_LIST
+	.. attribute:: FLAG_AFTER
+	
+	The methods to work with those flags are:
+		
+	.. method:: flag(pkg: Package, flag: int[, unset_flags: int])
+
+		Flag a package. Sets the flags given in *flag* and unsets
+		any flags given in *unset_flags*.
+		
+	.. method:: is_flag(pkg: Package, flag: int)
+	
+		Check whether the flags in *flag* are set for the package.
+		
+	.. method:: wipe_flags(flags: int)
+	
+		Remove the flags in *flags* from all packages.
+	
+	.. method:: is_missing(pkg: Package)
+
+		Check if the package is missing (not really usable right now)
+
+	.. method:: is_now(pkg: Package)
+
+		Check if the package is flagged for any state but removal.
+		
+	The following methods for ordering are provided:
+	
+	.. method:: order_critical()
+	
+		Order the packages for critical unpacking; that is, only
+		respect pre-dependencies.
+	
+	.. method:: order_unpack()
+	
+		Order the packages for unpacking, repecting Pre-Depends and
+		Conflicts.
+	
+	.. method:: order_configure()
+	
+		Order the packages for configuration, respecting Depends.
 
 Improve performance with :class:`ActionGroup`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

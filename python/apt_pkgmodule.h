@@ -102,6 +102,7 @@ PyObject *GetPkgAcqFile(PyObject *Self, PyObject *Args, PyObject *kwds);
 
 // packagemanager
 extern PyTypeObject PyPackageManager_Type;
+extern PyTypeObject PyPackageManager2_Type;
 PyObject *GetPkgManager(PyObject *Self,PyObject *Args);
 
 
@@ -134,6 +135,7 @@ extern PyTypeObject PyAcquireItemDesc_Type;
 extern PyTypeObject PyAcquireWorker_Type;
 extern PyTypeObject PySystemLock_Type;
 extern PyTypeObject PyFileLock_Type;
+extern PyTypeObject PyOrderList_Type;
 
 // Functions to be exported in the public API.
 
@@ -159,6 +161,7 @@ extern PyTypeObject PyFileLock_Type;
 # define PyPackage_ToCpp           GetCpp<pkgCache::PkgIterator>
 # define PyPackageFile_ToCpp       GetCpp<pkgCache::PkgFileIterator>
 # define PyIndexFile_ToCpp         GetCpp<pkgIndexFile*>
+# define PyOrderList_ToCpp         GetCpp<pkgOrderList*>
 # define PyPackageList_ToCpp       GetCpp<PkgListStruct> // TODO
 # define PyPackageManager_ToCpp    GetCpp<pkgPackageManager*>
 # define PyPackageRecords_ToCpp    GetCpp<PkgRecordsStruct> // TODO
@@ -191,6 +194,7 @@ PyObject* PyMetaIndex_FromCpp(metaIndex* const &obj, bool Delete, PyObject *Owne
 PyObject* PyPackage_FromCpp(pkgCache::PkgIterator const &obj, bool Delete, PyObject *Owner);
 PyObject* PyGroup_FromCpp(pkgCache::GrpIterator const &obj, bool Delete, PyObject *Owner);
 PyObject* PyIndexFile_FromCpp(pkgIndexFile* const &obj, bool Delete, PyObject *Owner);
+PyObject* PyOrderList_FromCpp(pkgOrderList* const &obj, bool Delete, PyObject *Owner);
 PyObject* PyPackageFile_FromCpp(pkgCache::PkgFileIterator const &obj, bool Delete, PyObject *Owner);
 //PyObject* PyPackageList_FromCpp(PkgListStruct const &obj, bool Delete, PyObject *Owner);
 PyObject* PyPackageManager_FromCpp(pkgPackageManager* const &obj, bool Delete, PyObject *Owner);
