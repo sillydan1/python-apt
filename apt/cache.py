@@ -66,7 +66,11 @@ class Cache(object):
         self._weakref = weakref.WeakValueDictionary()
         self._set = set()
         self._fullnameset = set()
+        self._changes_count = -1
         self._sorted_set = None
+        
+        self.connect("cache_post_open", self._inc_changes_count)
+        self.connect("cache_post_change", self._inc_changes_count)
         if memonly:
             # force apt to build its caches in memory
             apt_pkg.config.set("Dir::Cache::pkgcache", "")
@@ -87,6 +91,11 @@ class Cache(object):
             # recognized (LP: #320665)
             apt_pkg.init_system()
         self.open(progress)
+        
+
+    def _inc_changes_count(self):
+        """Increase the number of changes"""
+        self._changes_count += 1
 
     def _check_and_create_required_dirs(self, rootdir):
         """
@@ -576,6 +585,7 @@ class ProblemResolver(object):
 
     def __init__(self, cache):
         self._resolver = apt_pkg.ProblemResolver(cache._depcache)
+        self._cache = cache
 
     def clear(self, package):
         """Reset the package to the default state."""
@@ -595,11 +605,15 @@ class ProblemResolver(object):
 
     def resolve(self):
         """Resolve dependencies, try to remove packages where needed."""
+        self._cache.cache_pre_change()
         self._resolver.resolve()
+        self._cache.cache_post_change()
 
     def resolve_by_keep(self):
         """Resolve dependencies, do not try to remove packages."""
+        self._cache.cache_pre_change()
         self._resolver.resolve_by_keep()
+        self._cache.cache_post_change()
 
 
 # ----------------------------- experimental interface
