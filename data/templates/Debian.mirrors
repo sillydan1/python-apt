@@ -184,6 +184,7 @@ ftp://ftp5.gwdg.de/pub/linux/debian/debian/
 ftp://mirror.1und1.de/debian/
 ftp://mirror.ayous.org/debian/
 ftp://mirror.unitedcolo.de/debian/
+ftp://server.bdwservice.eu/debian/
 http://artfiles.org/debian/
 http://debian.charite.de/debian/
 http://debian.cruisix.net/debian/
@@ -212,6 +213,7 @@ http://ftp5.gwdg.de/pub/linux/debian/debian/
 http://mirror.1und1.de/debian/
 http://mirror.ayous.org/debian/
 http://mirror.unitedcolo.de/debian/
+http://server.bdwservice.eu/debian/
 #LOC:DK
 ftp://ftp.dk.debian.org/debian/
 ftp://mirrors.rackhosting.com/debian/
@@ -658,7 +660,6 @@ ftp://ftp.gtlib.gatech.edu/pub/debian/
 ftp://ftp.keystealth.org/debian/
 ftp://ftp.lug.udel.edu/pub/debian/
 ftp://ftp.ndlug.nd.edu/debian/
-ftp://ftp.uga.edu/debian/
 ftp://ftp.us.debian.org/debian/
 ftp://ftp.uwsg.indiana.edu/linux/debian/
 ftp://gladiator.real-time.com/linux/debian/
@@ -699,7 +700,6 @@ http://ftp.gtlib.gatech.edu/debian/
 http://ftp.keystealth.org/debian/
 http://ftp.lug.udel.edu/pub/debian/
 http://ftp.ndlug.nd.edu/mirrors/debian/
-http://ftp.uga.edu/debian/
 http://ftp.us.debian.org/debian/
 http://ftp.utexas.edu/debian/
 http://ftp.uwsg.indiana.edu/linux/debian/
@@ -714,6 +714,7 @@ http://mirror.its.uidaho.edu/pub/debian/
 http://mirror.mycre.ws/debian/
 http://mirror.rit.edu/debian/
 http://mirror.steadfast.net/debian/
+http://mirrors.accretive-networks.net/debian/
 http://mirrors.acm.jhu.edu/debian/
 http://mirrors.bloomu.edu/debian/
 http://mirrors.geeks.org/debian/
