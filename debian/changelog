@@ -1,3 +1,13 @@
+python-apt (0.7.100.3ubuntu6.1) natty-proposed; urgency=low
+
+  [ Loïc Minier ]
+  * Backport change below to fix bogus sizes returned by python-apt funcs.
+
+  [ Julian Andres Klode ]
+  * apt_pkg: Fix unsigned/long-vs-int issues (LP: #610820)
+
+ -- Loïc Minier <loic.minier@linaro.org>  Thu, 26 May 2011 19:26:27 +0200
+
 python-apt (0.7.100.3ubuntu6) natty; urgency=low
 
   * Add missing _Description entry to Ubuntu.info for new deb-src entries.
