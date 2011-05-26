@@ -1,3 +1,13 @@
+python-apt (0.7.96.1ubuntu11.2) maverick-proposed; urgency=low
+
+  [ Loïc Minier ]
+  * Backport change below to fix bogus sizes returned by python-apt funcs.
+
+  [ Julian Andres Klode ]
+  * apt_pkg: Fix unsigned/long-vs-int issues (LP: #610820)
+
+ -- Loïc Minier <loic.minier@linaro.org>  Thu, 26 May 2011 18:30:50 +0200
+
 python-apt (0.7.96.1ubuntu11.1) maverick-proposed; urgency=low
 
   * python/acquire-item.cc:
