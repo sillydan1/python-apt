@@ -1,3 +1,27 @@
+python-apt (0.8.0) unstable; urgency=low
+
+  * Upload to unstable
+
+  [ Julian Andres Klode ]
+  * Increase Breaks for update-notifier to 0.99.3debian9
+  * utils/get_debian_mirrors.py: Adjust for new Alioth SCM urls
+  * debian/control: Standards-Version 3.9.2
+  * Fix Lintian overrides
+  * Fix spelling errors reported by Lintian (sep[a->e]rated, overrid[d]en)
+  * po/urd.po: Remove, ur.po is the correct file
+  * debian/source/format: Add, set it to "3.0 (native)"
+
+  [ Tshepang Lekhonkhobe ]
+  * Fix get_changelog in Python 3 (Closes: #626532)
+  * apt/package.py: fix a few typos [formated->formatted] (Closes: #597054)
+  * doc/source/tutorials/contributing.rst: minor improvements (Closes: #625225)
+    - one typo [2to => 2to3], one broken link [pep8.py link]
+
+  [ Translation updates ]
+  * Esperanto (Closes: #626430)
+
+ -- Julian Andres Klode <jak@debian.org>  Fri, 27 May 2011 16:12:46 +0200
+
 python-apt (0.8.0~exp4) experimental; urgency=low
 
   * apt_pkg: Add OrderList, wanted for mancoosi (Closes: #623485)
