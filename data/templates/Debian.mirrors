@@ -124,9 +124,13 @@ http://debian.utalca.cl/debian/
 http://ftp.cl.debian.org/debian/
 #LOC:CN
 ftp://debian.bjtu.edu.cn/debian/
+ftp://debian.ustc.edu.cn/debian/
+ftp://ftp.cn.debian.org/debian/
 ftp://mirrors.geekbone.org/debian/
 ftp://www.anheng.com.cn/debian/
 http://debian.bjtu.edu.cn/debian/
+http://debian.ustc.edu.cn/debian/
+http://ftp.cn.debian.org/debian/
 http://mirrors.163.com/debian/
 http://mirrors.geekbone.org/debian/
 http://www.anheng.com.cn/debian/
@@ -278,6 +282,7 @@ ftp://ftp.univ-nantes.fr/debian/
 ftp://ftp.univ-pau.fr/pub/mirrors/debian/
 ftp://ftp2.fr.debian.org/debian/
 ftp://mirror.ovh.net/debian/
+ftp://mirrors.compuscene.org/debian/
 ftp://mirrors.ircam.fr/pub/debian/
 ftp://webb.ens-cachan.fr/debian/
 http://deb-mir1.naitways.net/debian/

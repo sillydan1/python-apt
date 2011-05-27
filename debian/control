@@ -3,7 +3,7 @@ Section: python
 Priority: standard
 Maintainer: APT Development Team <deity@lists.debian.org>
 Uploaders: Michael Vogt <mvo@debian.org>, Julian Andres Klode <jak@debian.org>
-Standards-Version: 3.9.1
+Standards-Version: 3.9.2
 XS-Python-Version: >= 2.6
 X-Python3-Version: >= 3.1
 Build-Depends: apt-utils,
@@ -50,7 +50,7 @@ Breaks: packagekit-backend-apt (<= 0.4.8-0ubuntu4),
         ubuntu-dev-tools (<< 0.93debian1),
         unattended-upgrades (<< 0.42debian2),
         update-manager (<< 0.200.2-1),
-        update-notifier (<< 0.99.3debian1),
+        update-notifier (<< 0.99.3debian9),
         wajig (<< 2.0.46)
 Provides: ${python:Provides}
 Suggests: python-apt-dbg, python-gtk2, python-vte, python-apt-doc
