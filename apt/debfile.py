@@ -36,7 +36,8 @@ class NoDebArchiveException(IOError):
 class DebPackage(object):
     """A Debian Package (.deb file)."""
 
-    _supported_data_members = ("data.tar.gz", "data.tar.bz2", "data.tar.lzma")
+    _supported_data_members = ("data.tar.gz", "data.tar.bz2", "data.tar.lzma",
+                               "data.tar.xz")
 
     debug = 0
 
