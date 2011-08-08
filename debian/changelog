@@ -1,3 +1,10 @@
+python-apt (0.8.0ubuntu3) oneiric; urgency=low
+
+  * aptsources/sourceslist.py:
+    - fix py3.2 compat issue that causes FTBFS on amd64 tests
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 08 Aug 2011 22:48:43 +0200
+
 python-apt (0.8.0ubuntu2) oneiric; urgency=low
 
   * disable tests if /etc/apt/sources.list is not readable
