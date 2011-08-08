@@ -25,6 +25,7 @@
 
 import gettext
 import glob
+import logging
 import os.path
 import re
 import shutil
@@ -449,7 +450,10 @@ class SourceEntryMatcher(object):
         found = False
         for template in self.templates:
             if (re.search(template.match_uri, source.uri) and
-                re.match(template.match_name, source.dist)):
+                re.match(template.match_name, source.dist) and
+                # deb is a valid fallback for deb-src (if that is not
+                # definied, see #760035
+                (source.type == template.type or template.type == "deb")):
                 found = True
                 source.template = template
                 break
@@ -467,14 +471,14 @@ if __name__ == "__main__":
     sources = SourcesList()
 
     for entry in sources:
-        print entry.str()
+        logging.info("entry %s" % entry.str())
         #print entry.uri
 
     mirror = is_mirror("http://archive.ubuntu.com/ubuntu/",
                        "http://de.archive.ubuntu.com/ubuntu/")
-    print "is_mirror(): %s" % mirror
+    logging.info("is_mirror(): %s" % mirror)
 
-    print is_mirror("http://archive.ubuntu.com/ubuntu",
-                    "http://de.archive.ubuntu.com/ubuntu/")
-    print is_mirror("http://archive.ubuntu.com/ubuntu/",
-                    "http://de.archive.ubuntu.com/ubuntu")
+    logging.info(is_mirror("http://archive.ubuntu.com/ubuntu",
+                    "http://de.archive.ubuntu.com/ubuntu/"))
+    logging.info(is_mirror("http://archive.ubuntu.com/ubuntu/",
+                    "http://de.archive.ubuntu.com/ubuntu"))
