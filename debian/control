@@ -1,14 +1,15 @@
 Source: python-apt
 Section: python
 Priority: standard
-Maintainer: APT Development Team <deity@lists.debian.org>
+Maintainer: Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: APT Development Team <deity@lists.debian.org>
 Uploaders: Michael Vogt <mvo@debian.org>, Julian Andres Klode <jak@debian.org>
 Standards-Version: 3.9.2
 XS-Python-Version: >= 2.6
 X-Python3-Version: >= 3.1
 Build-Depends: apt-utils,
                debhelper (>= 7.3.5),
-               libapt-pkg-dev (>= 0.8.11),
+               libapt-pkg-dev (>= 0.8.16~exp5),
                python-all-dev (>= 2.6.6-3~),
                python-all-dbg,
                python3-all-dev (>= 3.1.2-10~),
@@ -16,8 +17,8 @@ Build-Depends: apt-utils,
                python-distutils-extra (>= 2.0),
                python-sphinx (>= 0.5),
                python-debian
-Vcs-Bzr: http://bzr.debian.org/apt/python-apt/debian-sid
-Vcs-Browser: http://bzr.debian.org/loggerhead/apt/python-apt/debian-sid/changes
+XS-Debian-Vcs-Bzr: http://bzr.debian.org/apt/python-apt/debian-sid
+XS-Debian-Vcs-Browser: http://bzr.debian.org/loggerhead/apt/python-apt/debian-sid/changes
 
 Package: python-apt
 Architecture: any
@@ -38,7 +39,7 @@ Breaks: packagekit-backend-apt (<= 0.4.8-0ubuntu4),
         bcfg2 (<< 1.0.1),
         bzr-builddeb (<< 2.4),
         debpartial-mirror (<< 0.2.98),
-        debsecan (<< 0.4.14),
+        debsecan (<< 0.4.15),
         gdebi (<< 0.6.1),
         germinate (<< 1.21),
         gnome-codec-install (<< 0.4.5),
