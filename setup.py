@@ -11,7 +11,7 @@ cmdclass = {}
 try:
     from DistUtilsExtra.command import build_extra, build_i18n
     from DistUtilsExtra.auto import clean_build_tree
-    cmdclass['build'] = build_extra.build_extra
+    #cmdclass['build'] = build_extra.build_extra
     cmdclass['build_i18n'] = build_i18n.build_i18n
     cmdclass['clean'] = clean_build_tree
 except ImportError:
