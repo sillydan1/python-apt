@@ -1,3 +1,34 @@
+python-apt (0.8.1) unstable; urgency=low
+
+  [ Julian Andres Klode ]
+  * Breaks: debsecan (<< 0.4.15) [not only << 0.4.14] (Closes: #629512)
+  
+  [ Michael Vogt ]
+  * python/arfile.cc:
+    - use APT::Configuration::getCompressionTypes() instead of duplicating
+      the supported methods here
+  * tests/test_debfile.py:
+    - add test for raise on unknown data.tar.xxx
+  * tests/test_aptsources_ports.py, tests/test_aptsources.py:
+    - use tmpdir during the tests to fix test failure with apt from
+      experimental
+  * tests/test_apt_cache.py:
+    - fix test by providing proper fixture data
+    - fix test if sources.list is not readable (as is the case on some
+      PPA buildds)
+  * apt/package.py:
+    - fix py3 compatiblity with print
+  * tests/test_all.py:
+    - skip all tests if sources.list is not readable (as is the case on
+      some builds)
+    - packages in marked_install state can also be auto-removable
+  * add concept of "ParentComponent" for e.g. ubuntu/multiverse
+    that needs universe enabled as well (plus add test)
+  * apt/progress/gtk2.py:
+    - update to the latest vte API for child-exited (LP: #865388)
+
+ -- Michael Vogt <mvo@debian.org>  Wed, 19 Oct 2011 16:39:13 +0200
+
 python-apt (0.8.0) unstable; urgency=low
 
   * Upload to unstable
