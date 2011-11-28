@@ -1,3 +1,10 @@
+python-apt (0.7.4ubuntu7.7) hardy-security; urgency=low
+
+  * No change rebuild for security. This is needed to build update-manager
+    in the security pocket.
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 28 Nov 2011 09:38:19 -0500
+
 python-apt (0.7.4ubuntu7.5) hardy-proposed; urgency=low
 
   * aptsources/__init__.py, aptsources/distinfo.py:
