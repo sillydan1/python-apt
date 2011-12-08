@@ -319,6 +319,7 @@ ftp://ftp.uk.debian.org/debian/
 ftp://mirror.bytemark.co.uk/debian/
 ftp://mirror.ox.ac.uk/debian/
 ftp://mirror.positive-internet.com/debian/
+ftp://mirror.sov.uk.goscomb.net/debian/
 ftp://mirrors.melbourne.co.uk/debian/
 ftp://the.earth.li/debian/
 ftp://ukdebian.mirror.anlx.net/debian/
@@ -328,6 +329,7 @@ http://ftp.uk.debian.org/debian/
 http://mirror.bytemark.co.uk/debian/
 http://mirror.ox.ac.uk/debian/
 http://mirror.positive-internet.com/debian/
+http://mirror.sov.uk.goscomb.net/debian/
 http://mirrors.melbourne.co.uk/debian/
 http://the.earth.li/debian/
 http://ukdebian.mirror.anlx.net/debian/
@@ -589,10 +591,8 @@ ftp://ftp.si.debian.org/debian/
 http://ftp.arnes.si/pub/packages/debian/
 http://ftp.si.debian.org/debian/
 #LOC:SK
-ftp://debian.ynet.sk/debian/
 ftp://ftp.antik.sk/debian/
 ftp://ftp.sk.debian.org/debian/
-http://debian.ynet.sk/debian/
 http://ftp.antik.sk/debian/
 http://ftp.sk.debian.org/debian/
 #LOC:SV
