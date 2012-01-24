@@ -1,3 +1,12 @@
+python-apt (0.8.4~exp1) experimental; urgency=low
+
+  * tests/test_apt_cache.py:
+    - fix tests on kfreebsd/ia64
+  * apt/debfile.py: 
+    - fix crash in dep multiarch handling
+
+ -- Michael Vogt <mvo@debian.org>  Tue, 24 Jan 2012 14:02:46 +0100
+
 python-apt (0.8.3) unstable; urgency=low
 
   [ Alexey Feldgendler ] 
