@@ -1,3 +1,12 @@
+python-apt (0.8.3+nmu1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Backport testsuite fix from 0.8.4~exp1 to fix build on architectures
+    without libc6. Closes: #651472
+  * extend debian/rules clean to remove some leftover files
+
+ -- Peter Michael Green <plugwash@p10link.net>  Sat, 11 Feb 2012 10:00:00 +0000
+
 python-apt (0.8.3) unstable; urgency=low
 
   [ Alexey Feldgendler ] 
