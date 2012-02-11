@@ -45,3 +45,15 @@ endif
 
 override_dh_python2:
 	dh_python2 -N python-apt-common
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -f tests/pycache__
+	rm -f tests/data/aptsources/sources.list.enable_comps
+	rm -f tests/data/test-provides/var/cache/apt/pkgcache.bin
+	rm -f tests/data/test-provides/var/cache/apt/srcpkgcache.bin
+	rm -rf tests/data/tmp
+	rm -f tests/fetch_sources.list
+	rm -rf tests/__pycache__
+	rm -rf tests/tmp/*
+
