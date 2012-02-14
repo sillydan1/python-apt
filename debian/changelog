@@ -1,3 +1,25 @@
+python-apt (0.8.3ubuntu4) precise; urgency=low
+
+  * doc/examples/build-deps.py:
+    - update the build-deps.py example to use the apt API more
+  * add support for apt_pkg.Policy.get_priority(PkgFileIterator)
+  * apt/debfile.py:
+    - use apt_inst for reading the control_filelist
+  * debian/control:
+    - remove no longer needed dependency on python-debian
+  * tests/test_tagfile.py:
+    - add test for apt_pkg.TagFile() both for compressed/uncompressed
+      files
+  * python/tag.cc, tests/test_tagfile.py:
+    - add support a filename argument in apt_pkg.TagFile() (in addition
+      to the file object currently supported)
+  * tests/test_apt_cache.py:
+    - fix tests on kfreebsd/ia64
+  * apt/debfile.py: 
+    - fix crash in dep multiarch handling
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Tue, 14 Feb 2012 09:37:18 +0100
+
 python-apt (0.8.3ubuntu3) precise; urgency=low
 
   * rebuild against latest libapt
