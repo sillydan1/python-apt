@@ -1,3 +1,10 @@
+python-apt (0.8.3ubuntu6) precise; urgency=low
+
+  * apt/cache.py:
+    - fix _have_multi_arch flag (thanks to Sebastian Heinlein) LP: #966916
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 02 Apr 2012 14:33:50 +0200
+
 python-apt (0.8.3ubuntu5) precise; urgency=low
 
   [ Michael Vogt ]
