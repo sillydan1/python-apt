@@ -203,6 +203,7 @@ ftp://mirror.1und1.de/debian/
 ftp://mirror.ayous.org/debian/
 ftp://mirror.de.leaseweb.net/debian/
 ftp://mirror.unitedcolo.de/debian/
+ftp://mirrors.mycraft.eu/debian/
 ftp://server.bdwservice.eu/debian/
 http://debian.cruisix.net/debian/
 http://debian.intergenia.de/debian/
@@ -230,6 +231,7 @@ http://mirror.1und1.de/debian/
 http://mirror.ayous.org/debian/
 http://mirror.de.leaseweb.net/debian/
 http://mirror.unitedcolo.de/debian/
+http://mirrors.mycraft.eu/debian/
 http://server.bdwservice.eu/debian/
 #LOC:DK
 ftp://ftp.dk.debian.org/debian/
@@ -697,6 +699,7 @@ ftp://carroll.aset.psu.edu/pub/linux/distributions/debian/
 ftp://debian.cites.illinois.edu/pub/debian/
 ftp://debian.cs.binghamton.edu/debian/
 ftp://debian.ec.as6453.net/debian/
+ftp://debian.gtisc.gatech.edu/debian/
 ftp://debian.lcs.mit.edu/debian/
 ftp://debian.mirror.frontiernet.net/debian/
 ftp://debian.mirrors.tds.net/debian/
@@ -732,6 +735,7 @@ http://debian.cites.illinois.edu/pub/debian/
 http://debian.corenetworks.net/debian/
 http://debian.cs.binghamton.edu/debian/
 http://debian.ec.as6453.net/debian/
+http://debian.gtisc.gatech.edu/debian/
 http://debian.lcs.mit.edu/debian/
 http://debian.mirror.frontiernet.net/debian/
 http://debian.mirrors.easynews.com/linux/debian/
