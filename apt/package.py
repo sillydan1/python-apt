@@ -409,6 +409,17 @@ class Version(object):
         return self._cand.priority_str
 
     @property
+    def policy_priority(self):
+        """Return the internal policy priority as a number.
+           See apt_preferences(5) for more information about what it means.
+        """
+        priority = 0
+        policy = self.package._pcache._depcache.policy
+        for (packagefile, _) in self._cand.file_list:
+            priority = max(priority, policy.get_priority(packagefile))
+        return priority
+
+    @property
     def record(self):
         """Return a Record() object for this version.
 
@@ -534,7 +545,10 @@ class Version(object):
 
         .. versionadded:: 0.7.10
         """
-        return iter(self._uris()).next()
+        try:
+            return iter(self._uris()).next()
+        except StopIteration:
+            return None
 
     def fetch_binary(self, destdir='', progress=None):
         """Fetch the binary version of the package.
