@@ -1,3 +1,31 @@
+python-apt (0.8.4) unstable; urgency=low
+
+  [ Michael Vogt ]
+  * doc/examples/build-deps.py:
+    - update the build-deps.py example to use the apt API more
+  * add support for apt_pkg.Policy.get_priority(PkgFileIterator)
+  * apt/debfile.py:
+    - use apt_inst for reading the control_filelist
+  * debian/control:
+    - remove no longer needed dependency on python-debian
+  * tests/test_tagfile.py:
+    - add test for apt_pkg.TagFile() both for compressed/uncompressed
+      files
+  * python/tag.cc, tests/test_tagfile.py:
+    - add support a filename argument in apt_pkg.TagFile() (in addition
+      to the file object currently supported)
+  * apt/package.py:
+    - if there is no Version.uri return None
+  * apt/cache.py:
+    - fix _have_multi_arch flag (thanks to Sebastian Heinlein)
+  * build against apt 0.9.0
+
+  [Julian Andres Klode ]
+  * python/apt_pkgmodule.cc:
+    - Fix apt_pkg.Dependency.TYPE_RECOMMENDS, had Suggests value previously
+
+ -- Michael Vogt <mvo@debian.org>  Mon, 16 Apr 2012 19:06:48 +0200
+
 python-apt (0.8.4~exp1) experimental; urgency=low
 
   * tests/test_apt_cache.py:
