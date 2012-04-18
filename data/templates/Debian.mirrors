@@ -175,6 +175,7 @@ http://ftp.zcu.cz/mirrors/debian/
 http://merlin.fit.vutbr.cz/debian/
 #LOC:DE
 ftp://debian.cruisix.net/debian/
+ftp://debian.mirror.iphh.net/debian/
 ftp://debian.morphium.info/debian/
 ftp://debian.netcologne.de/debian/
 ftp://debian.tu-bs.de/debian/
@@ -183,7 +184,7 @@ ftp://ftp-stud.hs-esslingen.de/debian/
 ftp://ftp.de.debian.org/debian/
 ftp://ftp.fu-berlin.de/pub/unix/linux/mirrors/debian/
 ftp://ftp.halifax.rwth-aachen.de/debian/
-ftp://ftp.hosteurope.de/pub/linux/debian/
+ftp://ftp.hosteurope.de/mirror/ftp.debian.org/debian/
 ftp://ftp.informatik.hu-berlin.de/pub/Linux/debian/
 ftp://ftp.informatik.rwth-aachen.de/pub/Linux/debian/
 ftp://ftp.informatik.uni-frankfurt.de/pub/Mirrors/debian.org/debian/
@@ -207,6 +208,7 @@ ftp://mirrors.mycraft.eu/debian/
 ftp://server.bdwservice.eu/debian/
 http://debian.cruisix.net/debian/
 http://debian.intergenia.de/debian/
+http://debian.mirror.iphh.net/debian/
 http://debian.morphium.info/debian/
 http://debian.netcologne.de/debian/
 http://debian.tu-bs.de/debian/
@@ -214,7 +216,7 @@ http://debian.uni-duisburg-essen.de/debian/
 http://ftp-stud.hs-esslingen.de/debian/
 http://ftp.de.debian.org/debian/
 http://ftp.halifax.rwth-aachen.de/debian/
-http://ftp.hosteurope.de/pub/linux/debian/
+http://ftp.hosteurope.de/mirror/ftp.debian.org/debian/
 http://ftp.informatik.rwth-aachen.de/ftp/pub/Linux/debian/
 http://ftp.informatik.uni-frankfurt.de/debian/
 http://ftp.plusline.de/debian/
@@ -466,7 +468,9 @@ http://ftp.kr.debian.org/debian/
 http://ftp.lecl.net/debian/
 #LOC:KZ
 ftp://mirror.neolabs.kz/debian/
+ftp://mirror.network.kz/debian/
 http://mirror.neolabs.kz/debian/
+http://mirror.network.kz/debian/
 #LOC:LT
 ftp://debian.balt.net/debian/
 ftp://debian.mirror.vu.lt/debian/
@@ -513,6 +517,7 @@ ftp://ftp.nl.debian.org/debian/
 ftp://ftp.nluug.nl/pub/os/Linux/distr/debian/
 ftp://ftp.surfnet.nl/pub/os/Linux/distr/debian/
 ftp://ftp.tiscali.nl/pub/mirrors/debian/
+ftp://mirror.i3d.net/debian/
 ftp://mirror.nl.leaseweb.net/debian/
 ftp://nl.mirror.eurid.eu/debian/
 http://debian.mirror.cambrium.nl/debian/
@@ -522,6 +527,7 @@ http://ftp.nl.debian.org/debian/
 http://ftp.nluug.nl/pub/os/Linux/distr/debian/
 http://ftp.surfnet.nl/os/Linux/distr/debian/
 http://ftp.tiscali.nl/debian/
+http://mirror.i3d.net/pub/debian/
 http://mirror.nl.leaseweb.net/debian/
 http://nl.mirror.eurid.eu/debian/
 #LOC:NO
@@ -618,8 +624,10 @@ http://ftp.sunet.se/pub/Linux/distributions/debian/
 ftp://mirror.nus.edu.sg/pub/Debian/
 http://mirror.nus.edu.sg/Debian/
 #LOC:SI
+ftp://debmirror.amis.net/debian/
 ftp://ftp.arnes.si/packages/debian/
 ftp://ftp.si.debian.org/debian/
+http://debmirror.amis.net/debian/
 http://ftp.arnes.si/pub/packages/debian/
 http://ftp.si.debian.org/debian/
 #LOC:SK
@@ -709,7 +717,6 @@ ftp://debian.uchicago.edu/debian/
 ftp://ftp-mirror.internap.com/pub/debian/
 ftp://ftp.egr.msu.edu/debian/
 ftp://ftp.gtlib.gatech.edu/pub/debian/
-ftp://ftp.keystealth.org/debian/
 ftp://ftp.lug.udel.edu/pub/debian/
 ftp://ftp.ndlug.nd.edu/debian/
 ftp://ftp.us.debian.org/debian/
@@ -725,6 +732,7 @@ ftp://mirror.mycre.ws/debian/
 ftp://mirror.rit.edu/debian/
 ftp://mirrors.bloomu.edu/debian/
 ftp://mirrors.kernel.org/debian/
+ftp://mirrors.syringanetworks.net/debian/
 ftp://mirrors.tummy.com/debian/
 ftp://mirrors.usc.edu/pub/linux/distributions/debian/
 ftp://mirrors.xmission.com/debian/
@@ -748,7 +756,6 @@ http://debian.usu.edu/debian/
 http://ftp-mirror.internap.com/pub/debian/
 http://ftp.egr.msu.edu/debian/
 http://ftp.gtlib.gatech.edu/debian/
-http://ftp.keystealth.org/debian/
 http://ftp.lug.udel.edu/pub/debian/
 http://ftp.ndlug.nd.edu/mirrors/debian/
 http://ftp.us.debian.org/debian/
@@ -771,6 +778,7 @@ http://mirrors.bloomu.edu/debian/
 http://mirrors.gigenet.com/debian/
 http://mirrors.kernel.org/debian/
 http://mirrors.modwest.com/debian/
+http://mirrors.syringanetworks.net/debian/
 http://mirrors.tummy.com/debian/
 http://mirrors.usc.edu/pub/linux/distributions/debian/
 http://mirrors.xenir.com/debian/
