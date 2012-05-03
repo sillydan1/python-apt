@@ -139,14 +139,12 @@ http://mirrors.tecnoera.com/debian/
 ftp://debian.bjtu.edu.cn/debian/
 ftp://debian.ustc.edu.cn/debian/
 ftp://ftp.cn.debian.org/debian/
-ftp://mirrors.geekbone.org/debian/
 ftp://mirrors.sohu.com/debian/
 ftp://www.anheng.com.cn/debian/
 http://debian.bjtu.edu.cn/debian/
 http://debian.ustc.edu.cn/debian/
 http://ftp.cn.debian.org/debian/
 http://mirrors.163.com/debian/
-http://mirrors.geekbone.org/debian/
 http://mirrors.sohu.com/debian/
 http://www.anheng.com.cn/debian/
 #LOC:CO
@@ -174,6 +172,7 @@ http://ftp.cz.debian.org/debian/
 http://ftp.zcu.cz/mirrors/debian/
 http://merlin.fit.vutbr.cz/debian/
 #LOC:DE
+ftp://artfiles.org/debian/
 ftp://debian.cruisix.net/debian/
 ftp://debian.mirror.iphh.net/debian/
 ftp://debian.morphium.info/debian/
@@ -206,6 +205,7 @@ ftp://mirror.de.leaseweb.net/debian/
 ftp://mirror.unitedcolo.de/debian/
 ftp://mirrors.mycraft.eu/debian/
 ftp://server.bdwservice.eu/debian/
+http://artfiles.org/debian/
 http://debian.cruisix.net/debian/
 http://debian.intergenia.de/debian/
 http://debian.mirror.iphh.net/debian/
@@ -400,8 +400,10 @@ ftp://kebo.vlsm.org/debian/
 http://kambing.ui.ac.id/debian/
 http://kebo.vlsm.org/debian/
 #LOC:IE
+ftp://debian.heanet.ie/debian/
 ftp://ftp.esat.net/pub/linux/debian/
 ftp://ftp.ie.debian.org/debian/
+http://debian.heanet.ie/debian/
 http://ftp.esat.net/pub/linux/debian/
 http://ftp.ie.debian.org/debian/
 #LOC:IL
