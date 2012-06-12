@@ -1,3 +1,49 @@
+python-apt (0.8.5~ubuntu1) quantal-proposed; urgency=low
+
+  * Merge from unreleased Debian branch, remaining changes:
+    - drop recommends on python2.6
+    - build with COMPAT_0_7, which might still be needed by some code in the
+      Ubuntu archive.  We need to scan the archive for this, add liberal
+      Breaks, and analyze the dist-upgrader case before disabling.
+  * Revert change from lp:~ev/python-apt/dont-leak-fds; as discussed on IRC
+    during the Python3 porting sprint, the cure here is worse than the
+    disease.
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Tue, 12 Jun 2012 08:23:06 -0700
+
+python-apt (0.8.5) UNRELEASED; urgency=low
+
+  [ Michael Vogt ]
+  * python/cache.cc:
+    - ensure that pkgApplyStatus is called when the cache is opened
+      (thanks to Sebastian Heinlein for finding this bug), LP: #659438
+
+  [ Stéphane Graber ]
+  * data/templates/Ubuntu.info.in:
+    - add quantal
+
+  [ Evan Dandrea ]
+  * Don't leak file descriptors.
+  
+  [ Steve Langasek ]
+  * utils/get_ubuntu_mirrors_from_lp.py: move this script to python3
+  * pre-build.sh: call dpkg-checkbuilddeps with the list of our 
+    source-build-dependencies; this may save someone else an hour down the
+    line scratching their head over gratuitous test-suite failures...
+  
+  [ Sebastian Heinlein ]
+  * lp:~glatzor/python-apt/auth:
+    - this is a port of the software-properties AptAuth module to python-apt
+      with some cleanups. It provides a wrapper API for the apt-key command
+
+  [ Colin Watson ]
+  * aptsources/*.py, setup.py: Make aptsources modules work directly in
+    either Python 2 or 3, and exclude the "future" 2to3 fixer so that 2to3
+    doesn't need to modify them.  This makes life a little easier for the
+    strange tricks update-manager plays with its dist-upgrader tarball.
+
+ -- Michael Vogt <mvo@debian.org>  Tue, 17 Apr 2012 14:09:24 +0200
+
 python-apt (0.8.3ubuntu8) quantal; urgency=low
 
   * data/templates/Ubuntu.info.in:
