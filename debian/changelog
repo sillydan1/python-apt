@@ -1,3 +1,27 @@
+python-apt (0.8.6) unstable; urgency=low
+
+  [ Michael Vogt ]
+  * debian/control:
+    - add build-dep for apt (>= 0.9.6) to make test_auth.py test
+      work reliable
+
+  [ Julian Andres Klode ]
+  * apt/auth.py:
+    - Use tempfile.NamedTemporaryFile to create temporary file
+    - Use Popen.communicate() instead of stdin, stdout
+  * tests/fakeroot-apt-key:
+    - exec apt-key, otherwise we ignore the return value
+  * debian/control:
+    - Build-depend on fakeroot, needed for the apt.auth tests
+  * data/templates/Debian.info.in:
+    - Add wheezy
+    - Add wheezy-updates as Recommended Updates
+    - Order wheezy-proposed-updates after wheezy/updates and wheezy-updates
+  * po:
+    - Fixup the translations for wheezy again
+
+ -- Michael Vogt <mvo@debian.org>  Fri, 29 Jun 2012 15:57:20 +0200
+
 python-apt (0.8.5) unstable; urgency=low
 
   [ Michael Vogt ]
