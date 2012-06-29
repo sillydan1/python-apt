@@ -468,9 +468,11 @@ http://ftp2.jp.debian.org/debian/
 ftp://ftp.daum.net/debian/
 ftp://ftp.kr.debian.org/debian/
 ftp://ftp.lecl.net/debian/
+ftp://ftp.neowiz.com/debian/
 http://ftp.daum.net/debian/
 http://ftp.kr.debian.org/debian/
 http://ftp.lecl.net/debian/
+http://ftp.neowiz.com/debian/
 #LOC:KZ
 ftp://mirror.neolabs.kz/debian/
 ftp://mirror.network.kz/debian/
@@ -722,7 +724,9 @@ ftp://debian.mirrors.tds.net/debian/
 ftp://debian.osuosl.org/debian/
 ftp://debian.secsup.org/pub/linux/debian/
 ftp://debian.uchicago.edu/debian/
+ftp://ftp-chi.osuosl.org/debian/
 ftp://ftp-mirror.internap.com/pub/debian/
+ftp://ftp-nyc.osuosl.org/debian/
 ftp://ftp.egr.msu.edu/debian/
 ftp://ftp.gtlib.gatech.edu/pub/debian/
 ftp://ftp.lug.udel.edu/pub/debian/
@@ -734,6 +738,7 @@ ftp://lug.mtu.edu/debian/
 ftp://mirror.ancl.hawaii.edu/linux/debian/
 ftp://mirror.anl.gov/pub/debian/
 ftp://mirror.cc.columbia.edu/debian/
+ftp://mirror.cogentco.com/debian/
 ftp://mirror.fdcservers.net/debian/
 ftp://mirror.its.uidaho.edu/debian/
 ftp://mirror.mycre.ws/debian/
@@ -761,7 +766,9 @@ http://debian.secsup.org/
 http://debian.securedservers.com/debian/
 http://debian.uchicago.edu/debian/
 http://debian.usu.edu/debian/
+http://ftp-chi.osuosl.org/debian/
 http://ftp-mirror.internap.com/pub/debian/
+http://ftp-nyc.osuosl.org/debian/
 http://ftp.egr.msu.edu/debian/
 http://ftp.gtlib.gatech.edu/debian/
 http://ftp.lug.udel.edu/pub/debian/
@@ -774,6 +781,7 @@ http://lug.mtu.edu/debian/
 http://mirror.ancl.hawaii.edu/linux/debian/
 http://mirror.anl.gov/debian/
 http://mirror.cc.columbia.edu/debian/
+http://mirror.cogentco.com/debian/
 http://mirror.fdcservers.net/debian/
 http://mirror.hmc.edu/debian/
 http://mirror.its.uidaho.edu/pub/debian/
