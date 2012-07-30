@@ -3,6 +3,7 @@ ftp://debian.torredehanoi.org/debian/
 ftp://ftp.ccc.uba.ar/linux/debian/debian/
 http://debian.torredehanoi.org/debian/
 http://ftp.ccc.uba.ar/pub/linux/debian/debian/
+http://mirrors.dcarsat.com.ar/debian/
 #LOC:AT
 ftp://debian.inode.at/debian/
 ftp://debian.lagis.at/debian/
@@ -174,6 +175,7 @@ http://ftp.zcu.cz/mirrors/debian/
 http://merlin.fit.vutbr.cz/debian/
 #LOC:DE
 ftp://artfiles.org/debian/
+ftp://deb-mirror.de/debian/
 ftp://debian.cruisix.net/debian/
 ftp://debian.mirror.iphh.net/debian/
 ftp://debian.morphium.info/debian/
@@ -207,6 +209,7 @@ ftp://mirror.unitedcolo.de/debian/
 ftp://mirrors.mycraft.eu/debian/
 ftp://server.bdwservice.eu/debian/
 http://artfiles.org/debian/
+http://deb-mirror.de/debian/
 http://debian.cruisix.net/debian/
 http://debian.intergenia.de/debian/
 http://debian.mirror.iphh.net/debian/
@@ -325,6 +328,7 @@ http://ftp.fr.debian.org/debian/
 http://ftp.iut-bm.univ-fcomte.fr/debian/
 http://ftp.lip6.fr/pub/linux/distributions/debian/
 http://ftp.nerim.net/debian/
+http://ftp.proxad.net/mirrors/ftp.debian.org/
 http://ftp.u-picardie.fr/mirror/debian/
 http://ftp.u-strasbg.fr/debian/
 http://ftp.univ-pau.fr/linux/mirrors/debian/
@@ -510,6 +514,8 @@ ftp://ftp.mx.debian.org/debian/
 ftp://mmc.geofisica.unam.mx/debian/
 http://ftp.mx.debian.org/debian/
 http://mmc.geofisica.unam.mx/debian/
+#LOC:MY
+http://archive.mmu.edu.my/debian/
 #LOC:NC
 ftp://debian.nautile.nc/debian/
 ftp://ftp.nc.debian.org/debian/
@@ -605,12 +611,14 @@ ftp://ftp.debian.chuvsu.ru/debian/
 ftp://ftp.mipt.ru/debian/
 ftp://ftp.psn.ru/debian/
 ftp://ftp.ru.debian.org/debian/
+ftp://mirror.mephi.ru/debian/
 ftp://mirror.yandex.ru/debian/
 ftp://mirror2.corbina.ru/debian/
 http://debian.nsu.ru/debian/
 http://ftp.debian.chuvsu.ru/debian/
 http://ftp.psn.ru/debian/
 http://ftp.ru.debian.org/debian/
+http://mirror.mephi.ru/debian/
 http://mirror.yandex.ru/debian/
 http://mirror2.corbina.ru/debian/
 #LOC:SE
@@ -722,7 +730,6 @@ ftp://debian.lcs.mit.edu/debian/
 ftp://debian.mirror.frontiernet.net/debian/
 ftp://debian.mirrors.tds.net/debian/
 ftp://debian.osuosl.org/debian/
-ftp://debian.secsup.org/pub/linux/debian/
 ftp://debian.uchicago.edu/debian/
 ftp://ftp-chi.osuosl.org/debian/
 ftp://ftp-mirror.internap.com/pub/debian/
@@ -762,7 +769,6 @@ http://debian.mirror.frontiernet.net/debian/
 http://debian.mirrors.easynews.com/linux/debian/
 http://debian.mirrors.tds.net/debian/
 http://debian.osuosl.org/debian/
-http://debian.secsup.org/
 http://debian.securedservers.com/debian/
 http://debian.uchicago.edu/debian/
 http://debian.usu.edu/debian/
