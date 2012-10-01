@@ -1,3 +1,14 @@
+python-apt (0.8.7ubuntu2) quantal; urgency=low
+
+  * python/string.cc, tests/test_lp1030278.py: Fix StrSizeToStr() so that
+    1) it first checks for PyLong-ness so that in Python 3 on i386, it
+    will be able to convert larger numbers (via doubles rather than ints);
+    2) before doing the conversions through the apt API, check to see if a
+    Python exception occurred, e.g. OverflowError, and return an error
+    condition in that case instead of masking it.  (LP: #1030278)
+
+ -- Barry Warsaw <barry@ubuntu.com>  Mon, 01 Oct 2012 18:04:35 -0400
+
 python-apt (0.8.7ubuntu1) quantal; urgency=low
 
   [ James Hunt ]
