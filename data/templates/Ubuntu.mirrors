@@ -38,8 +38,10 @@ http://ubuntu.alex-vichev.info/
 http://ubuntu.ipacct.com/ubuntu/
 http://ubuntu.linux-bg.org/ubuntu/
 #LOC:BR
+http://espelhos.edugraf.ufsc.br/ubuntu/
 http://mirror.globo.com/ubuntu/archive/
 http://mirror.unesp.br/ubuntu/
+http://sft.if.usp.br/ubuntu/
 http://ubuntu-archive.locaweb.com.br/ubuntu/
 http://ubuntu.anid.com.br/ubuntu/
 http://ubuntu.c3sl.ufpr.br/ubuntu/
@@ -211,6 +213,7 @@ http://kebo.vlsm.org/ubuntu/
 http://pandawa.ipb.ac.id/ubuntu/
 http://singo.ub.ac.id/ubuntu/
 http://suro.ubaya.ac.id/ubuntu/
+http://ubuntu.idrepo.or.id/ubuntu/
 http://ubuntu.indika.net.id/ubuntu/
 http://ubuntu.pesat.net.id/archive/
 http://ubuntu.repo.unpas.ac.id/ubuntu/
@@ -358,7 +361,6 @@ http://ubuntu.mirrors.isu.net.sa/ubuntu/
 #LOC:SE
 http://ftp.acc.umu.se/ubuntu/
 http://ftp.availo.se/ubuntu/
-http://ftp.df.lth.se/ubuntu/
 http://ftp.ds.karen.hj.se/ubuntu/
 http://ftp.lysator.liu.se/ubuntu/
 http://ftp.portlane.com/ubuntu/
