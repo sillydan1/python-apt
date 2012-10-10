@@ -83,14 +83,14 @@ http://ftp.uni-sofia.bg/debian/
 #LOC:BR
 ftp://debian.c3sl.ufpr.br/debian/
 ftp://debian.las.ic.unicamp.br/debian/
-ftp://debs.ifsul.edu.br/debian/
+ftp://debs.pelotas.ifsul.edu.br/debian/
 ftp://ftp.br.debian.org/debian/
 ftp://ftp.pucpr.br/debian/
 ftp://linorg.usp.br/debian/
 http://debian.c3sl.ufpr.br/debian/
 http://debian.las.ic.unicamp.br/debian/
 http://debian.pop-sc.rnp.br/debian/
-http://debs.ifsul.edu.br/debian/
+http://debs.pelotas.ifsul.edu.br/debian/
 http://download.unesp.br/linux/debian/
 http://ftp.br.debian.org/debian/
 http://linorg.usp.br/debian/
@@ -210,7 +210,6 @@ ftp://mirror.ayous.org/debian/
 ftp://mirror.de.leaseweb.net/debian/
 ftp://mirror.unitedcolo.de/debian/
 ftp://mirrors.mycraft.eu/debian/
-ftp://server.bdwservice.eu/debian/
 http://artfiles.org/debian/
 http://deb-mirror.de/debian/
 http://debian.cruisix.net/debian/
@@ -241,7 +240,6 @@ http://mirror.ayous.org/debian/
 http://mirror.de.leaseweb.net/debian/
 http://mirror.unitedcolo.de/debian/
 http://mirrors.mycraft.eu/debian/
-http://server.bdwservice.eu/debian/
 #LOC:DK
 ftp://ftp.dk.debian.org/debian/
 ftp://mirror.easyspeedy.com/debian/
@@ -294,6 +292,7 @@ ftp://debian.med.univ-tours.fr/debian/
 ftp://debian.mines.inpl-nancy.fr/debian/
 ftp://debian.mirror.inra.fr/debian/
 ftp://debian.mirrors.easynet.fr/debian/
+ftp://debian.mirrors.ovh.net/debian/
 ftp://debian.polytech-lille.fr/debian/
 ftp://debian.proxad.net/debian/
 ftp://debian.revolsys.fr/debian/
@@ -311,7 +310,6 @@ ftp://ftp.univ-nantes.fr/debian/
 ftp://ftp.univ-pau.fr/pub/mirrors/debian/
 ftp://ftp2.fr.debian.org/debian/
 ftp://mirror.debian.ikoula.com/debian/
-ftp://mirror.ovh.net/debian/
 ftp://mirrors.compuscene.org/debian/
 ftp://mirrors.ircam.fr/pub/debian/
 ftp://webb.ens-cachan.fr/debian/
@@ -323,6 +321,8 @@ http://debian.med.univ-tours.fr/debian/
 http://debian.mines.inpl-nancy.fr/debian/
 http://debian.mirror.inra.fr/debian/
 http://debian.mirrors.easynet.fr/debian/
+http://debian.mirrors.ovh.net/debian/
+http://debian.opensourcemirror.com/debian/
 http://debian.polytech-lille.fr/debian/
 http://debian.proxad.net/debian/
 http://debian.revolsys.fr/debian/
@@ -339,7 +339,6 @@ http://ftp.u-strasbg.fr/debian/
 http://ftp.univ-pau.fr/linux/mirrors/debian/
 http://ftp2.fr.debian.org/debian/
 http://mirror.debian.ikoula.com/debian/
-http://mirror.ovh.net/debian/
 http://mirrors.compuscene.org/debian/
 http://mirrors.ircam.fr/pub/debian/
 http://webb.ens-cachan.fr/debian/
@@ -749,8 +748,8 @@ ftp://mirror.anl.gov/pub/debian/
 ftp://mirror.cc.columbia.edu/debian/
 ftp://mirror.cogentco.com/debian/
 ftp://mirror.fdcservers.net/debian/
-ftp://mirror.its.uidaho.edu/debian/
 ftp://mirror.mycre.ws/debian/
+ftp://mirror.picosecond.org/debian/
 ftp://mirror.rit.edu/debian/
 ftp://mirrors.bloomu.edu/debian/
 ftp://mirrors.kernel.org/debian/
@@ -767,6 +766,7 @@ http://debian.cs.binghamton.edu/debian/
 http://debian.ec.as6453.net/debian/
 http://debian.gtisc.gatech.edu/debian/
 http://debian.lcs.mit.edu/debian/
+http://debian.mirror.constant.com/debian/
 http://debian.mirror.frontiernet.net/debian/
 http://debian.mirrors.easynews.com/linux/debian/
 http://debian.mirrors.tds.net/debian/
@@ -792,8 +792,8 @@ http://mirror.cc.columbia.edu/debian/
 http://mirror.cogentco.com/debian/
 http://mirror.fdcservers.net/debian/
 http://mirror.hmc.edu/debian/
-http://mirror.its.uidaho.edu/pub/debian/
 http://mirror.mycre.ws/debian/
+http://mirror.picosecond.org/debian/
 http://mirror.rit.edu/debian/
 http://mirror.steadfast.net/debian/
 http://mirrors.accretive-networks.net/debian/
@@ -818,5 +818,7 @@ http://debian.unesr.edu.ve/debian/
 http://mirror.debian.vn/debian/
 #LOC:ZA
 ftp://debian.mirror.ac.za/debian/
+ftp://debian.mirror.neology.co.za/debian/
 ftp://ftp.is.co.za/debian/
 http://debian.mirror.ac.za/debian/
+http://debian.mirror.neology.co.za/debian/
