@@ -1,3 +1,10 @@
+python-apt (0.8.7ubuntu4) quantal; urgency=low
+
+  * apt/auth.py:
+    - do not fail to import keys that start with "0x" (LP: #1065015)
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Wed, 10 Oct 2012 15:55:55 +0200
+
 python-apt (0.8.7ubuntu3) quantal; urgency=low
 
   * lp:~mvo/python-apt/recv-key-lp1016643:
