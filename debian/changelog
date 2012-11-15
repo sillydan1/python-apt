@@ -1,3 +1,14 @@
+python-apt (0.8.8.1) unstable; urgency=low
+
+  * python/tag.cc:
+    - make TagSecString_FromStringAndSize, TagSecString_FromString
+      static, thanks to jcristau
+  * tests/test_lp659438.py:
+    - fix missing architecture to make the tests pass again during
+      build with the latest apt
+
+ -- Michael Vogt <mvo@debian.org>  Thu, 15 Nov 2012 09:55:24 +0100
+
 python-apt (0.8.8) unstable; urgency=low
 
   [ Program translation updates ]
