@@ -227,7 +227,7 @@ class TestAuthKeys(TestCase):
                     "0101010178F7FE5C3E65D8AF8B48AD6246925553",
                     "hkp://localhost:%d" % self.keyserver_port)
         self.assertTrue(
-            str(cm.exception).startswith("Fingerprints do not match"))
+            str(cm.exception).startswith("Fingerprints do not match"), cm.exception)
 
     def testAddKeyFromServer(self):
         """Install a GnuPG key from a remote server."""
@@ -285,6 +285,14 @@ class TestAuthKeys(TestCase):
         self.keyserver_port = int(keyserver_read.readline())
         keyserver_read.close()
 
+        # temporarily disable proxy, as gnupg does not get along with that
+        # (LP #789049)
+        self.orig_proxy = os.environ.get('http_proxy')
+        try:
+            del os.environ['http_proxy']
+        except KeyError:
+            pass
+
         # wait a bit until server is ready
         time.sleep(0.5)
 
@@ -295,6 +303,9 @@ class TestAuthKeys(TestCase):
         os.kill(self.keyserver_pid, 15)
         os.wait()
 
+        # restore proxy
+        if self.orig_proxy is not None:
+            os.environ['http_proxy'] = self.orig_proxy
 
 if __name__ == "__main__":
     unittest.main()
