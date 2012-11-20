@@ -1,7 +1,6 @@
 mirror://mirrors.ubuntu.com/mirrors.txt
 #LOC:AR
 http://ftp.ccc.uba.ar/pub/linux/ubuntu/
-http://mirror.fcaglp.unlp.edu.ar/ubuntu/
 http://mirrors.coopvgg.com.ar/ubuntu/
 http://ubuntu.unc.edu.ar/ubuntu/
 http://ubuntu.xfree.com.ar/ubuntu/
@@ -96,7 +95,6 @@ http://ubuntu.ucr.ac.cr/ubuntu/
 #LOC:CZ
 http://cz.archive.ubuntu.com/ubuntu/
 http://ftp.cvut.cz/ubuntu/
-http://ftp.sh.cvut.cz/MIRRORS/ubuntu/
 http://ubuntu.sh.cvut.cz/
 http://ucho.ignum.cz/ubuntu/
 #LOC:DE
@@ -233,6 +231,7 @@ http://ubuntuarchive.hnsdc.com/ubuntu/
 http://speglar.simnet.is/ubuntu/
 #LOC:IT
 http://giano.com.dist.unige.it/ubuntu/
+http://mirror.crazynetwork.it/ubuntu/archive/
 http://ubuntu.fastbull.org/ubuntu/
 http://ubuntu.ictvalleumbra.it/ubuntu/
 http://ubuntu.mirror.garr.it/mirrors/ubuntu-archive/
