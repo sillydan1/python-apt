@@ -1,3 +1,14 @@
+python-apt (0.8.8.2) unstable; urgency=low
+
+  [ David Prévot ]
+  * po/no.po: Remove useless translation (superseded by nb.po)
+
+  [ Julian Andres Klode ]
+  * apt/package.py: Try both filenames for package file lists
+    (Closes: #700715)
+
+ -- Julian Andres Klode <jak@debian.org>  Thu, 14 Mar 2013 21:25:25 +0100
+
 python-apt (0.8.8.1) unstable; urgency=low
 
   * python/tag.cc:
