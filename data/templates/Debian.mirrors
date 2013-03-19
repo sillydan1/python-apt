@@ -546,6 +546,7 @@ ftp://ftp.nl.debian.org/debian/
 ftp://ftp.nluug.nl/pub/os/Linux/distr/debian/
 ftp://ftp.surfnet.nl/pub/os/Linux/distr/debian/
 ftp://ftp.tiscali.nl/pub/mirrors/debian/
+ftp://mirror.1000mbps.com/debian/
 ftp://mirror.i3d.net/debian/
 ftp://mirror.nl.leaseweb.net/debian/
 ftp://mirror.proserve.nl/debian/
@@ -557,6 +558,7 @@ http://ftp.nl.debian.org/debian/
 http://ftp.nluug.nl/pub/os/Linux/distr/debian/
 http://ftp.surfnet.nl/os/Linux/distr/debian/
 http://ftp.tiscali.nl/debian/
+http://mirror.1000mbps.com/debian/
 http://mirror.i3d.net/pub/debian/
 http://mirror.nl.leaseweb.net/debian/
 http://mirror.proserve.nl/debian/
@@ -656,7 +658,6 @@ http://ftp.ds.karen.hj.se/debian/
 http://ftp.se.debian.org/debian/
 http://ftp.sunet.se/pub/Linux/distributions/debian/
 #LOC:SG
-ftp://mirror.nus.edu.sg/pub/Debian/
 http://mirror.nus.edu.sg/Debian/
 #LOC:SI
 ftp://debmirror.amis.net/debian/
