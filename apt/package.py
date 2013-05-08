@@ -1047,12 +1047,15 @@ class Package(object):
         Return a list of unicode names of the files which have
         been installed by this package
         """
-        path = "/var/lib/dpkg/info/%s.list" % self.name
-        try:
-            with open(path, "rb") as file_list:
-                return file_list.read().decode("utf-8").split(u"\n")
-        except EnvironmentError:
-            return []
+        for name in self.shortname, self.fullname:
+            path = "/var/lib/dpkg/info/%s.list" % name
+            try:
+                with open(path, "rb") as file_list:
+                    return file_list.read().decode("utf-8").split(u"\n")
+            except EnvironmentError:
+                continue
+
+        return []
 
     def get_changelog(self, uri=None, cancel_lock=None):
         """
