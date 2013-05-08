@@ -1,3 +1,9 @@
+python-apt (0.8.9) unstable; urgency=low
+
+  * upload previous experimental upload to sid
+
+ -- Michael Vogt <mvo@debian.org>  Wed, 08 May 2013 18:23:36 +0200
+
 python-apt (0.8.9~exp2) experimental; urgency=low
 
   * apt/package.py:
@@ -62,11 +68,24 @@ python-apt (0.8.9~exp1) experimental; urgency=low
   
  -- Michael Vogt <mvo@debian.org>  Wed, 13 Mar 2013 18:36:37 +0100
 
-python-apt (0.8.8.2) UNRELEASED; urgency=low
+python-apt (0.8.8.3) UNRELEASED; urgency=low
 
+  * aptsources/distro.py:
+    - include the missing ID in the NoDistroTemplateException() error,
+      thanks to Brian Murray
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Tue, 30 Apr 2013 18:37:24 +0200
+
+python-apt (0.8.8.2) unstable; urgency=low
+
+  [ David Prévot ]
   * po/no.po: Remove useless translation (superseded by nb.po)
 
- -- David Prévot <taffit@debian.org>  Wed, 28 Nov 2012 21:37:17 -0400
+  [ Julian Andres Klode ]
+  * apt/package.py: Try both filenames for package file lists
+    (Closes: #700715)
+
+ -- Julian Andres Klode <jak@debian.org>  Thu, 14 Mar 2013 21:25:25 +0100
 
 python-apt (0.8.8.1) unstable; urgency=low
 
