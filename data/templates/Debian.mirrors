@@ -180,6 +180,7 @@ http://merlin.fit.vutbr.cz/debian/
 ftp://artfiles.org/debian/
 ftp://deb-mirror.de/debian/
 ftp://debian.mirror.iphh.net/debian/
+ftp://debian.mirror.lrz.de/debian/
 ftp://debian.morphium.info/debian/
 ftp://debian.netcologne.de/debian/
 ftp://debian.tu-bs.de/debian/
@@ -209,11 +210,11 @@ ftp://mirror.1und1.de/debian/
 ftp://mirror.ayous.org/debian/
 ftp://mirror.de.leaseweb.net/debian/
 ftp://mirror.unitedcolo.de/debian/
-ftp://mirrors.mycraft.eu/debian/
 http://artfiles.org/debian/
 http://deb-mirror.de/debian/
 http://debian.intergenia.de/debian/
 http://debian.mirror.iphh.net/debian/
+http://debian.mirror.lrz.de/debian/
 http://debian.morphium.info/debian/
 http://debian.netcologne.de/debian/
 http://debian.tu-bs.de/debian/
@@ -239,7 +240,6 @@ http://mirror.1und1.de/debian/
 http://mirror.ayous.org/debian/
 http://mirror.de.leaseweb.net/debian/
 http://mirror.unitedcolo.de/debian/
-http://mirrors.mycraft.eu/debian/
 #LOC:DK
 ftp://ftp.dk.debian.org/debian/
 ftp://mirror.easyspeedy.com/debian/
@@ -288,13 +288,13 @@ ftp://debian.advalem.net/debian/
 ftp://debian.ens-cachan.fr/debian/
 ftp://debian.med.univ-tours.fr/debian/
 ftp://debian.mines.inpl-nancy.fr/debian/
-ftp://debian.mirror.inra.fr/debian/
 ftp://debian.mirrors.easynet.fr/debian/
 ftp://debian.mirrors.ovh.net/debian/
 ftp://debian.polytech-lille.fr/debian/
 ftp://debian.proxad.net/debian/
 ftp://debian.revolsys.fr/debian/
 ftp://debian.univ-reims.fr/debian/
+ftp://debian.univ-tlse2.fr/debian/
 ftp://ftp.crihan.fr/debian/
 ftp://ftp.ec-m.fr/debian/
 ftp://ftp.fr.debian.org/debian/
@@ -316,7 +316,6 @@ http://debian.advalem.net/debian/
 http://debian.ens-cachan.fr/ftp/debian/
 http://debian.med.univ-tours.fr/debian/
 http://debian.mines.inpl-nancy.fr/debian/
-http://debian.mirror.inra.fr/debian/
 http://debian.mirrors.easynet.fr/debian/
 http://debian.mirrors.ovh.net/debian/
 http://debian.opensourcemirror.com/debian/
@@ -324,6 +323,7 @@ http://debian.polytech-lille.fr/debian/
 http://debian.proxad.net/debian/
 http://debian.revolsys.fr/debian/
 http://debian.univ-reims.fr/debian/
+http://debian.univ-tlse2.fr/debian/
 http://ftp.crihan.fr/debian/
 http://ftp.ec-m.fr/debian/
 http://ftp.fr.debian.org/debian/
@@ -517,8 +517,6 @@ ftp://mg.debian.net/debian/
 http://mg.debian.net/debian/
 #LOC:MK
 http://debian.cabletel.com.mk/debian/
-#LOC:MT
-http://debian.res.um.edu.mt/debian/
 #LOC:MX
 ftp://ftp.mx.debian.org/debian/
 ftp://mmc.geofisica.unam.mx/debian/
@@ -832,6 +830,9 @@ http://debian.stream.uz/debian/
 http://debian.unesr.edu.ve/debian/
 #LOC:VN
 http://mirror.debian.vn/debian/
+#LOC:VU
+ftp://debian.telsatbb.vu/debian/
+http://debian.telsatbb.vu/debian/
 #LOC:ZA
 ftp://debian.mirror.ac.za/debian/
 ftp://debian.mirror.neology.co.za/debian/

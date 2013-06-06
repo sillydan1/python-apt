@@ -1,3 +1,20 @@
+python-apt (0.8.9.1) unstable; urgency=low
+
+  [ Michael Vogt ]
+  * debian/control:
+    - updated Vcs field to point to 
+      http://git.debian.org/git/apt/python-apt.git
+  * replace .bzr-builddeb/default.conf with debian/gbp.conf
+
+  [ Julian Andres Klode ]
+  * Update the Vcs fields to use Vcs-Git with git protocol, and gitweb
+    for Vcs-Browser
+  
+  [ Colin Watson ]
+  * add support for "key in apt.debfile.DebPackage" (closes: #710541)
+
+ -- Michael Vogt <mvo@debian.org>  Thu, 06 Jun 2013 18:32:14 +0200
+
 python-apt (0.8.9) unstable; urgency=low
 
   * upload previous experimental upload to sid
