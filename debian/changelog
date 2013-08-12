@@ -1,3 +1,11 @@
+python-apt (0.8.9.1ubuntu1) saucy; urgency=low
+
+  * Merge from debian unstable. Remaining changes:
+    - add "saucy" to data/templates/Ubuntu.info.in
+    - mark packages as Multi-Arch: allowed.
+
+ -- Jackson Doak <noskcaj@ubuntu.com>  Tue, 13 Aug 2013 08:02:10 +1000
+
 python-apt (0.8.9.1) unstable; urgency=low
 
   [ Michael Vogt ]
@@ -92,6 +100,16 @@ python-apt (0.8.8.3) UNRELEASED; urgency=low
       thanks to Brian Murray
 
  -- Michael Vogt <michael.vogt@ubuntu.com>  Tue, 30 Apr 2013 18:37:24 +0200
+
+python-apt (0.8.8.2ubuntu1) saucy; urgency=low
+
+  * aptsources/distro.py:
+    - include the missing ID in the NoDistroTemplateException() error,
+      thanks to Brian Murray
+  * data/templates/Ubuntu.info.in:
+    - add "saucy"
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Tue, 30 Apr 2013 18:47:46 +0200
 
 python-apt (0.8.8.2) unstable; urgency=low
 

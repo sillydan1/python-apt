@@ -1,7 +1,8 @@
 Source: python-apt
 Section: python
 Priority: standard
-Maintainer: APT Development Team <deity@lists.debian.org>
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: APT Development Team <deity@lists.debian.org>
 Uploaders: Michael Vogt <mvo@debian.org>, Julian Andres Klode <jak@debian.org>
 Standards-Version: 3.9.3
 XS-Python-Version: >= 2.6
@@ -25,6 +26,7 @@ XS-Testsuite: autopkgtest
 
 Package: python-apt
 Architecture: any
+Multi-Arch: allowed
 Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:Depends}, python-apt-common
 Recommends: lsb-release, iso-codes, xz-utils
 Breaks: packagekit-backend-apt (<= 0.4.8-0ubuntu4),
@@ -88,6 +90,7 @@ Description: Python interface to libapt-pkg (API documentation)
 Package: python-apt-dbg
 Priority: extra
 Architecture: any
+Multi-Arch: allowed
 Section: debug
 Depends: python-dbg, python-apt (= ${binary:Version}), ${shlibs:Depends},
          ${misc:Depends}
@@ -130,6 +133,7 @@ Description: Python interface to libapt-pkg (locales)
 Package: python3-apt
 Priority: optional
 Architecture: any
+Multi-Arch: allowed
 Depends: ${python3:Depends}, ${shlibs:Depends}, ${misc:Depends}, python-apt-common
 Recommends: lsb-release, iso-codes
 Provides: ${python3:Provides}
@@ -152,6 +156,7 @@ Description: Python 3 interface to libapt-pkg
 Package: python3-apt-dbg
 Priority: extra
 Architecture: any
+Multi-Arch: allowed
 Section: debug
 Breaks: python-apt (<< 0.7.98+nmu1)
 Replaces: python-apt (<< 0.7.98+nmu1)
