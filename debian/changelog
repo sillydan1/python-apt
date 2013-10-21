@@ -1,3 +1,54 @@
+python-apt (0.9.0) unstable; urgency=low
+
+  [ Michael Vogt ]
+  * some fixes from the "coverity" scan
+  * merge from Ubuntu:
+    - data/templates/Ubuntu.info.in: add "Saucy Salamander" to 
+    - debian/control: add "Multi-Arch: allowed"
+
+  [ Julian Andres Klode ]
+  * Completely remove all old-API support code
+  * Accept bytes object for file names (Closes: #680971)
+  * aptsources/sourceslist.py
+    - Document correct use of uniq and hide it using __all__ (Closes: #723815)
+    - Correctly parse multiple options (LP: #1103200)
+  * python/apt_pkgmodule.cc:
+    - Fix documentation of version_compare (Closes: #680891)
+  * python/cache.cc:
+    - Set NoDelete=true when creating Policy, fixes segfault in destructor
+  * apt/package.py:
+    - Add a Package.has_config_files property (Closes: #712749)
+  * tests:
+    - Do not set dir::etc::sourceparts to /tmp
+  * apt, aptsources:
+    - Only call init_config() if not already initialized (Closes: #686403)
+  * apt/debfile.py:
+    - Pass strip_multi_arch=False to parse_depends. Patch by Michael, tests
+      derived from the ones provided by the reporter.
+      Closes: #717859. Closes: #717861.
+  * doc/source/examples/dpkg-info.py:
+    - Use apt_inst.DebFile (Closes: #671784)
+  * doc/examples/*.py:
+    - Update examples to the new API (Closes: #639022)
+  * tests/old/*.py:
+    - Update to new API as well
+  * data/templates/Ubuntu.info.in:
+    - Add "Trusty Thar"
+  * debian/control:
+    - Set Standards-Version to 3.9.4
+
+  [ Jeremy Bicha ]
+  * data/templates/Ubuntu.info.in: add 'devel' series (Closes: #722961)
+
+  [ Jakub Wilk ]
+  * python-apt: formatting error in library/index.rst (Closes: #692484)
+
+  [ Daniel Hartwig ]
+  * apt/package.py:
+    - mark_upgrade misuses FromUser to set auto-installed (Closes: #686726)
+
+ -- Julian Andres Klode <jak@debian.org>  Mon, 21 Oct 2013 20:53:17 +0200
+
 python-apt (0.8.9.1) unstable; urgency=low
 
   [ Michael Vogt ]
@@ -84,14 +135,6 @@ python-apt (0.8.9~exp1) experimental; urgency=low
     - Fix descriptions of quantal and raring.
   
  -- Michael Vogt <mvo@debian.org>  Wed, 13 Mar 2013 18:36:37 +0100
-
-python-apt (0.8.8.3) UNRELEASED; urgency=low
-
-  * aptsources/distro.py:
-    - include the missing ID in the NoDistroTemplateException() error,
-      thanks to Brian Murray
-
- -- Michael Vogt <michael.vogt@ubuntu.com>  Tue, 30 Apr 2013 18:37:24 +0200
 
 python-apt (0.8.8.2) unstable; urgency=low
 

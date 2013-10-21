@@ -46,7 +46,7 @@ template<typename T> struct IterListStruct
    unsigned long LastIndex;
 
    IterListStruct(T const &I) : Iter(I), LastIndex(0) {}
-   IterListStruct() {};
+   IterListStruct() : LastIndex(0) {};
 
    bool move(unsigned long Index) {
        if (Index < 0 || (unsigned)Index >= Count())
@@ -161,63 +161,10 @@ static PyObject *PkgCacheUpdate(PyObject *Self,PyObject *Args)
    return HandleErrors(PyRes);
 }
 
-#ifdef COMPAT_0_7
-static PyObject *PkgCacheClose(PyObject *Self,PyObject *Args)
-{
-   PyErr_WarnEx(PyExc_DeprecationWarning, "Cache.Close() is deprecated, "
-                "because it causes segfaults. Delete the Cache instead.", 1);
-   PyObject *CacheFilePy = GetOwner<pkgCache*>(Self);
-   pkgCacheFile *Cache = GetCpp<pkgCacheFile*>(CacheFilePy);
-   Cache->Close();
-
-   Py_INCREF(Py_None);
-   return HandleErrors(Py_None);
-}
-
-static PyObject *PkgCacheOpen(PyObject *Self,PyObject *Args)
-{
-   PyErr_WarnEx(PyExc_DeprecationWarning, "Cache.Open() is deprecated, "
-                "because it causes memory leaks. Create a new Cache instead.",
-                1);
-   PyObject *CacheFilePy = GetOwner<pkgCache*>(Self);
-   pkgCacheFile *Cache = GetCpp<pkgCacheFile*>(CacheFilePy);
-
-   PyObject *pyCallbackInst = 0;
-   if (PyArg_ParseTuple(Args, "|O", &pyCallbackInst) == 0)
-      return 0;
-
-   if(pyCallbackInst != 0) {
-      PyOpProgress progress;
-      progress.setCallbackInst(pyCallbackInst);
-      if (Cache->Open(progress,false) == false)
-	 return HandleErrors();
-   }  else {
-      OpTextProgress Prog;
-      if (Cache->Open(Prog,false) == false)
-	 return HandleErrors();
-   }
-
-   //std::cout << "new cache is " << (pkgCache*)(*Cache) << std::endl;
-   
-   // ensure that the states are correct (LP: #659438)
-   pkgApplyStatus(*Cache);
-
-   // update the cache pointer after the cache was rebuild
-   ((CppPyObject<pkgCache*> *)Self)->Object = (pkgCache*)(*Cache);
-
-   Py_INCREF(Py_None);
-   return HandleErrors(Py_None);
-}
-#endif
 
 static PyMethodDef PkgCacheMethods[] =
 {
    {"update",PkgCacheUpdate,METH_VARARGS,cache_update_doc},
-#ifdef COMPAT_0_7
-   {"Open", PkgCacheOpen, METH_VARARGS,
-    "Open the cache; deprecated and unsafe"},
-   {"Close", PkgCacheClose, METH_VARARGS,"Close the cache"},
-#endif
    {}
 };
 
@@ -233,8 +180,12 @@ static PyObject *PkgCacheGetGroups(PyObject *Self, void*) {
 
 static PyObject *PkgCacheGetPolicy(PyObject *Self, void*) {
    pkgCacheFile *CacheFile = GetCpp<pkgCacheFile *>(Self);
-   std::cerr << "policy: " << CacheFile->Policy << std::endl;
-   return CppPyObject_NEW<pkgPolicy*>(Self,&PyPolicy_Type,CacheFile->Policy);
+   CppPyObject<pkgPolicy*> *obj;
+
+   obj = CppPyObject_NEW<pkgPolicy*>(Self,&PyPolicy_Type,CacheFile->Policy);
+   obj->NoDelete = true;
+
+   return obj;
 }
 
 static PyObject *PkgCacheGetPackages(PyObject *Self, void*) {
@@ -1654,11 +1605,3 @@ PyTypeObject PyDependencyList_Type =
 									/*}}}*/
 
 
-#ifdef COMPAT_0_7
-PyObject *TmpGetCache(PyObject *Self,PyObject *Args)
-{
-    PyErr_WarnEx(PyExc_DeprecationWarning, "apt_pkg.GetCache() is deprecated. "
-                 "Please see apt_pkg.Cache() for the replacement.", 1);
-    return PkgCacheNew(&PyCache_Type,Args,0);
-}
-#endif
