@@ -203,7 +203,7 @@ public:
 	bool callConfigure(PkgIterator Pkg) { return pkgDPkgPM::Configure(Pkg); }
 	pkgOrderList *getOrderList() { return pkgPackageManager::List; }
 
-	PyPkgManager(pkgDepCache *Cache) : pkgDPkgPM(Cache) {};
+        PyPkgManager(pkgDepCache *Cache) : pkgDPkgPM(Cache),pyinst(NULL) {};
 	PyObject *pyinst;
 };
 
@@ -225,23 +225,14 @@ static PyObject *PkgManagerNew(PyTypeObject *type,PyObject *Args,PyObject *kwds)
    return PkgManagerObj;
 }
 
-#ifdef COMPAT_0_7
-PyObject *GetPkgManager(PyObject *Self,PyObject *Args)
-{
-    PyErr_WarnEx(PyExc_DeprecationWarning, "apt_pkg.GetPackageManager() is "
-                 "deprecated. Please see apt_pkg.PackageManager() for the "
-                 "replacement.", 1);
-    return PkgManagerNew(&PyPackageManager2_Type,Args,0);
-}
-#endif
 
 static PyObject *PkgManagerInstall(PyObject *Self,PyObject *Args)
 {
    PyPkgManager *pm = GetCpp<PyPkgManager*>(Self);
    PyObject *pkg;
-   const char *file;
+   PyApt_Filename file;
 
-   if (PyArg_ParseTuple(Args, "O!s", &PyPackage_Type,&pkg, &file) == 0)
+   if (PyArg_ParseTuple(Args, "O!O&", &PyPackage_Type,&pkg, PyApt_Filename::Converter, &file) == 0)
       return 0;
 
    return HandleErrors(PyBool_FromLong(pm->callInstall(PyPackage_ToCpp(pkg), file)));

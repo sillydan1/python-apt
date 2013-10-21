@@ -37,8 +37,8 @@ static PyObject *indexrecords_new(PyTypeObject *type,PyObject *Args,
 
 static PyObject *indexrecords_load(PyObject *self,PyObject *args)
 {
-    const char *filename;
-    if (PyArg_ParseTuple(args, "s", &filename) == 0)
+    PyApt_Filename filename;
+    if (PyArg_ParseTuple(args, "O&", PyApt_Filename::Converter, &filename) == 0)
         return 0;
     indexRecords *records = GetCpp<indexRecords*>(self);
     return HandleErrors(PyBool_FromLong(records->Load(filename)));
@@ -51,8 +51,8 @@ static char *indexrecords_lookup_doc =
     "and the second element 'size' is an int object.";
 static PyObject *indexrecords_lookup(PyObject *self,PyObject *args)
 {
-    const char *keyname;
-    if (PyArg_ParseTuple(args, "s", &keyname) == 0)
+    PyApt_Filename keyname;
+    if (PyArg_ParseTuple(args, "O&", PyApt_Filename::Converter, &keyname) == 0)
         return 0;
     indexRecords *records = GetCpp<indexRecords*>(self);
     const indexRecords::checkSum *result = records->Lookup(keyname);

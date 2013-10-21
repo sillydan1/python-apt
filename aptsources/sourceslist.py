@@ -34,11 +34,13 @@ import time
 
 import apt_pkg
 from .distinfo import DistInfo
-from apt.deprecation import function_deprecated_by
 #from apt_pkg import gettext as _
 
 
 # some global helpers
+
+__all__ = ['is_mirror', 'SourceEntry', 'NullMatcher', 'SourcesList',
+           'SourceEntryMatcher']
 
 
 def is_mirror(master_uri, compare_uri):
@@ -72,7 +74,12 @@ def is_mirror(master_uri, compare_uri):
 
 
 def uniq(s):
-    """ simple and efficient way to return uniq list """
+    """ simple and efficient way to return uniq collection
+
+    This is not intended for use with a SourceList. It is provided
+    for internal use only. It does not have a leading underscore to
+    not break any old code that uses it; but it should not be used
+    in new code (and is not listed in __all__)."""
     return list(set(s))
 
 
@@ -84,6 +91,7 @@ class SourceEntry(object):
         self.disabled = False           # is it disabled ('#' in front)
         self.type = ""                  # what type (deb, deb-src)
         self.architectures = []         # architectures
+        self.trusted = None             # Trusted
         self.uri = ""                   # base-uri
         self.dist = ""                  # distribution (dapper, edgy, etc)
         self.comps = []                 # list of available componetns
@@ -116,9 +124,15 @@ class SourceEntry(object):
         p_found = False
         space_found = False
         for i in range(len(line)):
-            if line[i] == "[" and not space_found:
-                p_found=True
-                tmp += line[i]
+            if line[i] == "[":
+                if space_found:
+                    space_found = False
+                    p_found = True
+                    pieces.append(tmp)
+                    tmp = line[i]
+                else:
+                    p_found=True
+                    tmp += line[i]
             elif line[i] == "]":
                 p_found=False
                 tmp += line[i]
@@ -174,7 +188,7 @@ class SourceEntry(object):
             return
 
         if pieces[1].strip()[0] == "[":
-            options = pieces.pop(1).strip("[]").split(";")
+            options = pieces.pop(1).strip("[]").split()
             for option in options:
                 try:
                     key, value = option.split("=", 1)
@@ -183,6 +197,8 @@ class SourceEntry(object):
                 else:
                     if key == "arch":
                         self.architectures = value.split(",")
+                    elif key == "trusted":
+                        self.trusted = apt_pkg.string_to_bool(value)
                     else:
                         self.invalid = True
             
@@ -224,7 +240,11 @@ class SourceEntry(object):
 
         line += self.type
 
-        if self.architectures:
+        if self.architectures and self.trusted is not None:
+            line += " [arch=%s trusted=%s]" % (",".join(self.architectures), "yes" if self.trusted else "no")
+        elif self.trusted is not None:
+            line += " [trusted=%s]" % ("yes" if self.trusted else "no")
+        elif self.architectures:
             line += " [arch=%s]" % ",".join(self.architectures)
         line += " %s %s" % (self.uri, self.dist)
         if len(self.comps) > 0:
@@ -351,9 +371,6 @@ class SourcesList(object):
         for file in glob.glob("%s/*.list" % partsdir):
             if os.path.exists(file+backup_ext):
                 shutil.copy(file+backup_ext, file)
-
-    if apt_pkg._COMPAT_0_7:
-        restoreBackup = function_deprecated_by(restore_backup)
 
     def backup(self, backup_ext=None):
         """ make a backup of the current source files, if no backup extension
