@@ -88,9 +88,9 @@ http://mirrors.hustunique.com/ubuntu/
 http://mirrors.oss.org.cn/ubuntu/
 http://mirrors.shlug.org/ubuntu/
 http://mirrors.sohu.com/ubuntu/
-http://mirrors.tuna.tsinghua.edu.cn/ubuntu/
 http://mirrors.ustc.edu.cn/ubuntu/
 http://mirrors.yun-idc.com/ubuntu/
+http://mirrors.zju.edu.cn/ubuntu/
 http://ubuntu.cn99.com/ubuntu/
 http://ubuntu.cnssuestc.org/ubuntu/
 http://ubuntu.dormforce.net/ubuntu/
@@ -170,6 +170,7 @@ http://distrib-coffee.ipsl.jussieu.fr/pub/linux/ubuntu/
 http://distrib-coffee.ipsl.jussieu.fr/ubuntu/
 http://ftp.crihan.fr/ubuntu/
 http://ftp.free.org/mirrors/archive.ubuntu.com/ubuntu/
+http://ftp.oleane.net/ubuntu/
 http://ftp.u-picardie.fr/mirror/ubuntu/ubuntu/
 http://mirror.ovh.net/ubuntu/
 http://mirror.ubuntu.ikoula.com/ubuntu/
@@ -204,7 +205,6 @@ http://ubuntu.grena.ge/ubuntu/
 #LOC:GL
 http://mirror.greennet.gl/ubuntu/
 #LOC:GR
-http://ftp.cc.uoc.gr/mirrors/linux/ubuntu/packages/
 http://ftp.ntua.gr/pub/linux/ubuntu/
 http://ubuntu.otenet.gr/
 http://ubuntu.tsl.gr/
@@ -247,7 +247,6 @@ http://ubuntu.excellmedia.net/archive/
 http://speglar.simnet.is/ubuntu/
 #LOC:IT
 http://giano.com.dist.unige.it/ubuntu/
-http://mirror.crazynetwork.it/ubuntu/archive/
 http://ubuntu.fastbull.org/ubuntu/
 http://ubuntu.ictvalleumbra.it/ubuntu/
 http://ubuntu.mirror.garr.it/mirrors/ubuntu-archive/
@@ -367,7 +366,6 @@ http://linux.nsu.ru/ubuntu/
 http://linux.psu.ru/ubuntu/
 http://linux.vlz.su/ubuntu/
 http://mirror.beget.ru/ubuntu/
-http://mirror.corbina.net/ubuntu/
 http://mirror.logol.ru/ubuntu/
 http://mirror.rol.ru/ubuntu/
 http://mirror.timeweb.ru/ubuntu/
@@ -402,7 +400,6 @@ http://mirror.kku.ac.th/ubuntu/
 http://mirror.siamdata.co.th/ubuntu/
 http://mirror1.ku.ac.th/ubuntu/
 http://mirrors.psu.ac.th/ubuntu/
-http://ubuntu-archive.sit.kmutt.ac.th/
 http://ubuntu-mirror.totbb.net/ubuntu/
 #LOC:TN
 http://ubuntu.mirror.tn/
@@ -440,6 +437,7 @@ http://ftp.utexas.edu/ubuntu/
 http://hive.ist.unomaha.edu/ubuntu-archive/
 http://lug.mtu.edu/ubuntu/
 http://mirror.alfredstate.edu/ubuntu/
+http://mirror.ancl.hawaii.edu/linux/ubuntu/
 http://mirror.anl.gov/pub/ubuntu/
 http://mirror.calvin.edu/ubuntu/
 http://mirror.cc.columbia.edu/pub/linux/ubuntu/archive/
