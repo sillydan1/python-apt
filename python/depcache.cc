@@ -89,9 +89,11 @@ static PyObject *PkgDepCacheCommit(PyObject *Self,PyObject *Args)
    PyFetchProgress progress;
    progress.setCallbackInst(pyFetchProgressInst);
 
-   pkgAcquire Fetcher(&progress);
+   pkgAcquire Fetcher;
    pkgPackageManager *PM;
    PM = _system->CreatePM(depcache);
+
+   Fetcher.Setup(&progress);
    if(PM->GetArchives(&Fetcher, &List, &Recs) == false ||
       _error->PendingError() == true) {
       std::cerr << "Error in GetArchives" << std::endl;
@@ -109,7 +111,7 @@ static PyObject *PkgDepCacheCommit(PyObject *Self,PyObject *Args)
       bool Transient = false;
 
       if (Fetcher.Run() == pkgAcquire::Failed)
-	 return false;
+	 return HandleErrors();
 
       // Print out errors
       bool Failed = false;
@@ -893,7 +895,9 @@ static PyObject *PkgProblemResolverInstallProtect(PyObject *Self,PyObject *Args)
    pkgProblemResolver *fixer = GetCpp<pkgProblemResolver *>(Self);
    if (PyArg_ParseTuple(Args,"") == 0)
       return 0;
+   PY_APT_BEGIN_DEPRECATED;
    fixer->InstallProtect();
+   PY_APT_END_DEPRECATED;
    Py_INCREF(Py_None);
    return HandleErrors(Py_None);
 }
