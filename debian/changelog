@@ -1,3 +1,9 @@
+python-apt (0.9.1build1) trusty; urgency=medium
+
+  * No change rebuild against supported python3.4.
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Fri, 03 Jan 2014 08:45:23 +0000
+
 python-apt (0.9.1) unstable; urgency=low
 
   * data/templates/Ubuntu.info.in: It's 'Tahr', not 'Thar'
