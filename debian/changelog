@@ -1,3 +1,9 @@
+python-apt (0.9.1build2) trusty; urgency=medium
+
+  * Rebuild for python3.4 as a supported python version.
+
+ -- Matthias Klose <doko@ubuntu.com>  Sat, 04 Jan 2014 18:32:04 +0000
+
 python-apt (0.9.1build1) trusty; urgency=medium
 
   * No change rebuild against supported python3.4.
