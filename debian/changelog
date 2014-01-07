@@ -1,3 +1,10 @@
+python-apt (0.9.1ubuntu1) trusty; urgency=medium
+
+  * d/tests/control: Add python-all and python3-all as Depends for the
+    autopkgtests so all the supported Python versions are pulled in.
+
+ -- Barry Warsaw <barry@ubuntu.com>  Tue, 07 Jan 2014 11:13:50 -0500
+
 python-apt (0.9.1build2) trusty; urgency=medium
 
   * Rebuild for python3.4 as a supported python version.
