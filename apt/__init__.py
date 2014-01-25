@@ -18,11 +18,15 @@
 #  USA
 # import the core of apt_pkg
 """High-Level Interface for working with apt."""
+from __future__ import print_function
+
 import apt_pkg
 
 # import some fancy classes
 from apt.package import Package
 from apt.cache import Cache, ProblemResolver
+Cache  # pyflakes
+ProblemResolver  # pyflakes
 from apt.cdrom import Cdrom
 
 # init the package system, but do not re-initialize config

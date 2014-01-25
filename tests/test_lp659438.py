@@ -20,7 +20,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 # Licensed under the GNU General Public License Version 2
 
-__author__  = "Sebastian Heinlein <devel@glatzor.de>"
+__author__ = "Sebastian Heinlein <devel@glatzor.de>"
 
 import os
 import shutil
@@ -63,7 +63,7 @@ Architecture: all""")
     def tearDown(self):
         # this resets the rootdir apt_pkg.config to ensure it does not
         # "pollute" the later tests
-        cache = apt.cache.Cache(rootdir="/")
+        apt.cache.Cache(rootdir="/")
         shutil.rmtree(self.chroot_path)
 
     def test_survive_reqreinst(self):

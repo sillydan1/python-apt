@@ -9,6 +9,7 @@ def get_file(fetcher, uri, destfile):
     # get the file
     af = apt_pkg.AcquireFile(fetcher, uri=uri, descr="sample descr",
                                destfile=destfile)
+    print "desc_uri: %s -> %s" % (af.desc_uri, af.destfile)
     res = fetcher.run()
     if res != fetcher.RESULT_CONTINUE:
         return False
@@ -33,7 +34,8 @@ progress = apt.progress.text.AcquireProgress()
 fetcher = apt_pkg.Acquire(progress)
 pm = apt_pkg.PackageManager(depcache)
 pm.get_archives(fetcher, list, recs)
-print "%s (%s)" % (apt_pkg.size_to_str(fetcher.fetch_needed), fetcher.fetch_needed)
+print "%s (%s)" % (
+    apt_pkg.size_to_str(fetcher.fetch_needed), fetcher.fetch_needed)
 actiongroup = apt_pkg.ActionGroup(depcache)
 for pkg in cache.packages:
     depcache.mark_keep(pkg)
@@ -45,7 +47,7 @@ except OSError:
     pass
 apt_pkg.config.set("Dir::Cache::archives", "/tmp/pyapt-test")
 
-pkg = cache["3ddesktop"]
+pkg = cache["2vcard"]
 depcache.mark_install(pkg)
 
 progress = apt.progress.text.AcquireProgress()
@@ -64,7 +66,7 @@ for item in fetcher.items:
     print item
     if item.status == item.STAT_ERROR:
         print "Some error ocured: '%s'" % item.error_text
-    if item.complete == False:
+    if not item.complete:
         print "No error, still nothing downloaded (%s)" % item.error_text
     print
 
@@ -74,4 +76,4 @@ print "fetcher.Run() returned: %s" % res
 
 print "now runing pm.DoInstall()"
 res = pm.do_install(1)
-print "pm.DoInstall() returned: %s"% res
+print "pm.DoInstall() returned: %s" % res

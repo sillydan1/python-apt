@@ -26,6 +26,7 @@ if os.path.exists("../../build"):
         sys.path.insert(0, os.path.abspath(os.path.dirname(apt_pkg_path)))
         try:
             import apt_pkg
+            apt_pkg  # pyflakes
         except ImportError as exc:
             # Not the correct version
             sys.stderr.write('W: Ignoring error %s\n' % exc)
@@ -33,7 +34,6 @@ if os.path.exists("../../build"):
         else:
             sys.stdout.write('I: Found apt_pkg.so in %s\n' % sys.path[0])
             break
-
 
 
 # General configuration
@@ -67,7 +67,7 @@ copyright = u'2009-2010, Julian Andres Klode <jak@debian.org>'
 #
 
 try:
-    release=os.environ['DEBVER']
+    release = os.environ['DEBVER']
 except KeyError:
     from subprocess import Popen, PIPE
     p1 = Popen(["dpkg-parsechangelog", "-l../../debian/changelog"],
@@ -81,7 +81,7 @@ for c in release.split("~")[0].split(".")[2]:
     if not c.isdigit():
         break
     release_raw += c
-    
+
 if int(release_raw) >= 90:
     version_s = release.split("~")[0].split(".")[:3]
     # Set the version to 0.X.100 if the release is 0.X.9Y (0.7.90 => 0.7.100)
@@ -211,8 +211,8 @@ htmlhelp_basename = 'python-aptdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source index, target name, title, author, document class [howto/manual]).
 latex_documents = [
-  ('contents', 'python-apt.tex', ur'python-apt Documentation',
-   ur'Julian Andres Klode <jak@debian.org>', 'manual'),
+    ('contents', 'python-apt.tex', ur'python-apt Documentation',
+     ur'Julian Andres Klode <jak@debian.org>', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

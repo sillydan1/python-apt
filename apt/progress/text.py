@@ -15,6 +15,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 """Progress reporting for text interfaces."""
+from __future__ import print_function
+
 import os
 import sys
 
@@ -22,6 +24,11 @@ import apt_pkg
 from apt.progress import base
 
 __all__ = ['AcquireProgress', 'CdromProgress', 'OpProgress']
+
+if sys.version_info.major < 3:
+    input = raw_input
+else:
+    long = int
 
 
 def _(msg):
@@ -47,7 +54,7 @@ class TextProgress(object):
         # Fill remaining stuff with whitespace
         if self._width > len(msg):
             self._file.write((self._width - len(msg)) * ' ')
-        elif maximize: # Needed for OpProgress.
+        elif maximize:  # Needed for OpProgress.
             self._width = max(self._width, len(msg))
         if newline:
             self._file.write("\n")
@@ -91,7 +98,7 @@ class AcquireProgress(base.AcquireProgress, TextProgress):
         base.AcquireProgress.__init__(self)
         self._signal = None
         self._width = 80
-        self._id = 1
+        self._id = long(1)
 
     def start(self):
         """Start an Acquire progress.
@@ -104,7 +111,7 @@ class AcquireProgress(base.AcquireProgress, TextProgress):
         self._signal = signal.signal(signal.SIGWINCH, self._winch)
         # Get the window size.
         self._winch()
-        self._id = 1L
+        self._id = long(1)
 
     def _winch(self, *dummy):
         """Signal handler for window resize signals."""
@@ -114,7 +121,7 @@ class AcquireProgress(base.AcquireProgress, TextProgress):
             import struct
             buf = fcntl.ioctl(self._file, termios.TIOCGWINSZ, 8 * ' ')
             dummy, col, dummy, dummy = struct.unpack('hhhh', buf)
-            self._width = col - 1 # 1 for the cursor
+            self._width = col - 1  # 1 for the cursor
 
     def ims_hit(self, item):
         """Called when an item is update (e.g. not modified on the server)."""
@@ -188,8 +195,9 @@ class AcquireProgress(base.AcquireProgress, TextProgress):
 
             # Add the total size and percent
             if worker.total_size and not worker.current_item.owner.complete:
-                val += "/%sB %i%%" % (apt_pkg.size_to_str(worker.total_size),
-                                worker.current_size*100.0/worker.total_size)
+                val += "/%sB %i%%" % (
+                    apt_pkg.size_to_str(worker.total_size),
+                    worker.current_size * 100.0 / worker.total_size)
 
             val += ']'
 
@@ -214,7 +222,7 @@ class AcquireProgress(base.AcquireProgress, TextProgress):
         self._write(_("Media change: please insert the disc labeled\n"
                       " '%s'\n"
                       "in the drive '%s' and press enter\n") % (medium, drive))
-        return raw_input() not in ('c', 'C')
+        return input() not in ('c', 'C')
 
     def stop(self):
         """Invoked when the Acquire process stops running."""
@@ -239,7 +247,7 @@ class CdromProgress(base.CdromProgress, TextProgress):
         self._write(_("Please provide a name for this Disc, such as "
                       "'Debian 2.1r1 Disk 1'"), False)
         try:
-            return raw_input(":")
+            return input(":")
         except KeyboardInterrupt:
             return
 
@@ -255,6 +263,6 @@ class CdromProgress(base.CdromProgress, TextProgress):
         self._write(_("Please insert a Disc in the drive and press enter"),
                     False)
         try:
-            return (raw_input() == '')
+            return (input() == '')
         except KeyboardInterrupt:
             return False
