@@ -19,24 +19,24 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 #  USA
 """Functionality related to packages."""
-import httplib
+from __future__ import print_function
+
+
 import os
 import sys
 import re
 import socket
 import subprocess
-import urllib2
-import warnings
-try:
-    from collections import Mapping, Sequence
-except ImportError:
-    # (for Python < 2.6) pylint: disable-msg=C0103
-    Sequence = Mapping = object
 
 try:
-    from collections import Sequence
+    from http.client import BadStatusLine
+    from urllib.error import HTTPError
+    from urllib.request import urlopen
 except ImportError:
-    Sequence = object
+    from httplib import BadStatusLine
+    from urllib2 import HTTPError, urlopen
+
+from collections import Mapping, Sequence
 
 import apt_pkg
 import apt.progress.text
@@ -44,6 +44,9 @@ from apt_pkg import gettext as _
 
 __all__ = ('BaseDependency', 'Dependency', 'Origin', 'Package', 'Record',
            'Version', 'VersionList')
+
+if sys.version_info.major >= 3:
+    unicode = str
 
 
 def _file_is_same(path, size, md5):
@@ -58,31 +61,71 @@ class FetchError(Exception):
 
 
 class BaseDependency(object):
-    """A single dependency.
-
-    Attributes defined here:
-        name       - The name of the dependency
-        relation   - The relation (>,>=,==,<,<=,)
-        version    - The version depended on
-        rawtype   - The type of the dependendy (e.g. 'Recommends')
-        pre_depend - Boolean value whether this is a pre-dependency.
-    """
+    """A single dependency."""
 
     class __dstr(str):
-        """Helper to make > match >> and < match <<"""
+        """Compare helper for compatibility with old third-party code.
+
+        Old third-party code might still compare the relation with the
+        previously used relations (<<,<=,==,!=,>=,>>,) instead of the curently
+        used ones (<,<=,=,!=,>=,>,). This compare helper lets < match to <<,
+        > match to >> and = match to ==.
+        """
 
         def __eq__(self, other):
-            return str.__eq__(self, other) or str.__eq__(2 * self, other)
+            if str.__eq__(self, other):
+                return True
+            elif str.__eq__(self, '<'):
+                return str.__eq__('<<', other)
+            elif str.__eq__(self, '>'):
+                return str.__eq__('>>', other)
+            elif str.__eq__(self, '='):
+                return str.__eq__('==', other)
+            else:
+                return False
 
         def __ne__(self, other):
-            return str.__eq__(self, other) and str.__ne__(2 * self, other)
+            return not self.__eq__(other)
 
-    def __init__(self, name, rel, ver, pre, rawtype=None):
-        self.name = name
-        self.relation = len(rel) == 1 and self.__dstr(rel) or rel
-        self.version = ver
-        self.pre_depend = pre
-        self.rawtype = rawtype
+    def __init__(self, dep):
+        self._dep = dep  # apt_pkg.Dependency
+
+    @property
+    def name(self):
+        """The name of the target package."""
+        return self._dep.target_pkg.name
+
+    @property
+    def relation(self):
+        """The relation (<, <=, !=, =, >=, >, ).
+
+        Note that the empty string is a valid string as well, if no version
+        is specified.
+        """
+        return self.__dstr(self._dep.comp_type)
+
+    @property
+    def version(self):
+        """The target version or None.
+
+        It is None if and only if relation is the empty string."""
+        return self._dep.target_ver
+
+    @property
+    def rawtype(self):
+        """Type of the dependency.
+
+        This should be one of 'Breaks', 'Conflicts', 'Depends', 'Enhances',
+        'PreDepends', 'Recommends', 'Replaces', 'Suggests'.
+
+        Additional types might be added in the future.
+        """
+        return self._dep.dep_type_untranslated
+
+    @property
+    def pre_depend(self):
+        """Whether this is a PreDepends."""
+        return self._dep.dep_type_untranslated == 'PreDepends'
 
     def __repr__(self):
         return ('<BaseDependency: name:%r relation:%r version:%r preDepend:%r>'
@@ -332,14 +375,14 @@ class Version(object):
         try:
             if not isinstance(dsc, unicode):
                 # Only convert where needed (i.e. Python 2.X)
-                dsc = unicode(dsc, "utf-8")
+                dsc = dsc.decode("utf-8")
         except UnicodeDecodeError as err:
             return _("Invalid unicode in description for '%s' (%s). "
-                  "Please report.") % (self.package.name, err)
+                     "Please report.") % (self.package.name, err)
 
         lines = iter(dsc.split("\n"))
         # Skip the first line, since its a duplication of the summary
-        lines.next()
+        next(lines)
         for raw_line in lines:
             if raw_line.strip() == ".":
                 # The line is just line break
@@ -415,10 +458,7 @@ class Version(object):
                 for dep_ver_list in depends[type_]:
                     base_deps = []
                     for dep_or in dep_ver_list:
-                        base_deps.append(BaseDependency(dep_or.target_pkg.name,
-                                        dep_or.comp_type, dep_or.target_ver,
-                                        (type_ == "PreDepends"),
-                                         rawtype=type_))
+                        base_deps.append(BaseDependency(dep_or))
                     depends_list.append(Dependency(base_deps))
             except KeyError:
                 pass
@@ -428,7 +468,7 @@ class Version(object):
     def provides(self):
         """ Return a list of names that this version provides."""
         return [p[0] for p in self._cand.provides_list]
-        
+
     @property
     def enhances(self):
         """Return the list of enhances for the package version."""
@@ -524,7 +564,7 @@ class Version(object):
         .. versionadded:: 0.7.10
         """
         try:
-            return iter(self._uris()).next()
+            return next(iter(self._uris()))
         except StopIteration:
             return None
 
@@ -543,7 +583,7 @@ class Version(object):
         base = os.path.basename(self._records.filename)
         destfile = os.path.join(destdir, base)
         if _file_is_same(destfile, self.size, self._records.md5_hash):
-            print('Ignoring already existing file: %s' % destfile)
+            print(('Ignoring already existing file: %s' % destfile))
             return os.path.abspath(destfile)
         acq = apt_pkg.Acquire(progress or apt.progress.text.AcquireProgress())
         acqfile = apt_pkg.AcquireFile(acq, self.uri, self._records.md5_hash,
@@ -592,7 +632,7 @@ class Version(object):
             if type_ == 'dsc':
                 dsc = destfile
             if _file_is_same(destfile, size, md5):
-                print('Ignoring already existing file: %s' % destfile)
+                print(('Ignoring already existing file: %s' % destfile))
                 continue
             files.append(apt_pkg.AcquireFile(acq, src.index.archive_uri(path),
                          md5, size, base, destfile=destfile))
@@ -601,7 +641,7 @@ class Version(object):
         for item in acq.items:
             if item.status != item.STAT_DONE:
                 raise FetchError("The item %r could not be fetched: %s" %
-                                    (item.destfile, item.error_text))
+                                 (item.destfile, item.error_text))
 
         if unpack:
             outdir = src.package + '-' + apt_pkg.upstream_version(src.version)
@@ -633,8 +673,8 @@ class VersionList(Sequence):
     """
 
     def __init__(self, package, slice_=None):
-        self._package = package # apt.package.Package()
-        self._versions = package._pkg.version_list # [apt_pkg.Version(), ...]
+        self._package = package  # apt.package.Package()
+        self._versions = package._pkg.version_list  # [apt_pkg.Version(), ...]
         if slice_:
             self._versions = self._versions[slice_]
 
@@ -659,7 +699,7 @@ class VersionList(Sequence):
         return (Version(self._package, ver) for ver in self._versions)
 
     def __contains__(self, item):
-        if isinstance(item, Version): # Sequence interface
+        if isinstance(item, Version):  # Sequence interface
             item = item.version
         # Dictionary interface.
         for ver in self._versions:
@@ -702,8 +742,8 @@ class Package(object):
         self._changelog = ""            # Cached changelog
 
     def __repr__(self):
-        return '<Package: name:%r architecture=%r id:%r>' % (self._pkg.name,
-                 self._pkg.architecture, self._pkg.id)
+        return '<Package: name:%r architecture=%r id:%r>' % (
+            self._pkg.name, self._pkg.architecture, self._pkg.id)
 
     def __lt__(self, other):
         return self.name < other.name
@@ -917,10 +957,10 @@ class Package(object):
         src_section = "main"
         # use the section of the candidate as a starting point
         section = self.candidate.section
-        
+
         # get the source version
         src_ver = self.candidate.source_version
-                
+
         try:
             # try to get the source version of the pkg, this differs
             # for some (e.g. libnspr4 on ubuntu)
@@ -977,7 +1017,7 @@ class Package(object):
                 if cancel_lock and cancel_lock.isSet():
                     return u""
                 # FIXME: python3.2: Should be closed manually
-                changelog_file = urllib2.urlopen(uri)
+                changelog_file = urlopen(uri)
                 # do only get the lines that are new
                 changelog = u""
                 regexp = "^%s \((.*)\)(.*)$" % (re.escape(src_pkg))
@@ -1006,7 +1046,7 @@ class Package(object):
                             changelog_ver = changelog_ver.split(":", 1)[1]
 
                         if (installed and apt_pkg.version_compare(
-                                          changelog_ver, installed) <= 0):
+                                changelog_ver, installed) <= 0):
                             break
                     # EOF (shouldn't really happen)
                     changelog += line
@@ -1018,16 +1058,16 @@ class Package(object):
                         changelog = changelog.decode("utf-8")
                 self._changelog = changelog
 
-            except urllib2.HTTPError:
+            except HTTPError:
                 res = _("The list of changes is not available yet.\n\n"
-                         "Please use http://launchpad.net/ubuntu/+source/%s/"
-                         "%s/+changelog\n"
-                         "until the changes become available or try again "
-                         "later.") % (src_pkg, src_ver)
+                        "Please use http://launchpad.net/ubuntu/+source/%s/"
+                        "%s/+changelog\n"
+                        "until the changes become available or try again "
+                        "later.") % (src_pkg, src_ver)
                 return res if isinstance(res, unicode) else res.decode("utf-8")
-            except (IOError, httplib.BadStatusLine):
+            except (IOError, BadStatusLine):
                 res = _("Failed to download the list of changes. \nPlease "
-                         "check your Internet connection.")
+                        "check your Internet connection.")
                 return res if isinstance(res, unicode) else res.decode("utf-8")
         finally:
             socket.setdefaulttimeout(timeout)
@@ -1143,60 +1183,59 @@ class Package(object):
 
 def _test():
     """Self-test."""
-    print "Self-test for the Package modul"
+    print("Self-test for the Package modul")
     import random
     apt_pkg.init()
     progress = apt.progress.text.OpProgress()
     cache = apt.Cache(progress)
     pkg = cache["apt-utils"]
-    print "Name: %s " % pkg.name
-    print "ID: %s " % pkg.id
-    print "Priority (Candidate): %s " % pkg.candidate.priority
-    print "Priority (Installed): %s " % pkg.installed.priority
-    print "Installed: %s " % pkg.installed.version
-    print "Candidate: %s " % pkg.candidate.version
-    print "CandidateDownloadable: %s" % pkg.candidate.downloadable
-    print "CandidateOrigins: %s" % pkg.candidate.origins
-    print "SourcePkg: %s " % pkg.candidate.source_name
-    print "Section: %s " % pkg.section
-    print "Summary: %s" % pkg.candidate.summary
-    print "Description (formatted) :\n%s" % pkg.candidate.description
-    print "Description (unformatted):\n%s" % pkg.candidate.raw_description
-    print "InstalledSize: %s " % pkg.candidate.installed_size
-    print "PackageSize: %s " % pkg.candidate.size
-    print "Dependencies: %s" % pkg.installed.dependencies
-    print "Recommends: %s" % pkg.installed.recommends
+    print("Name: %s " % pkg.name)
+    print("ID: %s " % pkg.id)
+    print("Priority (Candidate): %s " % pkg.candidate.priority)
+    print("Priority (Installed): %s " % pkg.installed.priority)
+    print("Installed: %s " % pkg.installed.version)
+    print("Candidate: %s " % pkg.candidate.version)
+    print("CandidateDownloadable: %s" % pkg.candidate.downloadable)
+    print("CandidateOrigins: %s" % pkg.candidate.origins)
+    print("SourcePkg: %s " % pkg.candidate.source_name)
+    print("Section: %s " % pkg.section)
+    print("Summary: %s" % pkg.candidate.summary)
+    print("Description (formatted) :\n%s" % pkg.candidate.description)
+    print("Description (unformatted):\n%s" % pkg.candidate.raw_description)
+    print("InstalledSize: %s " % pkg.candidate.installed_size)
+    print("PackageSize: %s " % pkg.candidate.size)
+    print("Dependencies: %s" % pkg.installed.dependencies)
+    print("Recommends: %s" % pkg.installed.recommends)
     for dep in pkg.candidate.dependencies:
-        print ",".join("%s (%s) (%s) (%s)" % (o.name, o.version, o.relation,
-                        o.pre_depend) for o in dep.or_dependencies)
-    print "arch: %s" % pkg.candidate.architecture
-    print "homepage: %s" % pkg.candidate.homepage
-    print "rec: ", pkg.candidate.record
+        print(",".join("%s (%s) (%s) (%s)" % (o.name, o.version, o.relation,
+                       o.pre_depend) for o in dep.or_dependencies))
+    print("arch: %s" % pkg.candidate.architecture)
+    print("homepage: %s" % pkg.candidate.homepage)
+    print("rec: ", pkg.candidate.record)
 
-
-    print cache["2vcard"].get_changelog()
+    print(cache["2vcard"].get_changelog())
     for i in True, False:
-        print "Running install on random upgradable pkgs with AutoFix: %s " % i
+        print("Running install on random upgradable pkgs with AutoFix: ", i)
         for pkg in cache:
             if pkg.is_upgradable:
                 if random.randint(0, 1) == 1:
                     pkg.mark_install(i)
-        print "Broken: %s " % cache._depcache.broken_count
-        print "InstCount: %s " % cache._depcache.inst_count
+        print("Broken: %s " % cache._depcache.broken_count)
+        print("InstCount: %s " % cache._depcache.inst_count)
 
-    print
+    print()
     # get a new cache
     for i in True, False:
-        print "Randomly remove some packages with AutoFix: %s" % i
+        print("Randomly remove some packages with AutoFix: %s" % i)
         cache = apt.Cache(progress)
         for name in cache.keys():
             if random.randint(0, 1) == 1:
                 try:
                     cache[name].mark_delete(i)
                 except SystemError:
-                    print "Error trying to remove: %s " % name
-        print "Broken: %s " % cache._depcache.broken_count
-        print "DelCount: %s " % cache._depcache.del_count
+                    print("Error trying to remove: %s " % name)
+        print("Broken: %s " % cache._depcache.broken_count)
+        print("DelCount: %s " % cache._depcache.del_count)
 
 # self-test
 if __name__ == "__main__":

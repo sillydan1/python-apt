@@ -23,14 +23,6 @@ try:
 except ImportError:
     print('W: [python%s] Sphinx import error.' % sys.version[:3])
 
-if sys.version_info[0] == 3:
-    from distutils.command.build_py import build_py_2to3
-    from lib2to3.refactor import get_fixers_from_package
-    cmdclass['build_py'] = build_py_2to3
-    cmdclass['build_py'].fixer_names = sorted(
-        set(get_fixers_from_package("lib2to3.fixes")) -
-        set(["lib2to3.fixes.fix_future"]))
-
 # The apt_pkg module.
 files = ['apt_pkgmodule.cc', 'acquire.cc', 'cache.cc', 'cdrom.cc',
          'configuration.cc', 'depcache.cc', 'generic.cc', 'hashes.cc',
@@ -61,7 +53,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "build":
     for template in glob.glob('data/templates/*.mirrors'):
         import shutil
         shutil.copy(template, os.path.join("build", template))
-        
+
 
 setup(name="python-apt",
       description="Python bindings for APT",
@@ -70,10 +62,10 @@ setup(name="python-apt",
       author_email="deity@lists.debian.org",
       ext_modules=[apt_pkg, apt_inst],
       packages=['apt', 'apt.progress', 'aptsources'],
-      data_files = [('share/python-apt/templates',
-                    glob.glob('build/data/templates/*.info')),
-                    ('share/python-apt/templates',
-                    glob.glob('data/templates/*.mirrors'))],
-      cmdclass = cmdclass,
-      license = 'GNU GPL',
-      platforms = 'posix')
+      data_files=[('share/python-apt/templates',
+                   glob.glob('build/data/templates/*.info')),
+                  ('share/python-apt/templates',
+                   glob.glob('data/templates/*.mirrors'))],
+      cmdclass=cmdclass,
+      license='GNU GPL',
+      platforms='posix')

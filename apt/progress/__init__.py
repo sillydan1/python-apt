@@ -22,7 +22,8 @@ This package provides progress reporting for the python-apt package. The module
 'base' provides classes with no output, the module 'gtk2' provides classes for
 GTK+ applications, and the module 'text' provides classes for terminals, etc.
 """
-import apt_pkg
+
+from __future__ import print_function
 
 
 __all__ = []

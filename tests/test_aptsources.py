@@ -70,7 +70,6 @@ class TestAptSources(unittest.TestCase):
                     ["main"], architectures=["amd64", "i386"])
         self.assertTrue(sources.list == before.list)
 
-        
         # test to add something new: multiverse
         sources.add("deb", "http://de.archive.ubuntu.com/ubuntu/",
                     "edgy",
@@ -140,7 +139,6 @@ class TestAptSources(unittest.TestCase):
         distro = aptsources.distro.get_distro(id="Ubuntu")
         distro.get_sources(sources)
         # test if all suits of the current distro were detected correctly
-        dist_templates = set()
         for s in sources:
             if not s.template:
                 self.fail("source entry '%s' has no matcher" % s)
@@ -151,8 +149,7 @@ class TestAptSources(unittest.TestCase):
         apt_pkg.config.set("Dir::Etc::sourcelist", "data/aptsources/"
                            "sources.list")
         sources = aptsources.sourceslist.SourcesList(True, self.templates)
-
-        assert sources.list[8].invalid == False
+        assert not sources.list[8].invalid
         assert sources.list[8].type == "deb"
         assert sources.list[8].architectures == ["amd64", "i386"]
         assert sources.list[8].uri == "http://de.archive.ubuntu.com/ubuntu/"
@@ -167,18 +164,17 @@ class TestAptSources(unittest.TestCase):
         apt_pkg.config.set("Dir::Etc::sourcelist", "data/aptsources/"
                            "sources.list")
         sources = aptsources.sourceslist.SourcesList(True, self.templates)
-
-        assert sources.list[9].invalid == False
+        assert sources.list[9].invalid is False
         assert sources.list[9].type == "deb"
         assert sources.list[9].architectures == ["amd64", "i386"]
-        self.assertEqual( sources.list[9].uri, "http://de.archive.ubuntu.com/ubuntu/")
+        self.assertEqual(
+            sources.list[9].uri, "http://de.archive.ubuntu.com/ubuntu/")
         assert sources.list[9].dist == "natty"
         assert sources.list[9].comps == ["main"]
         assert sources.list[9].trusted
         assert sources.list[9].line.strip() == str(sources.list[9])
 
     def test_enable_component(self):
-        from subprocess import Popen, PIPE
         target = "./data/aptsources/sources.list.enable_comps"
         line = "deb http://archive.ubuntu.com/ubuntu lucid main\n"
         with open(target, "w") as target_file:
@@ -200,7 +196,7 @@ class TestAptSources(unittest.TestCase):
             comps = comps.union(set(entry.comps))
         self.assertTrue("multiverse" in comps)
         self.assertTrue("universe" in comps)
-        
+
     def testDistribution(self):
         """aptsources: Test distribution detection."""
         apt_pkg.config.set("Dir::Etc::sourcelist", "data/aptsources/"

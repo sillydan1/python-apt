@@ -6,23 +6,17 @@
 # notice and this notice are preserved.
 """Run all available unit tests."""
 import os
+import unittest.runner
+import unittest
 import sys
 
-try:
-    import unittest.runner
-    import unittest
-except ImportError:
-    # py2.6 compat
-    import unittest2 as unittest
-
-
-# workaround for py3.2 that apparently does not have this anymore
-# it has "abiflags" 
+# Python 3 only provides abiflags since 3.2
 if not hasattr(sys, "pydebug"):
     if sys.abiflags.startswith("d"):
         sys.pydebug = True
     else:
         sys.pydebug = False
+
 
 def get_library_dir():
     # Find the path to the built apt_pkg and apt_inst extensions
@@ -32,22 +26,21 @@ def get_library_dir():
     from distutils.sysconfig import get_python_version
     # Set the path to the build directory.
     plat_specifier = ".%s-%s" % (get_platform(), get_python_version())
-    if sys.version_info[0] >= 3 or sys.version_info[1] >= 6:
-        library_dir = "../build/lib%s%s" % (plat_specifier,
-                                            (sys.pydebug and "-pydebug" or ""))
-    else:
-        library_dir = "../build/lib%s%s" % ((sys.pydebug and "_d" or ""),
-                                            plat_specifier)
+    library_dir = "../build/lib%s%s" % (plat_specifier,
+                                        (sys.pydebug and "-pydebug" or ""))
     return os.path.abspath(library_dir)
+
 
 class MyTestRunner(unittest.runner.TextTestRunner):
     def __init__(self, *args, **kwargs):
         kwargs["stream"] = sys.stdout
         super(MyTestRunner, self).__init__(*args, **kwargs)
 
+
 if __name__ == '__main__':
     if not os.access("/etc/apt/sources.list", os.R_OK):
-        sys.stdout.write("[tests] Skipping because sources.list is not readable\n")
+        sys.stdout.write(
+            "[tests] Skipping because sources.list is not readable\n")
         sys.exit(0)
 
     sys.stdout.write("[tests] Running on %s\n" % sys.version.replace("\n", ""))
