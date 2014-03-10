@@ -541,8 +541,10 @@ http://mmc.geofisica.unam.mx/debian/
 #LOC:MY
 http://archive.mmu.edu.my/debian/
 #LOC:NC
+ftp://debian.lagoon.nc/debian/
 ftp://debian.nautile.nc/debian/
 ftp://ftp.nc.debian.org/debian/
+http://debian.lagoon.nc/debian/
 http://debian.nautile.nc/debian/
 http://ftp.nc.debian.org/debian/
 #LOC:NI
@@ -638,6 +640,7 @@ ftp://mirror.mephi.ru/debian/
 ftp://mirror.yandex.ru/debian/
 ftp://mirror2.corbina.ru/debian/
 http://debian.nsu.ru/debian/
+http://ftp.corbina.net/debian/
 http://ftp.debian.chuvsu.ru/debian/
 http://ftp.psn.ru/debian/
 http://ftp.ru.debian.org/debian/
