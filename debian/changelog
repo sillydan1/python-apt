@@ -1,3 +1,9 @@
+python-apt (0.9.3.2ubuntu2) trusty; urgency=medium
+
+  * Fix pep8 error.
+
+ -- Brian Murray <brian@ubuntu.com>  Fri, 14 Mar 2014 14:20:43 -0700
+
 python-apt (0.9.3.2ubuntu1) trusty; urgency=medium
 
   [ Steve Langasek ]
