@@ -1,3 +1,13 @@
+python-apt (0.9.3.2ubuntu1) trusty; urgency=medium
+
+  [ Steve Langasek ]
+  * aptsources/sourceslist.py: ensure that our sources are opened with UTF-8
+    encoding, regardless of the current locale, and handle the sources lines
+    as Unicode internally for consistency between python2 and python3.
+    LP: #1069019.
+
+ -- Brian Murray <brian@ubuntu.com>  Fri, 14 Mar 2014 13:19:27 -0700
+
 python-apt (0.9.3.2) unstable; urgency=high
 
   * Revert "* apt/cache.py:" (rootdir change) (Closes: #741251) (LP: #1288171)
