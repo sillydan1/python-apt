@@ -243,7 +243,8 @@ class SourceEntry(object):
 
         if self.architectures and self.trusted is not None:
             line += u" [arch=%s trusted=%s]" % (
-                u",".join(self.architectures), u"yes" if self.trusted else u"no")
+                u",".join(self.architectures),
+                u"yes" if self.trusted else u"no")
         elif self.trusted is not None:
             line += u" [trusted=%s]" % (u"yes" if self.trusted else u"no")
         elif self.architectures:
