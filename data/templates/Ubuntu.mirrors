@@ -64,7 +64,6 @@ http://mirror.its.dal.ca/ubuntu/
 http://mirror.its.sfu.ca/mirror/ubuntu/
 http://mirror.peer1.net/ubuntu/
 http://ubuntu-archives.mirror.nexicom.net/
-http://ubuntu.arcticnetwork.ca/
 http://ubuntu.bhs.mirrors.ovh.net/ftp.ubuntu.com/ubuntu/
 http://ubuntu.mirror.gtcomm.net/ubuntu/
 http://ubuntu.mirror.iweb.ca/
@@ -80,7 +79,6 @@ http://mirror.uchile.cl/ubuntu/
 http://linux.xjtuns.cn/ubuntu/
 http://mirror.bjtu.edu.cn/ubuntu/
 http://mirror.lupaworld.com/ubuntu/
-http://mirror.lzu.edu.cn/ubuntu/
 http://mirror.neu.edu.cn/ubuntu/
 http://mirror.skyshe.com/ubuntu/
 http://mirrors.163.com/ubuntu/
@@ -153,7 +151,7 @@ ftp://ftp.cesca.cat/ubuntu/archieve/
 http://ftp.caliu.cat/pub/distribucions/ubuntu/archive/
 http://ftp.dat.etsit.upm.es/ubuntu/
 http://ftp.udc.es/ubuntu/
-http://sunsite.rediris.es/mirror/ubuntu-archive/
+http://softlibre.unizar.es/ubuntu/archive/
 http://ubuntu.cica.es/ubuntu/
 http://ubuntu.grn.cat/ubuntu/
 http://ubuntu.uc3m.es/ubuntu/
@@ -187,6 +185,7 @@ http://mirror.krystal.co.uk/ubuntu/
 http://mirror.mythic-beasts.com/ubuntu/
 http://mirror.ox.ac.uk/sites/archive.ubuntu.com/ubuntu/
 http://mirror.sov.uk.goscomb.net/ubuntu/
+http://mirror.vorboss.net/ubuntu-archive/
 http://mirrors.coreix.net/ubuntu/
 http://mirrors.manchester.m247.com/ubuntu/
 http://mirrors.melbourne.co.uk/ubuntu/
@@ -258,6 +257,8 @@ http://ftp.yz.yamagata-u.ac.jp/pub/linux/ubuntu/archives/
 http://ubuntu-ashisuto.ubuntulinux.jp/ubuntu/
 http://ubuntutym.u-toyama.ac.jp/ubuntu/
 http://www.ftp.ne.jp/Linux/packages/ubuntu/archive/
+#LOC:KE
+http://ubuntu.mirror.ac.ke/ubuntu/
 #LOC:KR
 http://ftp.daum.net/ubuntu/
 http://ftp.neowiz.com/ubuntu/
@@ -265,8 +266,6 @@ http://kr.archive.ubuntu.com/ubuntu/
 http://mirror.premi.st/ubuntu/
 #LOC:KZ
 http://mirror.neolabs.kz/ubuntu/
-#LOC:LK
-http://mirror.learn.ac.lk/ubuntu/
 #LOC:LT
 http://ftp.litnet.lt/ubuntu/
 http://mirror.soften.ktu.lt/ubuntu/
@@ -374,7 +373,6 @@ http://ubuntu.mirrors.isu.net.sa/ubuntu/
 #LOC:SE
 http://ftp.acc.umu.se/ubuntu/
 http://ftp.availo.se/ubuntu/
-http://ftp.df.lth.se/ubuntu/
 http://ftp.ds.karen.hj.se/ubuntu/
 http://ftp.lysator.liu.se/ubuntu/
 http://ftp.sunet.se/pub/os/Linux/distributions/ubuntu/ubuntu/
@@ -485,7 +483,6 @@ http://ubuntu.cs.uaf.edu/ubuntu/
 http://ubuntu.cs.utah.edu/ubuntu/
 http://ubuntu.mirror.constant.com/
 http://ubuntu.mirror.frontiernet.net/ubuntu/
-http://ubuntu.mirrors.pair.com/archive/
 http://ubuntu.mirrors.tds.net/pub/ubuntu/
 http://ubuntu.osuosl.org/ubuntu/
 http://ubuntu.securedservers.com/
