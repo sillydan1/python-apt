@@ -253,7 +253,7 @@ class SourceEntry(object):
         if len(self.comps) > 0:
             line += u" " + u" ".join(self.comps)
         if self.comment != "":
-            line += u" #" + self.comment
+            line += u" #%s" % self.comment
         line += u"\n"
         return line
 

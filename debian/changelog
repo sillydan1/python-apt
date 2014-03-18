@@ -1,3 +1,10 @@
+python-apt (0.9.3.3ubuntu1) trusty; urgency=medium
+
+  * aptsources/sourceslist.py: handle additional part of sources line as Unicode.
+    https://errors.ubuntu.com/problem/b2a12c39bd86ee765617b2e606cef29d3a33e303
+
+ -- Brian Murray <brian@ubuntu.com>  Tue, 18 Mar 2014 10:21:23 -0700
+
 python-apt (0.9.3.3) unstable; urgency=medium
 
   [ Steve Langasek ]
