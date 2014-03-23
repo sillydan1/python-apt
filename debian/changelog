@@ -1,3 +1,9 @@
+python-apt (0.9.3.4build1) trusty; urgency=medium
+
+  * No-change rebuild to drop Python 3.3 support.
+
+ -- Matthias Klose <doko@ubuntu.com>  Sun, 23 Mar 2014 15:28:14 +0000
+
 python-apt (0.9.3.4) unstable; urgency=medium
 
   * python/progress.cc: Fix InstallProgress to set child_pid (LP: #1177720)
