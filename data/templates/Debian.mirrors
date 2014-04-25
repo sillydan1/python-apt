@@ -286,9 +286,11 @@ http://ulises.hostalia.com/debian/
 ftp://ftp.fi.debian.org/debian/
 ftp://ftp.funet.fi/pub/linux/mirrors/debian/
 ftp://ftp.seclan.com/debian/
+ftp://trumpetti.atm.tut.fi/debian/
 http://ftp.fi.debian.org/debian/
 http://ftp.funet.fi/pub/linux/mirrors/debian/
 http://ftp.seclan.com/debian/
+http://trumpetti.atm.tut.fi/debian/
 #LOC:FR
 ftp://debian.advalem.net/debian/
 ftp://debian.ens-cachan.fr/debian/
