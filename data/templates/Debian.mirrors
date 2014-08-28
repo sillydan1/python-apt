@@ -246,12 +246,14 @@ http://mirror.unitedcolo.de/debian/
 #LOC:DK
 ftp://ftp.dk.debian.org/debian/
 ftp://mirror.easyspeedy.com/debian/
+ftp://mirror.one.com/debian/
 ftp://mirrors.dotsrc.org/debian/
 ftp://mirrors.rackhosting.com/debian/
 ftp://mirrors.telianet.dk/debian/
 http://debian.skarta.net/debian/
 http://ftp.dk.debian.org/debian/
 http://mirror.easyspeedy.com/debian/
+http://mirror.one.com/debian/
 http://mirrors.dotsrc.org/debian/
 http://mirrors.rackhosting.com/debian/
 http://mirrors.telianet.dk/debian/
@@ -325,7 +327,6 @@ http://deb-mir1.naitways.net/debian/
 http://debian.advalem.net/debian/
 http://debian.ens-cachan.fr/ftp/debian/
 http://debian.med.univ-tours.fr/debian/
-http://debian.mirror.ate.info/debian/
 http://debian.mirrors.easynet.fr/debian/
 http://debian.mirrors.ovh.net/debian/
 http://debian.opensourcemirror.com/debian/
@@ -432,6 +433,7 @@ http://buaya.klas.or.id/debian/
 http://kambing.ui.ac.id/debian/
 http://kartolo.sby.datautama.net.id/debian/
 http://kebo.vlsm.org/debian/
+http://mirror.poliwangi.ac.id/debian/
 http://mirror.unej.ac.id/debian/
 http://suro.ubaya.ac.id/debian/
 #LOC:IE
@@ -661,7 +663,6 @@ ftp://ftp.availo.se/debian/
 ftp://ftp.df.lth.se/pub/debian/
 ftp://ftp.ds.karen.hj.se/debian/
 ftp://ftp.se.debian.org/debian/
-ftp://ftp.sunet.se/pub/Linux/distributions/debian/
 http://debian.bsnet.se/debian/
 http://debian.lth.se/debian/
 http://ftp.acc.umu.se/debian/
@@ -669,7 +670,6 @@ http://ftp.availo.se/debian/
 http://ftp.df.lth.se/pub/debian/
 http://ftp.ds.karen.hj.se/debian/
 http://ftp.se.debian.org/debian/
-http://ftp.sunet.se/pub/Linux/distributions/debian/
 #LOC:SG
 ftp://mirror.0x.sg/debian/
 http://mirror.0x.sg/debian/
@@ -827,6 +827,7 @@ http://mirrors.accretive-networks.net/debian/
 http://mirrors.acm.jhu.edu/debian/
 http://mirrors.advancedhosters.com/debian/
 http://mirrors.bloomu.edu/debian/
+http://mirrors.cat.pdx.edu/debian/
 http://mirrors.centarra.com/debian/
 http://mirrors.gigenet.com/debian/
 http://mirrors.kernel.org/debian/
