@@ -704,6 +704,12 @@ class DscSrcPackage(DebPackage):
         """Return the dependencies of the package"""
         return self._conflicts
 
+    @property
+    def filelist(self):
+        """Return the list of files associated with this dsc file"""
+        # Files stanza looks like (hash, size, filename, ...)
+        return self._sections['Files'].split()[2::3]
+
     def open(self, file):
         """Open the package."""
         depends_tags = ["Build-Depends", "Build-Depends-Indep"]
@@ -712,6 +718,11 @@ class DscSrcPackage(DebPackage):
         tagfile = apt_pkg.TagFile(fobj)
         try:
             for sec in tagfile:
+                # we only care about the stanza with the "Format:" tag, the
+                # rest is gpg signature noise. we should probably have
+                # bindings for apts OpenMaybeClearsignedFile()
+                if "Format" not in sec:
+                    continue
                 for tag in depends_tags:
                     if tag not in sec:
                         continue
@@ -724,8 +735,9 @@ class DscSrcPackage(DebPackage):
                     self.pkgname = sec['Source']
                 if 'Binary' in sec:
                     self.binaries = sec['Binary'].split(', ')
-                if 'Version' in sec:
-                    self._sections['Version'] = sec['Version']
+                for tag in sec.keys():
+                    if tag in sec:
+                        self._sections[tag] = sec[tag]
         finally:
             del tagfile
             fobj.close()
