@@ -1,3 +1,10 @@
+python-apt (0.9.3.11ubuntu1) wily; urgency=medium
+
+  * ./data/templates/Ubuntu.info.in: Add Wily template. Don't copy extras.u.c.
+    stanza as that's gone since 15.04.
+
+ -- Martin Pitt <martin.pitt@ubuntu.com>  Wed, 06 May 2015 07:11:28 +0200
+
 python-apt (0.9.3.11build1) vivid; urgency=medium
 
   * Rebuild to get updated mirror files.
