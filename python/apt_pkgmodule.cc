@@ -27,6 +27,7 @@
 #include <apt-pkg/orderlist.h>
 #include <apt-pkg/aptconfiguration.h>
 #include <apt-pkg/fileutl.h>
+#include <apt-pkg/gpgv.h>
 
 #include <sys/stat.h>
 #include <libintl.h>
@@ -311,7 +312,7 @@ static PyObject *sha1sum(PyObject *Self,PyObject *Args)
    return 0;
 }
 									/*}}}*/
-// sha256sum - Compute the sha1sum of a file or string			/*{{{*/
+// sha256sum - Compute the sha256sum of a file or string		/*{{{*/
 // ---------------------------------------------------------------------
 static const char *doc_sha256sum =
     "sha256sum(object) -> str\n\n"
@@ -341,6 +342,51 @@ static PyObject *sha256sum(PyObject *Self,PyObject *Args)
    if (Fd != -1)
    {
       SHA256Summation Sum;
+      struct stat St;
+      if (fstat(Fd,&St) != 0 ||
+	  Sum.AddFD(Fd,St.st_size) == false)
+      {
+	 PyErr_SetFromErrno(PyExc_SystemError);
+	 return 0;
+      }
+
+      return CppPyString(Sum.Result().Value());
+   }
+
+   PyErr_SetString(PyExc_TypeError,"Only understand strings and files");
+   return 0;
+}
+									/*}}}*/
+// sha512sum - Compute the sha512sum of a file or string		/*{{{*/
+// ---------------------------------------------------------------------
+static const char *doc_sha512sum =
+    "sha512sum(object) -> str\n\n"
+    "Return the sha512sum of the object. 'object' may either be a string, in\n"
+    "which case the sha512sum of the string is returned, or a file() object\n"
+    "(or file descriptor), in which case the sha512sum of its contents is\n"
+    "returned.";;
+static PyObject *sha512sum(PyObject *Self,PyObject *Args)
+{
+   PyObject *Obj;
+   if (PyArg_ParseTuple(Args,"O",&Obj) == 0)
+      return 0;
+
+   // Digest of a string.
+   if (PyBytes_Check(Obj) != 0)
+   {
+      char *s;
+      Py_ssize_t len;
+      SHA512Summation Sum;
+      PyBytes_AsStringAndSize(Obj, &s, &len);
+      Sum.Add((const unsigned char*)s, len);
+      return CppPyString(Sum.Result().Value());
+   }
+
+   // Digest of a file
+   int Fd = PyObject_AsFileDescriptor(Obj);
+   if (Fd != -1)
+   {
+      SHA512Summation Sum;
       struct stat St;
       if (fstat(Fd,&St) != 0 ||
 	  Sum.AddFD(Fd,St.st_size) == false)
@@ -427,6 +473,25 @@ static PyObject *InitSystem(PyObject *Self,PyObject *Args)
    return HandleErrors(Py_None);
 }
 									/*}}}*/
+// gpgv.cc:OpenMaybeClearSignedFile					/*{{{*/
+// ---------------------------------------------------------------------
+static char *doc_OpenMaybeClearSignedFile =
+"open_maybe_clear_signed_file(file: str) -> int\n\n"
+"Open a file and ignore a PGP clear signature.\n"
+"Return a open file descriptor or a error.";
+static PyObject *PyOpenMaybeClearSignedFile(PyObject *Self,PyObject *Args)
+{
+   PyApt_Filename file;
+   char errors = false;
+   if (PyArg_ParseTuple(Args,"O&",PyApt_Filename::Converter, &file,&errors) == 0)
+      return 0;
+
+   FileFd Fd;
+   if (OpenMaybeClearSignedFile(file, Fd) == false)
+      return HandleErrors(MkPyNumber(-1));
+
+   return HandleErrors(MkPyNumber(dup(Fd.Fd())));
+}
 
 // fileutils.cc: GetLock						/*{{{*/
 // ---------------------------------------------------------------------
@@ -501,6 +566,9 @@ static PyMethodDef methods[] =
    // Tag File
    {"rewrite_section",RewriteSection,METH_VARARGS,doc_RewriteSection},
 
+   {"open_maybe_clear_signed_file",PyOpenMaybeClearSignedFile,METH_VARARGS,
+    doc_OpenMaybeClearSignedFile},
+
    // Locking
    {"get_lock",GetLock,METH_VARARGS,doc_GetLock},
    {"pkgsystem_lock",PkgSystemLock,METH_VARARGS,doc_PkgSystemLock},
@@ -521,10 +589,11 @@ static PyMethodDef methods[] =
    {"parse_depends",ParseDepends,METH_VARARGS,doc_ParseDepends},
    {"parse_src_depends",ParseSrcDepends,METH_VARARGS,parse_src_depends_doc},
 
-   // Stuff
+   // Hashes
    {"md5sum",md5sum,METH_VARARGS,doc_md5sum},
    {"sha1sum",sha1sum,METH_VARARGS,doc_sha1sum},
    {"sha256sum",sha256sum,METH_VARARGS,doc_sha256sum},
+   {"sha512sum",sha512sum,METH_VARARGS,doc_sha512sum},
 
    // multiarch
    {"get_architectures", GetArchitectures, METH_VARARGS, doc_GetArchitectures},
@@ -841,7 +910,9 @@ extern "C" void initapt_pkg()
    PyDict_SetItemString(PyPackageManager_Type.tp_dict, "RESULT_INCOMPLETE",
                         MkPyNumber(pkgPackageManager::Incomplete));
 
-
+   PyDict_SetItemString(PyVersion_Type.tp_dict, "MULTI_ARCH_NO",
+                        MkPyNumber(pkgCache::Version::None));
+   // NONE is deprecated (#782802)
    PyDict_SetItemString(PyVersion_Type.tp_dict, "MULTI_ARCH_NONE",
                         MkPyNumber(pkgCache::Version::None));
    PyDict_SetItemString(PyVersion_Type.tp_dict, "MULTI_ARCH_ALL",
