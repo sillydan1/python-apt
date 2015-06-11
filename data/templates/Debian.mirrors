@@ -36,7 +36,7 @@ ftp://mirror.overthewire.com.au/debian/
 ftp://mirror.waia.asn.au/debian/
 http://debian.mirror.digitalpacific.com.au/debian/
 http://debian.mirror.serversaustralia.com.au/debian/
-http://debian.mirror.uber.com.au/debian/
+http://debian.uberglobalmirror.com/debian/
 http://ftp.au.debian.org/debian/
 http://ftp.iinet.net.au/debian/debian/
 http://ftp.monash.edu.au/pub/linux/debian/
@@ -49,7 +49,9 @@ http://mirror.optus.net/debian/
 http://mirror.overthewire.com.au/debian/
 http://mirror.waia.asn.au/debian/
 #LOC:BD
+ftp://mirror.dhakacom.com/debian/
 ftp://mirrors.ispros.com.bd/debian/
+http://mirror.dhakacom.com/debian/
 http://mirrors.ispros.com.bd/debian/
 #LOC:BE
 ftp://be.mirror.eurid.eu/debian/
@@ -128,11 +130,13 @@ ftp://debian.csg.uzh.ch/debian/
 ftp://debian.ethz.ch/debian/
 ftp://ftp.ch.debian.org/debian/
 ftp://mirror.iway.ch/debian/
+ftp://mirror.sinavps.ch/debian/
 ftp://mirror.switch.ch/mirror/debian/
 http://debian.csg.uzh.ch/debian/
 http://debian.ethz.ch/debian/
 http://ftp.ch.debian.org/debian/
 http://mirror.iway.ch/debian/
+http://mirror.sinavps.ch/debian/
 http://mirror.switch.ch/ftp/mirror/debian/
 #LOC:CL
 ftp://debian.insacom.cl/debian/
@@ -245,6 +249,7 @@ http://ftp5.gwdg.de/pub/linux/debian/debian/
 http://mirror.1und1.de/debian/
 http://mirror.de.leaseweb.net/debian/
 http://mirror.unitedcolo.de/debian/
+http://packages.hs-regensburg.de/debian/
 #LOC:DK
 ftp://ftp.dk.debian.org/debian/
 ftp://mirror.easyspeedy.com/debian/
@@ -274,8 +279,6 @@ ftp://ftp.cesca.cat/debian/
 ftp://ftp.cica.es/debian/
 ftp://ftp.es.debian.org/debian/
 ftp://ftp.gul.uc3m.es/debian/
-ftp://ftp.gva.es/mirror/debian/
-ftp://ftp.rediris.es/debian/
 ftp://ftp.udc.es/debian/
 ftp://ulises.hostalia.com/debian/
 http://debian.grn.cat/debian/
@@ -283,8 +286,6 @@ http://ftp.caliu.cat/debian/
 http://ftp.cica.es/debian/
 http://ftp.es.debian.org/debian/
 http://ftp.gul.uc3m.es/debian/
-http://ftp.gva.es/mirror/debian/
-http://ftp.rediris.es/debian/
 http://ftp.udc.es/debian/
 http://ulises.hostalia.com/debian/
 #LOC:FI
@@ -353,6 +354,7 @@ http://mirror.debian.ikoula.com/debian/
 http://mirror.ibcp.fr/pub/debian/
 http://mirrors.ircam.fr/pub/debian/
 http://webb.ens-cachan.fr/debian/
+http://www.miroir.vbrunet.eu/debian/
 #LOC:GB
 ftp://debian.serverspace.co.uk/debian/
 ftp://free.hands.com/debian/
@@ -365,6 +367,7 @@ ftp://mirror.positive-internet.com/debian/
 ftp://mirror.sov.uk.goscomb.net/debian/
 ftp://mirrors-uk.Go-Parts.com/debian/
 ftp://mirrors.melbourne.co.uk/debian/
+ftp://mirrors.muzzy.org.uk/debian/
 ftp://mirrorservice.org/sites/ftp.debian.org/debian/
 ftp://the.earth.li/debian/
 ftp://ukdebian.mirror.anlx.net/debian/
@@ -383,6 +386,7 @@ http://mirror.sov.uk.goscomb.net/debian/
 http://mirror.vorboss.net/debian/
 http://mirrors-uk.Go-Parts.com/debian/
 http://mirrors.melbourne.co.uk/debian/
+http://mirrors.muzzy.org.uk/debian/
 http://mirrorservice.org/sites/ftp.debian.org/debian/
 http://the.earth.li/debian/
 http://ukdebian.mirror.anlx.net/debian/
@@ -548,6 +552,7 @@ http://mirror.as43289.net/debian/
 #LOC:MK
 http://debian.cabletel.com.mk/debian/
 #LOC:MX
+ftp://debian.unam.mx/debian/
 ftp://ftp.mx.debian.org/debian/
 ftp://mmc.geofisica.unam.mx/debian/
 http://ftp.mx.debian.org/debian/
@@ -576,6 +581,7 @@ ftp://mirror.nl.leaseweb.net/debian/
 ftp://mirror.proserve.nl/debian/
 ftp://nl.mirror.eurid.eu/debian/
 http://debian.mirror.cambrium.nl/debian/
+http://debmirror.tuxis.nl/debian/
 http://ftp.debian.nl/debian/
 http://ftp.nl.debian.org/debian/
 http://ftp.nluug.nl/pub/os/Linux/distr/debian/

@@ -6,6 +6,7 @@ import os
 import sys
 
 from distutils.core import setup, Extension
+from distutils import sysconfig
 cmdclass = {}
 
 try:
@@ -22,6 +23,21 @@ try:
     cmdclass['build_sphinx'] = BuildDoc
 except ImportError:
     print('W: [python%s] Sphinx import error.' % sys.version[:3])
+
+
+def get_version():
+    """Get a PEP 0440 compatible version string"""
+    version = os.environ.get('DEBVER')
+    version = version.replace("~alpha", ".a")
+    version = version.replace("~beta", ".b")
+    version = version.replace("~rc", ".rc")
+    version = version.replace("~exp", ".dev")
+    version = version.replace("ubuntu", "+ubuntu")
+    version = version.replace("tanglu", "+tanglu")
+    version = version.split("build")[0]
+
+    return version
+
 
 # The apt_pkg module.
 files = ['apt_pkgmodule.cc', 'acquire.cc', 'cache.cc', 'cdrom.cc',
@@ -54,10 +70,16 @@ if len(sys.argv) > 1 and sys.argv[1] == "build":
         import shutil
         shutil.copy(template, os.path.join("build", template))
 
+# Remove the "-Wstrict-prototypes" compiler option, which isn't valid for C++.
+# See http://bugs.python.org/issue9031 and http://bugs.python.org/issue1222585
+cfg_vars = sysconfig.get_config_vars()
+for key, value in cfg_vars.items():
+    if type(value) == str:
+        cfg_vars[key] = value.replace("-Wstrict-prototypes", "")
 
 setup(name="python-apt",
       description="Python bindings for APT",
-      version=os.environ.get('DEBVER'),
+      version=get_version(),
       author="APT Development Team",
       author_email="deity@lists.debian.org",
       ext_modules=[apt_pkg, apt_inst],
