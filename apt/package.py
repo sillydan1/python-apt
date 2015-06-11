@@ -106,9 +106,11 @@ class BaseDependency(object):
 
     @property
     def version(self):
-        """The target version or None.
+        """The target version or an empty string.
 
-        It is None if and only if relation is the empty string."""
+        Note that the version is only an empty string in case of an unversioned
+        dependency. In this case the relation is also an empty string.
+        """
         return self._dep.target_ver
 
     @property
@@ -450,7 +452,14 @@ class Version(object):
         return Record(self._records.record)
 
     def get_dependencies(self, *types):
-        """Return a list of Dependency objects for the given types."""
+        """Return a list of Dependency objects for the given types.
+
+        Multiple types can be specified. Possible types are:
+        'Breaks', 'Conflicts', 'Depends', 'Enhances', 'PreDepends',
+        'Recommends', 'Replaces', 'Suggests'
+
+        Additional types might be added in the future.
+        """
         depends_list = []
         depends = self._cand.depends_list
         for type_ in types:
@@ -785,6 +794,7 @@ class Package(object):
         as :attr:`shortname`
 
         .. versionchanged:: 0.7.100.3
+
         As part of multi-arch, this field now may include architecture
         information.
         """
@@ -904,7 +914,7 @@ class Package(object):
         Return a list of unicode names of the files which have
         been installed by this package
         """
-        for name in self.shortname, self.fullname:
+        for name in self.name, self.fullname:
             path = "/var/lib/dpkg/info/%s.list" % name
             try:
                 with open(path, "rb") as file_list:
@@ -1059,11 +1069,15 @@ class Package(object):
                 self._changelog = changelog
 
             except HTTPError:
-                res = _("The list of changes is not available yet.\n\n"
-                        "Please use http://launchpad.net/ubuntu/+source/%s/"
-                        "%s/+changelog\n"
-                        "until the changes become available or try again "
-                        "later.") % (src_pkg, src_ver)
+                if self.candidate.origins[0].origin == "Ubuntu":
+                    res = _("The list of changes is not available yet.\n\n"
+                            "Please use "
+                            "http://launchpad.net/ubuntu/+source/%s/"
+                            "%s/+changelog\n"
+                            "until the changes become available or try again "
+                            "later.") % (src_pkg, src_ver)
+                else:
+                    res = _("The list of changes is not available")
                 return res if isinstance(res, unicode) else res.decode("utf-8")
             except (IOError, BadStatusLine):
                 res = _("Failed to download the list of changes. \nPlease "

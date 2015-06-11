@@ -596,7 +596,16 @@ PyTypeObject PyGroupList_Type =
 
 MkGet(PackageGetName,PyString_FromString(Pkg.Name()))
 MkGet(PackageGetArch,PyString_FromString(Pkg.Arch()))
-MkGet(PackageGetSection,Safe_FromString(Pkg.Section()))
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+static PyObject *PackageGetSection(PyObject *Self,void*)
+{
+    pkgCache::PkgIterator &Pkg = GetCpp<pkgCache::PkgIterator>(Self);
+    if (PyErr_WarnEx(PyExc_DeprecationWarning, "Package.section is deprecated, use Version.section instead", 1) == -1)
+      return NULL;
+    return Safe_FromString(Pkg.Section());
+}
+#pragma GCC diagnostic pop
 MkGet(PackageGetRevDependsList,CppPyObject_NEW<RDepListStruct>(Owner,
                                &PyDependencyList_Type, Pkg.RevDependsList()))
 MkGet(PackageGetProvidesList,CreateProvides(Owner,Pkg.ProvidesList()))
@@ -605,7 +614,6 @@ MkGet(PackageGetInstState,MkPyNumber(Pkg->InstState))
 MkGet(PackageGetCurrentState,MkPyNumber(Pkg->CurrentState))
 MkGet(PackageGetID,MkPyNumber(Pkg->ID))
 #
-MkGet(PackageGetAuto,PyBool_FromLong((Pkg->Flags & pkgCache::Flag::Auto) != 0))
 MkGet(PackageGetEssential,PyBool_FromLong((Pkg->Flags & pkgCache::Flag::Essential) != 0))
 MkGet(PackageGetImportant,PyBool_FromLong((Pkg->Flags & pkgCache::Flag::Important) != 0))
 #undef MkGet
@@ -706,9 +714,6 @@ static PyGetSetDef PackageGetSet[] = {
      "CURSTATE_UNPACKED of the apt_pkg module."},
     {"id",PackageGetID,0,
      "The numeric ID of the package"},
-    {"auto",PackageGetAuto,0,
-     "Ignore it, it does nothing. You want to use\n"
-     "DepCache.is_auto_installed instead."},
     {"essential",PackageGetEssential,0,
      "Boolean value determining whether the package is essential."},
     {"important",PackageGetImportant,0,
@@ -728,11 +733,8 @@ static PyGetSetDef PackageGetSet[] = {
 static PyObject *PackageRepr(PyObject *Self)
 {
    pkgCache::PkgIterator &Pkg = GetCpp<pkgCache::PkgIterator>(Self);
-
-   return PyString_FromFormat("<%s object: name:'%s' section: "
-                              "'%s' id:%u>", Self->ob_type->tp_name,
-                              Pkg.Name(), (Pkg.Section() ? Pkg.Section() : ""),
-                              Pkg->ID);
+   return PyString_FromFormat("<%s object: name:'%s' id:%u>", Self->ob_type->tp_name,
+                              Pkg.Name(), Pkg->ID);
 }
 
 static const char *package_doc =

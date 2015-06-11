@@ -27,7 +27,6 @@ import weakref
 
 import apt_pkg
 from apt import Package
-from apt_pkg import gettext as _
 import apt.progress.text
 
 
@@ -59,11 +58,18 @@ class Cache(object):
     objects (although only getting items is supported).
 
     Keyword arguments:
-    progress -- a OpProgress object
-    rootdir -- a alternative root directory. if that is given
-               the system sources.list and system lists/ files are
-               not read, only files relative to the given rootdir
-    memonly -- build the cache in memory only
+    progress -- a OpProgress object,
+    rootdir  -- an alternative root directory. if that is given the system
+    sources.list and system lists/files are not read, only file relative
+    to the given rootdir,
+    memonly  -- build the cache in memory only.
+
+
+    .. versionchanged:: 1.0
+
+        The cache now supports package names with special architecture
+        qualifiers such as :all and :native. It does not export them
+        in :meth:`keys()`, though, to keep :meth:`keys()` a unique set.
     """
 
     def __init__(self, progress=None, rootdir=None, memonly=False):
@@ -73,13 +79,11 @@ class Cache(object):
         self._list = None
         self._callbacks = {}
         self._weakref = weakref.WeakValueDictionary()
-        self._set = set()
-        self._fullnameset = set()
         self._changes_count = -1
         self._sorted_set = None
 
-        self.connect("cache_post_open", self._inc_changes_count)
-        self.connect("cache_post_change", self._inc_changes_count)
+        self.connect("cache_post_open", "_inc_changes_count")
+        self.connect("cache_post_change", "_inc_changes_count")
         if memonly:
             # force apt to build its caches in memory
             apt_pkg.config.set("Dir::Cache::pkgcache", "")
@@ -135,7 +139,10 @@ class Cache(object):
         """ internal helper to run a callback """
         if name in self._callbacks:
             for callback in self._callbacks[name]:
-                callback()
+                if callback == '_inc_changes_count':
+                    self._inc_changes_count()
+                else:
+                    callback()
 
     def open(self, progress=None):
         """ Open the package cache, after that it can be used like
@@ -153,27 +160,10 @@ class Cache(object):
         self._records = apt_pkg.PackageRecords(self._cache)
         self._list = apt_pkg.SourceList()
         self._list.read_main_list()
-        self._set.clear()
-        self._fullnameset.clear()
         self._sorted_set = None
         self._weakref.clear()
 
         self._have_multi_arch = len(apt_pkg.get_architectures()) > 1
-
-        progress.op = _("Building data structures")
-        i = last = 0
-        size = len(self._cache.packages)
-        for pkg in self._cache.packages:
-            if progress is not None and last + 100 < i:
-                progress.update(i / float(size) * 100)
-                last = i
-            # drop stuff with no versions (cruft)
-            if pkg.has_versions:
-                self._set.add(pkg.get_fullname(pretty=True))
-                if self._have_multi_arch:
-                    self._fullnameset.add(pkg.get_fullname(pretty=False))
-
-            i += 1
 
         progress.done()
         self._run_callbacks("cache_post_open")
@@ -197,12 +187,25 @@ class Cache(object):
         try:
             return self._weakref[key]
         except KeyError:
-            if key in self._set or key in self._fullnameset:
-                key = str(key)
-                pkg = self._weakref[key] = Package(self, self._cache[key])
-                return pkg
-            else:
+            key = str(key)
+            try:
+                rawpkg = self._cache[key]
+            except KeyError:
                 raise KeyError('The cache has no package named %r' % key)
+
+            # It might be excluded due to not having a version or something
+            if not self.__is_real_pkg(rawpkg):
+                raise KeyError('The cache has no package named %r' % key)
+
+            # Check if we already know the package using the normalized name
+            name = rawpkg.get_fullname(pretty=False)
+            try:
+                return self._weakref[name]
+            except KeyError:
+                pkg = Package(self, rawpkg)
+                self._weakref[key] = self._weakref[name] = pkg
+
+            return pkg
 
     def __iter__(self):
         # We iterate sorted over package names here. With this we read the
@@ -210,24 +213,32 @@ class Cache(object):
         # instead of having to do thousands of random seeks; the latter
         # is disastrous if we use compressed package indexes, and slower than
         # necessary for uncompressed indexes.
-        if self._sorted_set is None:
-            self._sorted_set = sorted(self._set)
-
-        for pkgname in self._sorted_set:
+        for pkgname in self.keys():
             yield self[pkgname]
         raise StopIteration
 
+    def __is_real_pkg(self, rawpkg):
+        """Check if the apt_pkg.Package provided is a real package."""
+        return rawpkg.has_versions
+
     def has_key(self, key):
-        return (key in self._set or key in self._fullnameset)
+        return key in self
 
     def __contains__(self, key):
-        return (key in self._set or key in self._fullnameset)
+        try:
+            return self.__is_real_pkg(self._cache[key])
+        except KeyError:
+            return False
 
     def __len__(self):
-        return len(self._set)
+        return len(self.keys())
 
     def keys(self):
-        return list(self._set)
+        if self._sorted_set is None:
+            self._sorted_set = sorted(p.get_fullname(pretty=True)
+                                      for p in self._cache.packages
+                                        if self.__is_real_pkg(p))
+        return list(self._sorted_set)  # We need a copy here, caller may modify
 
     def get_changes(self):
         """ Get the marked changes """
@@ -409,7 +420,7 @@ class Cache(object):
         apt.progress.FetchProgress, the default is apt.progress.FetchProgress()
         .
         sources_list -- Update a alternative sources.list than the default.
-         Note that the sources.list.d directory is ignored in this case
+        Note that the sources.list.d directory is ignored in this case
         """
         lockfile = apt_pkg.config.find_dir("Dir::State::Lists") + "lock"
         lock = apt_pkg.get_lock(lockfile)

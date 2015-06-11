@@ -487,7 +487,7 @@ Installation ordering with :class:`OrderList`
 
 .. class:: OrderList(depcache: DepCache)
 
-	Represent a :ctype:`pkgOrderList`, used for installation
+	Represent a :c:type:`pkgOrderList`, used for installation
 	ordering. This class provides several methods and attributes,
 	is complicated and should not be used by normal programs.
 	
@@ -715,7 +715,7 @@ Resolving Dependencies with :class:`ProblemResolver`
         The version currently installed as a :class:`Version` object, or None
         if the package is not installed.
 
-   .. method:: get_fullname([pretty: bool = False]) -> str
+    .. method:: get_fullname([pretty: bool = False]) -> str
 
         Get the full name of the package, including the architecture. If
         *pretty* is ``True``, the architecture is omitted for native packages,
@@ -723,7 +723,7 @@ Resolving Dependencies with :class:`ProblemResolver`
 
         .. versionadded:: 0.7.100.3
 
-   .. attribute:: has_provides
+    .. attribute:: has_provides
 
         A boolean value determining whether the list available via the
         attribute :attr:`provides_list` has at least one element. This
@@ -733,7 +733,7 @@ Resolving Dependencies with :class:`ProblemResolver`
 
             pkg.has_provides and not pkg.has_versions
 
-   .. attribute:: has_versions
+    .. attribute:: has_versions
 
         A boolean value determining whether the list available via the
         attribute :attr:`version_list` has at least one element. This
@@ -787,6 +787,11 @@ Resolving Dependencies with :class:`ProblemResolver`
         The section of the package, as specified in the record. The list of
         possible sections is defined in the Policy. This is a string.
 
+        .. deprecated:: 1.0
+
+            A package can have multiple versions with different sections, so
+            the section information should be accessed from the version class.
+
     .. attribute:: version_list
 
         A list of :class:`Version` objects for all versions of this package
@@ -814,13 +819,6 @@ Resolving Dependencies with :class:`ProblemResolver`
         etc). See :ref:`CurStates` for a list of available states.
 
     **Flags**:
-
-    .. attribute:: auto
-
-        This flag is here for compatibility purposes and does not appear to
-        be used anymore in APT. To find out whether a package is marked as
-        automatically installed, use :meth:`DepCache.is_auto_installed`
-        instead.
 
     .. attribute:: essential
 
@@ -1481,6 +1479,8 @@ Records (Release files, Packages, Sources)
         ``(str: md5, int: size, str: path, str:type)``, where
         'type' can be 'diff' (includes .debian.tar.gz), 'dsc', 'tar'.
 
+        .. deprecated: 1.0
+
     .. attribute:: index
 
         A list of :class:`IndexFile` objects associated with this
@@ -1534,8 +1534,7 @@ installation.
     The constructor takes an optional parameter *progress* which takes an
     :class:`apt.progress.base.AcquireProgress` object. This object may then
     report progress information (see :mod:`apt.progress.text` for reporting
-    progress to a I/O stream and :mod:`apt.progress.gtk2` for GTK+ progress
-    reporting).
+    progress to a I/O stream).
     
     Acquire items have two methods to start and stop the fetching:
 
@@ -1600,8 +1599,12 @@ installation.
 
     .. attribute:: RESULT_CONTINUE
 
-        All items have been fetched successfully and the process has not been
-        canceled.
+        All items have been fetched successfully or failed transiently
+        and the process has not been canceled.
+
+        You need to look at the status of each item and check if it has not
+        failed transiently to discover errors like a Not Found when acquiring
+        packages.
 
     .. attribute:: RESULT_FAILED
 
@@ -1704,7 +1707,7 @@ installation.
         There was a network error.
 
 
-.. class:: AcquireFile(owner, uri[, md5, size, descr, short_descr, destdir, destfile])
+.. class:: AcquireFile(owner, uri[, hash, size, descr, short_descr, destdir, destfile])
 
     Create a new :class:`AcquireFile()` object and register it with *acquire*,
     so it will be fetched. You must always keep around a reference to the
@@ -1717,8 +1720,9 @@ installation.
     The parameter *uri* refers to the location of the file, any protocol
     of apt is supported.
 
-    The parameter *md5* refers to the md5sum of the file. This can be used
-    for checking the file.
+    The parameter *hash* refers to the hash of the file. If this is set
+    libapt will check the file after downloading. See :class:`HashString`
+    for the combined form string format description.
 
     The parameter *size* can be used to specify the size of the package,
     which can then be used to calculate the progress and validate the download.
@@ -1850,8 +1854,8 @@ generic hash support:
 
     .. attribute:: hashtype
 
-        The type of the hash, as a string. This may be "MD5Sum", "SHA1"
-        or "SHA256".
+        The type of the hash, as a string. This may be "MD5Sum", "SHA1",
+        "SHA256" or "SHA512".
 
     .. method:: verify_file(filename: str) -> bool
 
@@ -1908,16 +1912,38 @@ section as a string.
 .. class:: TagFile(file, bytes: bool = False)
 
     An object which represents a typical debian control file. Can be used for
-    Packages, Sources, control, Release, etc. Such an object provides two
-    kinds of API which should not be used together:
+    Packages, Sources, control, Release, etc.
+
+    The *file* argument shall be a path name or an open file object. The
+    argument *bytes* specifies whether the file shall be represented using
+    bytes (``True``) or unicode (``False``) strings.
+
+    It is a context manager that can be used with a with statement or the
+    :meth:`close` method.
+
+    .. describe:: with TagFile(...) as ...:
+
+        Use the :class:`TagFile` as a context manager. This will automatically
+        close the file after the body finished execution.
+
+        .. versionadded:: 1.0
+
+    .. method:: close()
+
+        Close the file. It's recommended to use the context manager
+        instead (that is, the `with` statement).
+
+        .. versionadded:: 1.0
+
+    It provides two kinds of API which should not be used together:
 
     The first API implements the iterator protocol and should be used whenever
     possible because it has less side effects than the other one. It may be
     used e.g. with a for loop::
 
-        tagf = apt_pkg.TagFile(open('/var/lib/dpkg/status'))
-        for section in tagfile:
-            print section['Package']
+        with apt_pkg.TagFile('/var/lib/dpkg/status') as tagfile:
+            for section in tagfile:
+                print section['Package']
 
     .. versionchanged:: 0.7.100
         Added support for using gzip files, via :class:`gzip.GzipFile` or any
@@ -1943,9 +1969,9 @@ section as a string.
     use less memory, but is not recommended because it works by modifying
     one object. It can be used like this::
 
-        tagf = apt_pkg.TagFile(open('/var/lib/dpkg/status'))
-        tagf.step()
-        print tagf.section['Package']
+        with apt_pkg.TagFile('/var/lib/dpkg/status') as tagf:
+            tagf.step()
+            print tagf.section['Package']
 
     .. method:: step() -> bool
 
