@@ -242,6 +242,8 @@ http://mirror.letsopen.com/os/ubuntu/
 http://mirror.premi.st/ubuntu/
 #LOC:KZ
 http://mirror.neolabs.kz/ubuntu/
+#LOC:LK
+http://mirror.learn.ac.lk/ubuntu/
 #LOC:LT
 http://ftp.litnet.lt/ubuntu/
 http://mirror.soften.ktu.lt/ubuntu/
@@ -427,7 +429,6 @@ http://mirrors.mit.edu/ubuntu/
 http://mirrors.namecheap.com/ubuntu/
 http://mirrors.ocf.berkeley.edu/ubuntu/
 http://mirrors.rit.edu/ubuntu/
-http://mirrors.sfo1.digitalocean.com/ubuntu/
 http://mirrors.sonic.net/ubuntu/
 http://mirrors.syringanetworks.net/ubuntu-archive/
 http://mirrors.tripadvisor.com/ubuntu/
