@@ -456,6 +456,15 @@ class DebPackage(object):
         """
         self._dbg(3, "compare_to_version_in_cache")
         pkgname = self._sections["Package"]
+        architecture = self._sections["Architecture"]
+
+        # Architecture all gets mapped to the native architecture internally
+        if architecture == 'all':
+            architecture = apt_pkg.config.find("APT::Architecture")
+
+        # Arch qualify the package name
+        pkgname = ":".join([pkgname, architecture])
+
         debver = self._sections["Version"]
         self._dbg(1, "debver: %s" % debver)
         if pkgname in self._cache:
@@ -734,7 +743,8 @@ class DscSrcPackage(DebPackage):
                 if 'Source' in sec:
                     self.pkgname = sec['Source']
                 if 'Binary' in sec:
-                    self.binaries = sec['Binary'].split(', ')
+                    self.binaries = [b.strip() for b in
+                                     sec['Binary'].split(',')]
                 for tag in sec.keys():
                     if tag in sec:
                         self._sections[tag] = sec[tag]
