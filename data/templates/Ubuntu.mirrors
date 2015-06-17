@@ -203,6 +203,7 @@ http://kambing.ui.ac.id/ubuntu/
 http://kartolo.sby.datautama.net.id/ubuntu/
 http://kebo.pens.ac.id/ubuntu/
 http://mirror.kavalinux.com/ubuntu/
+http://mirror.poliwangi.ac.id/ubuntu/
 http://mirror.unej.ac.id/ubuntu/
 http://suro.ubaya.ac.id/ubuntu/
 #LOC:IE
@@ -212,7 +213,6 @@ http://mirror.isoc.org.il/pub/ubuntu/
 #LOC:IN
 ftp://ftp.iitb.ac.in/distributions/ubuntu/archives/
 http://ftp.iitm.ac.in/ubuntu/
-http://mirror.cse.iitk.ac.in/ubuntu/
 #LOC:IR
 http://mirror.iranserver.com/ubuntu/
 http://ubuntu.asis.io/
@@ -370,7 +370,6 @@ http://ftp.yzu.edu.tw/ubuntu/
 http://mirror01.idc.hinet.net/ubuntu/
 http://tw.archive.ubuntu.com/ubuntu/
 http://ubuntu.cs.nctu.edu.tw/ubuntu/
-http://ubuntu.stu.edu.tw/ubuntu/
 #LOC:TZ
 http://deb-mirror.habari.co.tz/ubuntu/
 http://mirror.aptus.co.tz/pub/ubuntuarchive/
@@ -452,6 +451,7 @@ http://ubuntu.wallawalla.edu/ubuntu/
 http://ubuntu.wikimedia.org/ubuntu/
 http://ubuntuarchive.mirror.nac.net/
 http://us.archive.ubuntu.com/ubuntu/
+http://www.club.cc.cmu.edu/pub/ubuntu/
 http://www.gtlib.gatech.edu/pub/ubuntu/
 http://www.lug.bu.edu/mirror/ubuntu/
 #LOC:UZ
