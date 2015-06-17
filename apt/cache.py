@@ -23,6 +23,7 @@ from __future__ import print_function
 
 import fnmatch
 import os
+import warnings
 import weakref
 
 import apt_pkg
@@ -78,6 +79,7 @@ class Cache(object):
         self._records = None
         self._list = None
         self._callbacks = {}
+        self._callbacks2 = {}
         self._weakref = weakref.WeakValueDictionary()
         self._changes_count = -1
         self._sorted_set = None
@@ -143,6 +145,10 @@ class Cache(object):
                     self._inc_changes_count()
                 else:
                     callback()
+
+        if name in self._callbacks2:
+            for callback, args, kwds in self._callbacks2[name]:
+                    callback(self, *args, **kwds)
 
     def open(self, progress=None):
         """ Open the package cache, after that it can be used like
@@ -539,11 +545,39 @@ class Cache(object):
         self._run_callbacks("cache_pre_change")
 
     def connect(self, name, callback):
-        """ connect to a signal, currently only used for
-            cache_{post,pre}_{changed,open} """
+        """Connect to a signal.
+
+        .. deprecated:: 1.0
+
+            Please use connect2() instead, as this function is very
+            likely to cause a memory leak.
+        """
+        if callback != '_inc_changes_count':
+            warnings.warn("connect() likely causes a reference"
+                          " cycle, use connect2() instead", RuntimeWarning, 2)
         if name not in self._callbacks:
             self._callbacks[name] = []
         self._callbacks[name].append(callback)
+
+    def connect2(self, name, callback, *args, **kwds):
+        """Connect to a signal.
+
+        The callback will be passed the cache as an argument, and
+        any arguments passed to this function. Make sure that, if you
+        pass a method of a class as your callback, your class does not
+        contain a reference to the cache.
+
+        Cyclic references to the cache can cause issues if the Cache object
+        is replaced by a new one, because the cache keeps a lot of objects and
+        tens of open file descriptors.
+
+        currently only used for cache_{post,pre}_{changed,open}.
+
+        .. versionadded:: 1.0
+        """
+        if name not in self._callbacks2:
+            self._callbacks2[name] = []
+        self._callbacks2[name].append((callback, args, kwds))
 
     def actiongroup(self):
         """Return an `ActionGroup` object for the current cache.
@@ -664,6 +698,38 @@ class MarkedChangesFilter(Filter):
             return False
 
 
+class _FilteredCacheHelper(object):
+    """Helper class for FilteredCache to break a reference cycle."""
+
+    def __init__(self, cache):
+        # Do not keep a reference to the cache, or you have a cycle!
+
+        self._filtered = {}
+        self._filters = {}
+        cache.connect2("cache_post_change", self.filter_cache_post_change)
+        cache.connect2("cache_post_open", self.filter_cache_post_change)
+
+    def _reapply_filter(self, cache):
+        " internal helper to refilter "
+        # Do not keep a reference to the cache, or you have a cycle!
+        self._filtered = {}
+        for pkg in cache:
+            for f in self._filters:
+                if f.apply(pkg):
+                    self._filtered[pkg.name] = 1
+                    break
+
+    def set_filter(self, filter):
+        """Set the current active filter."""
+        self._filters = []
+        self._filters.append(filter)
+
+    def filter_cache_post_change(self, cache):
+        """Called internally if the cache changes, emit a signal then."""
+        # Do not keep a reference to the cache, or you have a cycle!
+        self._reapply_filter(cache)
+
+
 class FilteredCache(object):
     """ A package cache that is filtered.
 
@@ -675,66 +741,50 @@ class FilteredCache(object):
             self.cache = Cache(progress)
         else:
             self.cache = cache
-        self.cache.connect("cache_post_change", self.filter_cache_post_change)
-        self.cache.connect("cache_post_open", self.filter_cache_post_change)
-        self._filtered = {}
-        self._filters = []
+        self._helper = _FilteredCacheHelper(self.cache)
 
     def __len__(self):
-        return len(self._filtered)
+        return len(self._helper._filtered)
 
     def __getitem__(self, key):
         return self.cache[key]
 
     def __iter__(self):
-        for pkgname in self._filtered:
+        for pkgname in self._helper._filtered:
             yield self.cache[pkgname]
 
     def keys(self):
-        return self._filtered.keys()
+        return self._helper._filtered.keys()
 
     def has_key(self, key):
-        return (key in self._filtered)
+        return key in self
 
     def __contains__(self, key):
-        return (key in self._filtered)
-
-    def _reapply_filter(self):
-        " internal helper to refilter "
-        self._filtered = {}
-        for pkg in self.cache:
-            for f in self._filters:
-                if f.apply(pkg):
-                    self._filtered[pkg.name] = 1
-                    break
+        try:
+            # Normalize package name for multi arch
+            return self.cache[key].name in self._helper._filtered
+        except KeyError:
+            return False
 
     def set_filter(self, filter):
         """Set the current active filter."""
-        self._filters = []
-        self._filters.append(filter)
-        #self._reapplyFilter()
-        # force a cache-change event that will result in a refiltering
+        self._helper.set_filter(filter)
         self.cache.cache_post_change()
 
     def filter_cache_post_change(self):
         """Called internally if the cache changes, emit a signal then."""
-        #print "filterCachePostChange()"
-        self._reapply_filter()
-
-#    def connect(self, name, callback):
-#        self.cache.connect(name, callback)
+        self._helper.filter_cache_post_change(self.cache)
 
     def __getattr__(self, key):
         """we try to look exactly like a real cache."""
-        #print "getattr: %s " % key
         return getattr(self.cache, key)
 
 
-def cache_pre_changed():
+def cache_pre_changed(cache):
     print("cache pre changed")
 
 
-def cache_post_changed():
+def cache_post_changed(cache):
     print("cache post changed")
 
 
@@ -743,8 +793,8 @@ def _test():
     print("Cache self test")
     apt_pkg.init()
     cache = Cache(apt.progress.text.OpProgress())
-    cache.connect("cache_pre_change", cache_pre_changed)
-    cache.connect("cache_post_change", cache_post_changed)
+    cache.connect2("cache_pre_change", cache_pre_changed)
+    cache.connect2("cache_post_change", cache_post_changed)
     print(("aptitude" in cache))
     pkg = cache["aptitude"]
     print(pkg.name)
@@ -771,8 +821,8 @@ def _test():
 
     print("Testing filtered cache (argument is old cache)")
     filtered = FilteredCache(cache)
-    filtered.cache.connect("cache_pre_change", cache_pre_changed)
-    filtered.cache.connect("cache_post_change", cache_post_changed)
+    filtered.cache.connect2("cache_pre_change", cache_pre_changed)
+    filtered.cache.connect2("cache_post_change", cache_post_changed)
     filtered.cache.upgrade()
     filtered.set_filter(MarkedChangesFilter())
     print(len(filtered))
@@ -783,8 +833,8 @@ def _test():
 
     print("Testing filtered cache (no argument)")
     filtered = FilteredCache(progress=apt.progress.base.OpProgress())
-    filtered.cache.connect("cache_pre_change", cache_pre_changed)
-    filtered.cache.connect("cache_post_change", cache_post_changed)
+    filtered.cache.connect2("cache_pre_change", cache_pre_changed)
+    filtered.cache.connect2("cache_post_change", cache_post_changed)
     filtered.cache.upgrade()
     filtered.set_filter(MarkedChangesFilter())
     print(len(filtered))
