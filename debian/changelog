@@ -1,3 +1,11 @@
+python-apt (1.0.0~beta3ubuntu1) wily; urgency=medium
+
+  * To properly conform to PEP 479 and Python 3.5, __iter__() methods
+    should return when exhausted instead of raising StopIterator.  This
+    diff can be dropped when Debian bug #792606 is fixed released.
+
+ -- Barry Warsaw <barry@ubuntu.com>  Thu, 16 Jul 2015 12:25:23 -0400
+
 python-apt (1.0.0~beta3build1) wily; urgency=medium
 
   * No change rebuild for python3.5.
