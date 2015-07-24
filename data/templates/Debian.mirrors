@@ -1,3 +1,5 @@
+#LOC:AM
+http://mirrors.asnet.am/debian/
 #LOC:AR
 ftp://ftp.ccc.uba.ar/pub/linux/debian/debian/
 http://debian.mirror.utn.edu.ar/debian/
@@ -118,7 +120,6 @@ http://debian.mirror.iweb.ca/debian/
 http://debian.mirror.netelligent.ca/debian/
 http://debian.mirror.rafal.ca/debian/
 http://debian.savoirfairelinux.net/debian/
-http://debian.yorku.ca/debian/
 http://ftp.ca.debian.org/debian/
 http://ftp3.nrc.ca/debian/
 http://mirror.cpsc.ucalgary.ca/mirror/debian.org/debian/
@@ -190,7 +191,6 @@ http://merlin.fit.vutbr.cz/debian/
 ftp://artfiles.org/debian/
 ftp://deb-mirror.de/debian/
 ftp://debian.mirror.iphh.net/debian/
-ftp://debian.mirror.lrz.de/debian/
 ftp://debian.morphium.info/debian/
 ftp://debian.netcologne.de/debian/
 ftp://debian.tu-bs.de/debian/
@@ -282,11 +282,13 @@ ftp://ftp.gul.uc3m.es/debian/
 ftp://ftp.udc.es/debian/
 ftp://ulises.hostalia.com/debian/
 http://debian.grn.cat/debian/
+http://debian.redparra.com/debian/
 http://ftp.caliu.cat/debian/
 http://ftp.cica.es/debian/
 http://ftp.es.debian.org/debian/
 http://ftp.gul.uc3m.es/debian/
 http://ftp.udc.es/debian/
+http://softlibre.unizar.es/debian/
 http://ulises.hostalia.com/debian/
 #LOC:FI
 ftp://ftp.fi.debian.org/debian/
@@ -351,7 +353,6 @@ http://ftp.u-strasbg.fr/debian/
 http://ftp.univ-pau.fr/linux/mirrors/debian/
 http://ftp2.fr.debian.org/debian/
 http://mirror.debian.ikoula.com/debian/
-http://mirror.ibcp.fr/pub/debian/
 http://mirrors.ircam.fr/pub/debian/
 http://webb.ens-cachan.fr/debian/
 http://www.miroir.vbrunet.eu/debian/
@@ -607,7 +608,9 @@ ftp://repository.linux.pf/debian/
 http://repository.linux.pf/debian/
 #LOC:PH
 ftp://mirror.pregi.net/debian/
+ftp://mirror.rise.ph/debian/
 http://mirror.pregi.net/debian/
+http://mirror.rise.ph/debian/
 #LOC:PL
 ftp://ftp.agh.edu.pl/debian/
 ftp://ftp.icm.edu.pl/pub/Linux/debian/
@@ -643,11 +646,9 @@ http://mirrors.fe.up.pt/debian/
 http://mirrors.nfsi.pt/debian/
 #LOC:RO
 ftp://ftp.lug.ro/debian/
-ftp://ftp.ro.debian.org/debian/
 ftp://ftp.roedu.net/debian/
 ftp://mirrors.xservers.ro/debian/
 http://ftp.lug.ro/debian/
-http://ftp.ro.debian.org/debian/
 http://ftp.roedu.net/debian/
 http://mirrors.serverhost.ro/debian/
 http://mirrors.xservers.ro/debian/
@@ -849,6 +850,7 @@ http://mirrors.advancedhosters.com/debian/
 http://mirrors.bloomu.edu/debian/
 http://mirrors.cat.pdx.edu/debian/
 http://mirrors.centarra.com/debian/
+http://mirrors.e2wsolutions.com/debian/
 http://mirrors.gigenet.com/debian/
 http://mirrors.kernel.org/debian/
 http://mirrors.linux.iu.edu/linux/debian/
