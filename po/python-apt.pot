@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-10 15:57+0200\n"
+"POT-Creation-Date: 2015-08-03 09:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -512,16 +512,16 @@ msgstr ""
 msgid "Custom servers"
 msgstr ""
 
-#: ../apt/package.py:380
+#: ../apt/package.py:457
 #, python-format
 msgid "Invalid unicode in description for '%s' (%s). Please report."
 msgstr ""
 
-#: ../apt/package.py:951 ../apt/package.py:1057
+#: ../apt/package.py:1041 ../apt/package.py:1147 ../apt/package.py:1161
 msgid "The list of changes is not available"
 msgstr ""
 
-#: ../apt/package.py:1063
+#: ../apt/package.py:1154
 #, python-format
 msgid ""
 "The list of changes is not available yet.\n"
@@ -530,7 +530,7 @@ msgid ""
 "until the changes become available or try again later."
 msgstr ""
 
-#: ../apt/package.py:1070
+#: ../apt/package.py:1164
 msgid ""
 "Failed to download the list of changes. \n"
 "Please check your Internet connection."
@@ -577,44 +577,44 @@ msgid ""
 "the '%(debfile)s' provides it via: '%(provides)s'"
 msgstr ""
 
-#: ../apt/debfile.py:488
+#: ../apt/debfile.py:493
 msgid "No Architecture field in the package"
 msgstr ""
 
-#: ../apt/debfile.py:498
+#: ../apt/debfile.py:503
 #, python-format
 msgid "Wrong architecture '%s'"
 msgstr ""
 
-#: ../apt/debfile.py:506
+#: ../apt/debfile.py:512
 msgid "A later version is already installed"
 msgstr ""
 
-#: ../apt/debfile.py:531
+#: ../apt/debfile.py:537
 msgid "Failed to satisfy all dependencies (broken cache)"
 msgstr ""
 
-#: ../apt/debfile.py:560
+#: ../apt/debfile.py:566
 #, python-format
 msgid "Cannot install '%s'"
 msgstr ""
 
-#: ../apt/debfile.py:636
+#: ../apt/debfile.py:642
 msgid ""
 "Automatically decompressed:\n"
 "\n"
 msgstr ""
 
-#: ../apt/debfile.py:642
+#: ../apt/debfile.py:648
 msgid "Automatically converted to printable ascii:\n"
 msgstr ""
 
-#: ../apt/debfile.py:746
+#: ../apt/debfile.py:753
 #, python-format
 msgid "Install Build-Dependencies for source package '%s' that builds %s\n"
 msgstr ""
 
-#: ../apt/debfile.py:757
+#: ../apt/debfile.py:764
 msgid "An essential package would be removed"
 msgstr ""
 
@@ -663,8 +663,4 @@ msgstr ""
 
 #: ../apt/progress/text.py:263
 msgid "Please insert a Disc in the drive and press enter"
-msgstr ""
-
-#: ../apt/cache.py:163
-msgid "Building data structures"
 msgstr ""
