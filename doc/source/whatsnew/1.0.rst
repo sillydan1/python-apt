@@ -29,6 +29,8 @@ The following features are deprecated, starting with this release:
 * The method :meth:`apt.cache.Cache.connect` has been deprecated. It is
   replaced by :meth:`apt.cache.Cache.connect2` which is more flexible and
   less prone to reference cycles.
+* The attribute :attr:`apt_pkg.AcquireItem.mode` has been replaced by
+  :attr:`apt_pkg.AcquireItem.active_subprocess`
 
 Removed
 -------
@@ -41,6 +43,9 @@ Removed
   for installation in graphical environments.
 * The attribute :attr:`apt_pkg.Package.auto` was not set anymore, and thus
   removed.
+
+* The class :class:`apt_pkg.IndexRecords` has been removed, as it was removed
+  in APT 1.1
 
 Maintenance
 -----------
