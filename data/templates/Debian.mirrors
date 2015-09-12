@@ -353,6 +353,7 @@ http://ftp.u-strasbg.fr/debian/
 http://ftp.univ-pau.fr/linux/mirrors/debian/
 http://ftp2.fr.debian.org/debian/
 http://mirror.debian.ikoula.com/debian/
+http://mirror.ibcp.fr/pub/debian/
 http://mirrors.ircam.fr/pub/debian/
 http://webb.ens-cachan.fr/debian/
 http://www.miroir.vbrunet.eu/debian/
@@ -384,6 +385,7 @@ http://mirror.mythic-beasts.com/debian/
 http://mirror.ox.ac.uk/debian/
 http://mirror.positive-internet.com/debian/
 http://mirror.sov.uk.goscomb.net/debian/
+http://mirror.sucs.swan.ac.uk/pub/linux/debian/
 http://mirror.vorboss.net/debian/
 http://mirrors-uk.Go-Parts.com/debian/
 http://mirrors.melbourne.co.uk/debian/
@@ -864,6 +866,7 @@ http://mirrors.xenir.com/debian/
 http://mirrors.xmission.com/debian/
 http://noodle.portalus.net/debian/
 http://pubmirrors.dal.corespace.com/debian/
+http://reflector.westga.edu/repos/Debian/
 #LOC:UZ
 ftp://debian.stream.uz/debian/
 http://debian.stream.uz/debian/
