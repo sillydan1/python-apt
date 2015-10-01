@@ -1,3 +1,12 @@
+python-apt (1.0.0ubuntu1) wily; urgency=medium
+
+  * Merge from Debian.  All previous Ubuntu deltas can be dropped as
+    they've been merged upstream.  (LP: #1501805)
+  * debian/tests/control: Add `Restrictions: allow-stderr` to prevent the
+    DeprecationWarnings generated during the test from failing DEP-8.
+
+ -- Barry Warsaw <barry@ubuntu.com>  Thu, 01 Oct 2015 15:14:19 -0400
+
 python-apt (1.0.0) unstable; urgency=medium
 
   [ Julian Andres Klode ]
@@ -23,6 +32,15 @@ python-apt (1.0.0) unstable; urgency=medium
   * Add helpers/filters for installed packages/versions
 
  -- Julian Andres Klode <jak@debian.org>  Sat, 12 Sep 2015 14:35:27 +0200
+
+python-apt (1.0.0~beta3.1ubuntu1) wily; urgency=medium
+
+  * Cherrypick d1d4e0848c5c2963d8411470bcf15a0e8c3538af from git
+    to resolve the testsuite failures with the new pep8 version.
+  * debian/control: Drop apt build-depends to 1.0.9.10ubuntu6 to
+    build in wily; can be dropped after apt >= 1.0.10 is merged.
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Thu, 13 Aug 2015 22:07:58 -0600
 
 python-apt (1.0.0~beta3.1) unstable; urgency=medium
 
