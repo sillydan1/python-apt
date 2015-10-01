@@ -324,6 +324,7 @@ ftp://ftp.u-strasbg.fr/debian/
 ftp://ftp.univ-nantes.fr/debian/
 ftp://ftp.univ-pau.fr/pub/mirrors/debian/
 ftp://ftp2.fr.debian.org/debian/
+ftp://miroir.vbrunet.eu/debian/
 ftp://mirror.debian.ikoula.com/debian/
 ftp://mirrors.ircam.fr/pub/debian/
 ftp://webb.ens-cachan.fr/debian/
@@ -352,11 +353,11 @@ http://ftp.u-picardie.fr/mirror/debian/
 http://ftp.u-strasbg.fr/debian/
 http://ftp.univ-pau.fr/linux/mirrors/debian/
 http://ftp2.fr.debian.org/debian/
+http://miroir.vbrunet.eu/debian/
 http://mirror.debian.ikoula.com/debian/
 http://mirror.ibcp.fr/pub/debian/
 http://mirrors.ircam.fr/pub/debian/
 http://webb.ens-cachan.fr/debian/
-http://www.miroir.vbrunet.eu/debian/
 #LOC:GB
 ftp://debian.serverspace.co.uk/debian/
 ftp://free.hands.com/debian/
@@ -719,9 +720,11 @@ http://ftp.sv.debian.org/debian/
 #LOC:TH
 ftp://ftp.debianclub.org/debian/
 ftp://ftp.th.debian.org/debian/
+ftp://mirror.applebred.net/debian/
 ftp://mirror.kku.ac.th/debian/
 http://ftp.debianclub.org/debian/
 http://ftp.th.debian.org/debian/
+http://mirror.applebred.net/debian/
 http://mirror.kku.ac.th/debian/
 #LOC:TJ
 http://mirrors.eastera.tj/debian/
@@ -732,13 +735,11 @@ ftp://debian.gnu.gen.tr/debian/
 ftp://ftp.linux.org.tr/debian/
 ftp://ftp.metu.edu.tr/debian/
 ftp://ftp.tr.debian.org/debian/
-ftp://russell.cs.bilgi.edu.tr/debian/
 http://debian.doratelekom.com/debian/
 http://debian.gnu.gen.tr/debian/
 http://ftp.linux.org.tr/debian/
 http://ftp.metu.edu.tr/debian/
 http://ftp.tr.debian.org/debian/
-http://russell.cs.bilgi.edu.tr/debian/
 #LOC:TW
 ftp://debian.csie.nctu.edu.tw/debian/
 ftp://debian.csie.ntu.edu.tw/pub/debian/
