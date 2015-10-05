@@ -1,3 +1,9 @@
+python-apt (1.0.1build1) wily; urgency=medium
+
+  * No-change rebuild against libapt-pkg4.16
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 05 Oct 2015 16:40:35 +0200
+
 python-apt (1.0.1) unstable; urgency=medium
 
   [ Michael Vogt ]
