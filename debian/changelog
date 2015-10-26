@@ -1,3 +1,9 @@
+python-apt (1.0.1ubuntu2) xenial; urgency=medium
+
+  * doc/source/examples/apt-cdrom.py: Fix PEP-8 errors.
+
+ -- Martin Pitt <martin.pitt@ubuntu.com>  Mon, 26 Oct 2015 07:07:17 +0100
+
 python-apt (1.0.1ubuntu1) xenial; urgency=medium
 
   * ./data/templates/Ubuntu.info.in: Add Xenial template.
