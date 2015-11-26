@@ -1,6 +1,4 @@
 mirror://mirrors.ubuntu.com/mirrors.txt
-#LOC:AF
-http://repo.unpatti.ac.id/ubuntu/
 #LOC:AM
 http://mirrors.asnet.am/ubuntu/
 #LOC:AR
@@ -12,10 +10,12 @@ http://gd.tuwien.ac.at/opsys/linux/ubuntu/archive/
 http://ubuntu.lagis.at/ubuntu/
 http://ubuntu.uni-klu.ac.at/ubuntu/
 #LOC:AU
+http://ftp.iinet.net.au/pub/ubuntu/
 http://mirror.aarnet.edu.au/pub/ubuntu/archive/
 http://mirror.as24220.net/pub/ubuntu-archive/
 http://mirror.as24220.net/pub/ubuntu/
 http://mirror.internode.on.net/pub/ubuntu/ubuntu/
+http://mirror.netspace.net.au/pub/ubuntu/
 http://mirror.optus.net/ubuntu/
 http://mirror.overthewire.com.au/ubuntu/
 http://mirror.waia.asn.au/ubuntu/
@@ -29,7 +29,6 @@ http://archive.ubuntu.com.ba/ubuntu/
 #LOC:BD
 http://mirror.dhakacom.com/ubuntu-archive/
 http://mirror.dhakacom.com/ubuntu/
-http://mirrors.ispros.com.bd/ubuntu/
 #LOC:BE
 http://ftp.belnet.be/ubuntu.com/ubuntu/
 http://mirror.unix-solutions.be/ubuntu/
@@ -38,7 +37,6 @@ http://ubuntu.mirrors.skynet.be/pub/ubuntu.com/ubuntu/
 http://ubuntu.mirrors.skynet.be/ubuntu/
 #LOC:BG
 http://mirror.telepoint.bg/ubuntu/
-http://mirrors.neterra.net/ubuntu/
 http://ubuntu.ipacct.com/ubuntu/
 #LOC:BR
 http://mirror.globo.com/ubuntu/archive/
@@ -72,6 +70,7 @@ http://ftp.tecnoera.com/ubuntu/
 http://mirror.uchile.cl/ubuntu/
 #LOC:CN
 http://ftp.sjtu.edu.cn/ubuntu/
+http://mirror.neu.edu.cn/ubuntu/
 http://mirrors.aliyun.com/ubuntu/
 http://mirrors.cqu.edu.cn/ubuntu/
 http://mirrors.skyshe.cn/ubuntu/
@@ -81,7 +80,7 @@ http://mirrors.ustc.edu.cn/ubuntu/
 http://mirrors.yun-idc.com/ubuntu/
 http://run.hit.edu.cn/ubuntu/
 http://ubuntu.cn99.com/ubuntu/
-http://ubuntu.cnssuestc.org/ubuntu/
+http://ubuntu.uestc.edu.cn/ubuntu/
 #LOC:CO
 http://mirror.edatel.net.co/ubuntu/
 #LOC:CR
@@ -121,7 +120,7 @@ http://mirror.bauhuette.fh-aachen.de/ubuntu/
 http://mirror.de.leaseweb.net/ubuntu/
 http://mirror.netcologne.de/ubuntu/
 http://mirror.serverloft.eu/ubuntu/ubuntu/
-http://mirror.skylink-datacenter.de/ubuntu/
+http://mirror.stored.cc/ubuntu/
 http://mirror2.tuxinator.org/ubuntu/
 http://suse.uni-leipzig.de/pub/releases.ubuntu.com/ubuntu/
 http://ubuntu.mirror.lrz.de/ubuntu/
@@ -136,6 +135,8 @@ http://mirrors.telianet.dk/ubuntu/
 #LOC:EC
 http://mirror.cedia.org.ec/ubuntu/
 http://mirror.espol.edu.ec/ubuntu/
+#LOC:EE
+http://ftp.estpak.ee/ubuntu/
 #LOC:ES
 ftp://ftp.cesca.cat/ubuntu/archieve/
 http://ftp.caliu.cat/pub/distribucions/ubuntu/archive/
@@ -143,7 +144,6 @@ http://ftp.udc.es/ubuntu/
 http://softlibre.unizar.es/ubuntu/archive/
 http://ubuntu.cica.es/ubuntu/
 http://ubuntu.grn.cat/ubuntu/
-http://ubuntu.uc3m.es/ubuntu/
 #LOC:FI
 http://mirrors.nic.funet.fi/ubuntu/
 http://ubuntu.trumpetti.atm.tut.fi/ubuntu/
@@ -154,6 +154,7 @@ http://bouyguestelecom.ubuntu.lafibre.info/ubuntu/
 http://distrib-coffee.ipsl.jussieu.fr/pub/linux/ubuntu/
 http://ftp.oleane.net/ubuntu/
 http://ftp.u-picardie.fr/mirror/ubuntu/ubuntu/
+http://mirror.plusserver.com/ubuntu/ubuntu/
 http://mirror.ubuntu.ikoula.com/ubuntu/
 http://mirrors.ircam.fr/pub/ubuntu/archive/
 http://ubuntu.mirrors.ovh.net/ftp.ubuntu.com/ubuntu/
@@ -166,6 +167,7 @@ http://archive.ubuntu.com/ubuntu/
 http://ftp.ticklers.org/archive.ubuntu.org/ubuntu/
 http://mirror.as29550.net/archive.ubuntu.com/
 http://mirror.bytemark.co.uk/ubuntu/
+http://mirror.mythic-beasts.com/ubuntu/
 http://mirror.ox.ac.uk/sites/archive.ubuntu.com/ubuntu/
 http://mirror.sov.uk.goscomb.net/ubuntu/
 http://mirror.vorboss.net/ubuntu-archive/
@@ -197,15 +199,14 @@ http://ftp.kfki.hu/linux/ubuntu/
 http://ubuntu.sth.sze.hu/ubuntu/
 #LOC:ID
 http://buaya.klas.or.id/ubuntu/
-http://jaran.undip.ac.id/ubuntu/
 http://kambing.ui.ac.id/ubuntu/
 http://kartolo.sby.datautama.net.id/ubuntu/
 http://kebo.pens.ac.id/ubuntu/
 http://mirror.cloud.id/ubuntu/
 http://mirror.kavalinux.com/ubuntu/
 http://mirror.omadata.com/ubuntu/
-http://mirror.poliwangi.ac.id/ubuntu/
 http://mirror.unej.ac.id/ubuntu/
+http://repo.unpatti.ac.id/ubuntu/
 http://suro.ubaya.ac.id/ubuntu/
 #LOC:IE
 http://ftp.heanet.ie/pub/ubuntu/
@@ -220,8 +221,10 @@ http://mirror.iranserver.com/ubuntu/
 http://ubuntu.asis.io/
 #LOC:IS
 http://speglar.simnet.is/ubuntu/
+http://ubuntu.hysing.is/ubuntu/
 #LOC:IT
 http://giano.com.dist.unige.it/ubuntu/
+http://mirror.crazynetwork.it/ubuntu/archive/
 http://mirrors.muzzy.it/ubuntu/
 http://ubuntu.fastbull.org/ubuntu/
 http://ubuntu.ictvalleumbra.it/ubuntu/
@@ -238,10 +241,8 @@ http://www.ftp.ne.jp/Linux/packages/ubuntu/archive/
 http://ubuntu-archive.mirror.liquidtelecom.com/ubuntu/
 http://ubuntu.mirror.ac.ke/ubuntu/
 #LOC:KR
-http://ftp.daum.net/ubuntu/
 http://ftp.neowiz.com/ubuntu/
 http://kr.archive.ubuntu.com/ubuntu/
-http://mirror.letsopen.com/os/ubuntu/
 http://mirror.premi.st/ubuntu/
 #LOC:KZ
 http://mirror.neolabs.kz/ubuntu/
@@ -259,9 +260,8 @@ http://ubuntu.koyanet.lv/ubuntu/
 #LOC:MD
 http://mirror.as43289.net/ubuntu/
 #LOC:MK
+http://mirror.blizoo.mk/ubuntu/
 http://mirror.t-home.mk/ubuntu/
-#LOC:MN
-http://mirror.datacenter.mn/ubuntu/
 #LOC:MY
 http://ubuntu.ipserverone.com/ubuntu/
 http://ubuntu.tuxuri.com/ubuntu/
@@ -276,6 +276,7 @@ http://ftp.tudelft.nl/archive.ubuntu.com/
 http://mirror.1000mbps.com/ubuntu/
 http://mirror.amsiohosting.net/archive.ubuntu.com/
 http://mirror.i3d.net/pub/ubuntu/
+http://mirror.nforce.com/pub/linux/ubuntu/
 http://mirror.nl.leaseweb.net/ubuntu/
 http://mirror.transip.net/ubuntu/ubuntu/
 http://mirrors.nl.eu.kernel.org/ubuntu/
@@ -309,6 +310,7 @@ ftp://ftp.man.szczecin.pl/pub/Linux/ubuntu/
 http://ftp.agh.edu.pl/ubuntu/
 http://ftp.icm.edu.pl/pub/Linux/ubuntu/
 http://ftp.vectranet.pl/ubuntu/
+http://mirror.onet.pl/pub/mirrors/ubuntu/
 http://piotrkosoft.net/pub/mirrors/ubuntu/
 http://ubuntu.task.gda.pl/ubuntu/
 #LOC:PT
@@ -318,6 +320,7 @@ http://ubuntu.dcc.fc.up.pt/
 #LOC:RO
 http://ftp.astral.ro/mirrors/ubuntu.com/ubuntu/
 http://ftp.gts.lug.ro/ubuntu/
+http://ftp.info.uvt.ro/ubuntu/
 http://mirrors.pidginhost.com/ubuntu/
 http://ubuntu.mirrors.linux.ro/archive/
 #LOC:RU
@@ -331,6 +334,7 @@ http://mirror.timeweb.ru/ubuntu/
 http://mirror.yandex.ru/ubuntu/
 #LOC:SE
 http://ftp.acc.umu.se/ubuntu/
+http://ftp.availo.se/ubuntu/
 http://ftp.df.lth.se/ubuntu/
 http://ftp.ds.karen.hj.se/ubuntu/
 http://ftp.lysator.liu.se/ubuntu/
@@ -340,7 +344,6 @@ http://ubuntu.cybercomhosting.com/ubuntu/
 http://ubuntu.mirror.su.se/ubuntu/
 #LOC:SG
 http://download.nus.edu.sg/mirror/ubuntu/
-http://mirror.nus.edu.sg/ubuntu/
 #LOC:SI
 http://ftp.arnes.si/pub/mirrors/ubuntu/
 #LOC:SK
@@ -357,6 +360,7 @@ http://mirrors.eastera.tj/ubuntu/
 http://ubuntu.mirror.tn/ubuntu/
 #LOC:TR
 http://ftp.linux.org.tr/ubuntu/
+http://mirror.ni.net.tr/ubuntu/
 http://ubuntu.saglayici.com/ubuntu/
 #LOC:TW
 http://free.nchc.org.tw/ubuntu/
@@ -388,15 +392,16 @@ http://dist1.800hosting.com/ubuntu/
 http://ftp.unina.it/pub/linux/distributions/ubuntu/
 http://ftp.usf.edu/pub/ubuntu/
 http://ftp.ussg.iu.edu/linux/ubuntu/
-http://ftp.utexas.edu/ubuntu/
 http://lug.mtu.edu/ubuntu/
 http://mirror.ancl.hawaii.edu/linux/ubuntu/
+http://mirror.atlantic.net/ubuntu/
 http://mirror.cc.columbia.edu/pub/linux/ubuntu/archive/
 http://mirror.cc.vt.edu/pub2/ubuntu/
 http://mirror.clarkson.edu/ubuntu/
 http://mirror.cogentco.com/pub/linux/ubuntu/
 http://mirror.cs.pitt.edu/ubuntu/archive/
 http://mirror.evolvedservers.com/ubuntu-archive/
+http://mirror.hmc.edu/ubuntu/
 http://mirror.htnshost.com/ubuntu/
 http://mirror.jmu.edu/pub/ubuntu/
 http://mirror.lcsee.wvu.edu/ubuntu/
@@ -405,7 +410,6 @@ http://mirror.math.ucdavis.edu/ubuntu/
 http://mirror.metrocast.net/ubuntu/
 http://mirror.nexcess.net/ubuntu/
 http://mirror.os6.org/ubuntu/
-http://mirror.pavlovmedia.net/ubuntu/
 http://mirror.picosecond.org/ubuntu/
 http://mirror.pnl.gov/ubuntu/
 http://mirror.steadfast.net/ubuntu/
@@ -413,7 +417,6 @@ http://mirror.stjschools.org/public/ubuntu-archive/
 http://mirror.symnds.com/ubuntu/
 http://mirror.team-cymru.org/ubuntu/
 http://mirror.tocici.com/ubuntu/
-http://mirror.umd.edu/ubuntu/
 http://mirror.uoregon.edu/ubuntu/
 http://mirror.us.leaseweb.net/ubuntu/
 http://mirrordenver.fdcservers.net/ubuntu/
@@ -424,22 +427,22 @@ http://mirrors.arpnetworks.com/Ubuntu/
 http://mirrors.bloomu.edu/ubuntu/
 http://mirrors.cat.pdx.edu/ubuntu/
 http://mirrors.ccs.neu.edu/ubuntu/
-http://mirrors.easynews.com/linux/ubuntu/
 http://mirrors.gigenet.com/ubuntuarchive/
 http://mirrors.liquidweb.com/ubuntu/
+http://mirrors.maine.edu/ubuntu/
 http://mirrors.mit.edu/ubuntu/
 http://mirrors.namecheap.com/ubuntu/
 http://mirrors.ocf.berkeley.edu/ubuntu/
+http://mirrors.psychz.net/Ubuntu/
 http://mirrors.rit.edu/ubuntu/
 http://mirrors.sonic.net/ubuntu/
 http://mirrors.syringanetworks.net/ubuntu-archive/
 http://mirrors.tripadvisor.com/ubuntu/
 http://mirrors.us.kernel.org/ubuntu/
 http://mirrors.usinternet.com/ubuntu/archive/
-http://mirrors.vpsie.com/ubuntu/
 http://mirrors.xmission.com/ubuntu/
 http://pubmirrors.dal.corespace.com/ubuntu/
-http://repo.atlantic.net/ubuntu/
+http://reflector.westga.edu/repos/Ubuntu/archive/
 http://ubuntu.cs.utah.edu/ubuntu/
 http://ubuntu.localmsp.org/ubuntu/
 http://ubuntu.mirror.constant.com/
