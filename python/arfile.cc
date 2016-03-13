@@ -37,7 +37,7 @@
 
 static PyObject *armember_get_name(PyObject *self, void *closure)
 {
-    return CppPyString(GetCpp<ARArchive::Member*>(self)->Name);
+    return CppPyPath(GetCpp<ARArchive::Member*>(self)->Name);
 }
 
 static PyObject *armember_get_mtime(PyObject *self, void *closure)
@@ -594,7 +594,7 @@ static PyObject *debfile_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
     const ARArchive::Member *member = self->Object->FindMember("debian-binary");
     if (!member)
-        return PyErr_Format(PyExc_SystemError, "No debian archive, missing %s",
+        return PyErr_Format(PyAptError, "No debian archive, missing %s",
                             "debian-binary");
 
     if (!self->Fd.Seek(member->Start))

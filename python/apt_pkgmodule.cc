@@ -35,6 +35,16 @@
 #include <Python.h>
 									/*}}}*/
 
+static char PyAptError_Doc[] =
+   "Exception class for most python-apt exceptions.\n"
+   "\n"
+   "This class replaces the use of :class:`SystemError` in previous versions\n"
+   "of python-apt. It inherits from :class:`SystemError`, so make sure to\n"
+   "catch this class first.\n\n"
+   ".. versionadded:: 1.1";
+
+PyObject *PyAptError;
+
 /**
  * A Python->C->Python gettext() function.
  *
@@ -49,7 +59,7 @@ static PyObject *py_gettext(PyObject *self, PyObject *Args) {
     if (PyArg_ParseTuple(Args,"s|s:gettext",&msg, &domain) == 0)
         return 0;
 
-    return PyString_FromString(dgettext(domain, msg));
+    return CppPyString(dgettext(domain, msg));
 }
 
 // newConfiguration - Build a new configuration class			/*{{{*/
@@ -256,7 +266,7 @@ static PyObject *md5sum(PyObject *Self,PyObject *Args)
       if (fstat(Fd,&St) != 0 ||
 	  Sum.AddFD(Fd,St.st_size) == false)
       {
-	 PyErr_SetFromErrno(PyExc_SystemError);
+	 PyErr_SetFromErrno(PyAptError);
 	 return 0;
       }
 
@@ -301,7 +311,7 @@ static PyObject *sha1sum(PyObject *Self,PyObject *Args)
       if (fstat(Fd,&St) != 0 ||
 	  Sum.AddFD(Fd,St.st_size) == false)
       {
-	 PyErr_SetFromErrno(PyExc_SystemError);
+	 PyErr_SetFromErrno(PyAptError);
 	 return 0;
       }
 
@@ -346,7 +356,7 @@ static PyObject *sha256sum(PyObject *Self,PyObject *Args)
       if (fstat(Fd,&St) != 0 ||
 	  Sum.AddFD(Fd,St.st_size) == false)
       {
-	 PyErr_SetFromErrno(PyExc_SystemError);
+	 PyErr_SetFromErrno(PyAptError);
 	 return 0;
       }
 
@@ -391,7 +401,7 @@ static PyObject *sha512sum(PyObject *Self,PyObject *Args)
       if (fstat(Fd,&St) != 0 ||
 	  Sum.AddFD(Fd,St.st_size) == false)
       {
-	 PyErr_SetFromErrno(PyExc_SystemError);
+	 PyErr_SetFromErrno(PyAptError);
 	 return 0;
       }
 
@@ -785,6 +795,9 @@ extern "C" void initapt_pkg()
    // Finalize our types to add slots, etc.
    if (PyType_Ready(&PyConfiguration_Type) == -1) INIT_ERROR;
    if (PyType_Ready(&PyCacheFile_Type) == -1) INIT_ERROR;
+   PyAptError = PyErr_NewExceptionWithDoc("apt_pkg.Error", PyAptError_Doc, PyExc_SystemError, NULL);
+   if (PyAptError == NULL)
+      INIT_ERROR;
 
    // Initialize the module
    #if PY_MAJOR_VERSION >= 3
@@ -799,7 +812,7 @@ extern "C" void initapt_pkg()
    // Global configuration, should never be deleted.
    Config->NoDelete = true;
    PyModule_AddObject(Module,"config",Config);
-
+   PyModule_AddObject(Module,"Error",PyAptError);
 
 
 
@@ -807,6 +820,10 @@ extern "C" void initapt_pkg()
    /* ============================ tag.cc ============================ */
    ADDTYPE(Module,"TagSection",&PyTagSection_Type);
    ADDTYPE(Module,"TagFile",&PyTagFile_Type);
+   ADDTYPE(Module,"Tag",&PyTag_Type);
+   ADDTYPE(Module,"TagRewrite",&PyTagRewrite_Type);
+   ADDTYPE(Module,"TagRename",&PyTagRename_Type);
+   ADDTYPE(Module,"TagRemove",&PyTagRemove_Type);
    /* ============================ acquire.cc ============================ */
    ADDTYPE(Module,"Acquire",&PyAcquire_Type);
    ADDTYPE(Module,"AcquireFile",&PyAcquireFile_Type);
@@ -851,6 +868,7 @@ extern "C" void initapt_pkg()
    ADDTYPE(Module,"SystemLock",&PySystemLock_Type);
    ADDTYPE(Module,"FileLock",&PyFileLock_Type);
    ADDTYPE(Module,"OrderList",&PyOrderList_Type);
+   ADDTYPE(Module,"HashStringList",&PyHashStringList_Type);
    // Tag file constants
    PyModule_AddObject(Module,"REWRITE_PACKAGE_ORDER",
                       CharCharToList(TFRewritePackageOrder));
@@ -936,7 +954,13 @@ extern "C" void initapt_pkg()
                         MkPyNumber(pkgAcquire::Item::StatError));
    PyDict_SetItemString(PyAcquireItem_Type.tp_dict, "STAT_AUTH_ERROR",
                         MkPyNumber(pkgAcquire::Item::StatAuthError));
-
+   // TagSection constants
+   PyDict_SetItemString(PyTag_Type.tp_dict, "REMOVE",
+                        MkPyNumber(pkgTagSection::Tag::REMOVE));
+   PyDict_SetItemString(PyTag_Type.tp_dict, "REWRITE",
+                        MkPyNumber(pkgTagSection::Tag::REWRITE));
+   PyDict_SetItemString(PyTag_Type.tp_dict, "RENAME",
+                        MkPyNumber(pkgTagSection::Tag::RENAME));
 
 #if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 1
    PyObject *PyCapsule = PyCapsule_New(&API, "apt_pkg._C_API", NULL);
@@ -979,7 +1003,6 @@ extern "C" void initapt_pkg()
    PyModule_AddIntConstant(Module,"INSTSTATE_REINSTREQ",pkgCache::State::ReInstReq);
    PyModule_AddIntConstant(Module,"INSTSTATE_HOLD",pkgCache::State::Hold);
    PyModule_AddIntConstant(Module,"INSTSTATE_HOLD_REINSTREQ",pkgCache::State::HoldReInstReq);
-
 
    #if PY_MAJOR_VERSION >= 3
    return Module;

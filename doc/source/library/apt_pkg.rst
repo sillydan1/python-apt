@@ -28,6 +28,10 @@ be called without having run init*(), but will not return the expected value.
     the commandline afterwards and finally call :func:`init_system`.
 
 
+Exceptions
+----------
+.. autoclass:: Error
+
 Working with the cache
 ----------------------
 .. class:: Cache([progress: apt.progress.base.OpProgress])
@@ -1007,12 +1011,6 @@ Example:
         A list of all possible target :class:`Version` objects which satisfy
         this dependency.
 
-    .. method:: smart_target_pkg
-
-        Return a :class:`Version` object of a package which satisfies the
-        dependency and does not conflict with installed packages
-        (the 'natural target').
-
     .. attribute:: comp_type
 
         The type of comparison (<,<=,=,!=,>=,>,), as string. Note that the
@@ -1282,7 +1280,7 @@ Index Files
 
             for pkgfile in cache.file_list:
                 if pkgfile.not_source:
-                    print 'The file %s has no source.' % pkgfile.filename
+                    print('The file %s has no source.' % pkgfile.filename)
 
     .. attribute:: origin
 
@@ -1350,22 +1348,36 @@ Records (Release files, Packages, Sources)
             cand = depcache.get_candidate_ver(cache['python-apt'])
             records.lookup(cand.file_list[0])
             # Now you can access the record
-            print records.source_pkg # == python-apt
+            print(records.source_pkg) # == python-apt
 
     .. attribute:: filename
 
         Return the field 'Filename' of the record. This is the path to the
         package, relative to the base path of the archive.
 
+    .. attribute:: hashes
+
+        A :class:`apt_pkg.HashStringList` of all hashes.
+
+        .. versionadded:: 1.1
+
     .. attribute:: md5_hash
 
         Return the MD5 hashsum of the package This refers to the field
         'MD5Sum' in the raw record.
 
+        .. deprecated:: 1.1
+
+            Use :attr:`hashes` instead.
+
     .. attribute:: sha1_hash
 
         Return the SHA1 hashsum of the package. This refers to the field 'SHA1'
         in the raw record.
+
+        .. deprecated:: 1.1
+
+            Use :attr:`hashes` instead.
 
     .. attribute:: sha256_hash
 
@@ -1373,6 +1385,10 @@ Records (Release files, Packages, Sources)
         'SHA256' in the raw record.
 
         .. versionadded:: 0.7.9
+
+        .. deprecated:: 1.1
+
+            Use :attr:`hashes` instead.
 
     .. attribute:: source_pkg
 
@@ -1417,7 +1433,7 @@ Records (Release files, Packages, Sources)
         Example::
 
             section = apt_pkg.TagSection(records.record)
-            print section['SHA256'] # Use records.sha256_hash instead
+            print(section['SHA256']) # Use records.sha256_hash instead
 
 
 .. class:: SourceRecords
@@ -1816,25 +1832,8 @@ of the ones provides in Python's :mod:`hashlib` module.
 The module provides the two classes :class:`Hashes` and :class:`HashString` for
 generic hash support:
 
-.. class:: Hashes(object)
-
-    Calculate all supported hashes of the object. *object* may either be a
-    string, in which cases the hashes of the string are calculated; or a
-    :class:`file()` object or file descriptor, in which case the hashes of
-    its contents is calculated. The calculated hashes are then available via
-    attributes:
-
-    .. attribute:: md5
-
-        The MD5 hash of the data, as string.
-
-    .. attribute:: sha1
-
-        The SHA1 hash of the data, as string.
-
-    .. attribute:: sha256
-
-        The SHA256 hash of the data, as string.
+.. autoclass:: Hashes
+    :members:
 
 .. class:: HashString(type: str[, hash: str])
 
@@ -1863,6 +1862,17 @@ generic hash support:
 
         Verify that the file given by the parameter *filename* matches the
         hash stored in this object.
+
+.. autoclass:: HashStringList
+    :members:
+
+    .. describe:: len(list)
+
+        Return the length of the list
+
+    .. describe:: list[index]
+
+        Get the :class:`HashString` object at the specified index.
 
 The :mod:`apt_pkg` module also provides the functions :func:`md5sum`,
 :func:`sha1sum` and :func:`sha256sum` for creating a single hash from a
@@ -1945,7 +1955,7 @@ section as a string.
 
         with apt_pkg.TagFile('/var/lib/dpkg/status') as tagfile:
             for section in tagfile:
-                print section['Package']
+                print(section['Package'])
 
     .. versionchanged:: 0.7.100
         Added support for using gzip files, via :class:`gzip.GzipFile` or any
@@ -2037,22 +2047,36 @@ section as a string.
 
         Return a list of keys in the section.
 
-.. function:: rewrite_section(section: TagSection, order: list, rewrite_list: list) -> str
 
-    Rewrite the section given by *section* using *rewrite_list*, and order the
-    fields according to *order*.
+A function can be rewritten by using tag classes:
 
-    The parameter *order* is a :class:`list` object containing the names of the
-    fields in the order they should appear in the rewritten section.
-    :data:`apt_pkg.REWRITE_PACKAGE_ORDER` and
-    :data:`apt_pkg.REWRITE_SOURCE_ORDER` are two predefined lists for rewriting
-    package and source sections, respectively.
+.. autoclass:: Tag
+    :members:
 
-    The parameter *rewrite_list* is a list of tuples of the form
-    ``(tag, newvalue[, renamed_to])``, where *tag* describes the field which
-    should be changed, *newvalue* the value which should be inserted or
-    ``None`` to delete the field, and the optional *renamed_to* can be used
-    to rename the field.
+    The following static members can be used to determine the meaning of
+    :attr:`action`:
+
+    .. data:: REWRITE
+
+        Change the field value to the value of :attr:`data`
+
+    .. data:: RENAME
+
+        Rename the tag to a new tag stored in :attr:`data`.
+
+    .. data:: REMOVE
+
+        Remove the tag.
+
+    Apart from this, the class provides access to several attributes.
+
+.. autoclass:: TagRewrite
+
+.. autoclass:: TagRemove
+
+.. autoclass:: TagRename
+
+Pre-defined ordering for tag sections are:
 
 .. data:: REWRITE_PACKAGE_ORDER
 
@@ -2063,6 +2087,11 @@ section as a string.
 
     The order in which the information for source packages should be rewritten,
     i.e. the order in which the fields should appear.
+
+Before APT 1.1, the function :func:`rewrite_section` was used.
+
+.. autofunction:: rewrite_section
+
 
 Dependencies
 ------------
