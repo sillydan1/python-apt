@@ -212,12 +212,12 @@ static PyObject *tarmember_issym(PyObject *self, PyObject *args)
 
 static PyObject *tarmember_get_name(PyObject *self, void *closure)
 {
-    return PyString_FromString(GetCpp<pkgDirStream::Item>(self).Name);
+    return CppPyPath(GetCpp<pkgDirStream::Item>(self).Name);
 }
 
 static PyObject *tarmember_get_linkname(PyObject *self, void *closure)
 {
-    return Safe_FromString(GetCpp<pkgDirStream::Item>(self).LinkTarget);
+    return CppPyPath(GetCpp<pkgDirStream::Item>(self).LinkTarget);
 }
 
 static PyObject *tarmember_get_mode(PyObject *self, void *closure)
