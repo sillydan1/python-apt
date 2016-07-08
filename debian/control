@@ -3,7 +3,7 @@ Section: python
 Priority: standard
 Maintainer: APT Development Team <deity@lists.debian.org>
 Uploaders: Michael Vogt <mvo@debian.org>, Julian Andres Klode <jak@debian.org>
-Standards-Version: 3.9.6
+Standards-Version: 3.9.8
 X-Python-Version: >= 2.7
 X-Python3-Version: >= 3.3
 Build-Depends: apt (>= 1.0.9.4),
@@ -20,9 +20,8 @@ Build-Depends: apt (>= 1.0.9.4),
                python-sphinx (>= 0.5),
                pep8,
                pyflakes
-Vcs-Git: git://anonscm.debian.org/apt/python-apt.git
-Vcs-Browser: http://anonscm.debian.org/gitweb/?p=apt/python-apt.git
-XS-Testsuite: autopkgtest
+Vcs-Git: https://anonscm.debian.org/git/apt/python-apt.git
+Vcs-Browser: https://anonscm.debian.org/git/apt/python-apt.git
 
 Package: python-apt
 Architecture: any
