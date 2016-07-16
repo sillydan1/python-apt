@@ -140,13 +140,12 @@ http://debian.insacom.cl/debian/
 http://mirrors.tecnoera.com/debian/
 #LOC:CN
 ftp://debian.bjtu.edu.cn/debian/
-ftp://debian.ustc.edu.cn/debian/
 ftp://ftp.cn.debian.org/debian/
 ftp://ftp2.cn.debian.org/debian/
 ftp://mirrors.sohu.com/debian/
 ftp://mirrors.tuna.tsinghua.edu.cn/debian/
+ftp://mirrors.ustc.edu.cn/debian/
 http://debian.bjtu.edu.cn/debian/
-http://debian.ustc.edu.cn/debian/
 http://ftp.cn.debian.org/debian/
 http://ftp2.cn.debian.org/debian/
 http://mirrors.163.com/debian/
@@ -154,6 +153,7 @@ http://mirrors.cug.edu.cn/debian/
 http://mirrors.hust.edu.cn/debian/
 http://mirrors.sohu.com/debian/
 http://mirrors.tuna.tsinghua.edu.cn/debian/
+http://mirrors.ustc.edu.cn/debian/
 #LOC:CO
 ftp://debian.unal.edu.co/debian/
 http://debian.unal.edu.co/debian/
