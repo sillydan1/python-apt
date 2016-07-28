@@ -1,3 +1,9 @@
+python-apt (1.1.0~beta4ubuntu1) yakkety; urgency=medium
+
+  * apt.auth: Set APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Thu, 28 Jul 2016 11:23:12 +0000
+
 python-apt (1.1.0~beta4) unstable; urgency=medium
 
   * Fix test failures causing FTBFS (Closes: #830995)

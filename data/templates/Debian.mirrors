@@ -450,7 +450,9 @@ http://ftp.iitm.ac.in/debian/
 http://mirror.cse.iitk.ac.in/debian/
 #LOC:IR
 ftp://debian.asis.io/debian/
+ftp://debian.parspack.com/debian/
 http://debian.asis.io/debian/
+http://debian.parspack.com/debian/
 http://mirror.iranserver.com/debian/
 #LOC:IS
 ftp://debian.simnet.is/debian/
@@ -545,6 +547,9 @@ ftp://ftp.mx.debian.org/debian/
 ftp://mmc.geofisica.unam.mx/debian/
 http://ftp.mx.debian.org/debian/
 http://mmc.geofisica.unam.mx/debian/
+#LOC:MY
+ftp://mirrors.apu.edu.my/debian/
+http://mirrors.apu.edu.my/debian/
 #LOC:NC
 ftp://debian.lagoon.nc/debian/
 ftp://debian.nautile.nc/debian/
