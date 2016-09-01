@@ -63,6 +63,7 @@ def _call_apt_key_script(*args, **kwargs):
     cmd.extend(args)
     env = os.environ.copy()
     env["LANG"] = "C"
+    env["APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE"] = "1"
     try:
         if apt_pkg.config.find_dir("Dir") != "/":
             # If the key is to be installed into a chroot we have to export the
@@ -178,6 +179,7 @@ def _add_key_from_keyserver(keyid, keyserver, tmp_keyring_dir):
             "--keyring", tmp_export_keyring,
             "--fingerprint",
             "--batch",
+            "--fixed-list-mode",
             "--with-colons",
         ],
         stdout=subprocess.PIPE,
@@ -256,12 +258,16 @@ def list_keys():
     # The output of `apt-key list` is difficult to parse since the
     # --with-colons parameter isn't user
     output = _call_apt_key_script("adv", "--with-colons", "--batch",
-                                  "--list-keys")
+                                  "--fixed-list-mode", "--list-keys")
     res = []
     for line in output.split("\n"):
         fields = line.split(":")
         if fields[0] == "pub":
-            key = TrustedKey(fields[9], fields[4][-8:], fields[5])
+            keyid = fields[4]
+        if fields[0] == "uid":
+            uid = fields[9]
+            creation_date = fields[5]
+            key = TrustedKey(uid, keyid, creation_date)
             res.append(key)
     return res
 
