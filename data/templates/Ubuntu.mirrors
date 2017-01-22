@@ -41,6 +41,7 @@ http://ubuntu.mirrors.skynet.be/ubuntu/
 http://mirror.telepoint.bg/ubuntu/
 http://mirrors.neterra.net/ubuntu/
 http://ubuntu.ipacct.com/ubuntu/
+http://ubuntu.uni-sofia.bg/ubuntu/
 #LOC:BR
 http://mirror.globo.com/ubuntu/archive/
 http://mirror.ufscar.br/ubuntu/
@@ -75,15 +76,15 @@ http://ftp.tecnoera.com/ubuntu/
 http://mirror.uchile.cl/ubuntu/
 http://mirrors.cloud.linets.cl/ubuntu/
 #LOC:CN
-http://archive.ubuntu.mirrors.opensource.ynu.edu.cn/
 http://ftp.sjtu.edu.cn/ubuntu/
 http://mirror.lzu.edu.cn/ubuntu/
 http://mirrors.aliyun.com/ubuntu/
 http://mirrors.cn99.com/ubuntu/
-http://mirrors.cqu.edu.cn/ubuntu/
 http://mirrors.skyshe.cn/ubuntu/
+http://mirrors.sohu.com/ubuntu/
 http://mirrors.tuna.tsinghua.edu.cn/ubuntu/
 http://mirrors.ustc.edu.cn/ubuntu/
+http://mirrors.xjtu.edu.cn/ubuntu/
 http://mirrors.yun-idc.com/ubuntu/
 http://ubuntu.uestc.edu.cn/ubuntu/
 #LOC:CO
@@ -162,7 +163,6 @@ http://www.nic.funet.fi/pub/mirrors/archive.ubuntu.com/
 http://bouyguestelecom.ubuntu.lafibre.info/ubuntu/
 http://distrib-coffee.ipsl.jussieu.fr/pub/linux/ubuntu/
 http://ftp.oleane.net/ubuntu/
-http://ftp.rezopole.net/ubuntu/
 http://ftp.u-picardie.fr/mirror/ubuntu/ubuntu/
 http://mirror.plusserver.com/ubuntu/ubuntu/
 http://mirror.ubuntu.ikoula.com/ubuntu/
@@ -209,6 +209,7 @@ http://ftp.freepark.org/ubuntu/
 http://ftp.kfki.hu/linux/ubuntu/
 http://mirror.atomki.mta.hu/ubuntu/
 #LOC:ID
+http://buaya.klas.or.id/ubuntu/
 http://jaran.undip.ac.id/ubuntu/
 http://kambing.ui.ac.id/ubuntu/
 http://kartolo.sby.datautama.net.id/ubuntu/
@@ -218,14 +219,13 @@ http://mirror.poliwangi.ac.id/ubuntu/
 http://mirror.unej.ac.id/ubuntu/
 http://repo.unpatti.ac.id/ubuntu/
 http://suro.ubaya.ac.id/ubuntu/
-#LOC:IE
-http://ftp.heanet.ie/pub/ubuntu/
 #LOC:IL
 http://mirror.isoc.org.il/pub/ubuntu/
 #LOC:IN
 http://ftp.iitm.ac.in/ubuntu/
 http://mirror.cse.iitk.ac.in/ubuntu/
 http://mirror.pramati.com/ubuntu/
+http://ubuntu-archive.mirror.net.in/ubuntu/
 #LOC:IQ
 http://mirror.earthlink.iq/ubuntu/
 #LOC:IR
@@ -235,6 +235,7 @@ http://mirror.faraso.org/ubuntu/
 http://mirror.iranserver.com/ubuntu/
 http://mirror.network32.net/ubuntu/
 http://mirror.rasanegar.com/ubuntu/archive/
+http://mirrors.pol.hostinja.com/ubuntu/
 http://ubuntu-mirror.parsdev.net/ubuntu-archive/
 http://ubuntu.parspack.com/ubuntu/
 #LOC:IS
@@ -244,8 +245,6 @@ http://ubuntu.hysing.is/ubuntu/
 http://giano.com.dist.unige.it/ubuntu/
 http://it-mirrors.evowise.com/ubuntu/
 http://mirror.crazynetwork.it/ubuntu/archive/
-http://ubuntu.fastbull.org/ubuntu/
-http://ubuntu.ictvalleumbra.it/ubuntu/
 http://ubuntu.mirror.garr.it/ubuntu/
 #LOC:JP
 http://ftp.jaist.ac.jp/pub/Linux/ubuntu/
@@ -347,10 +346,8 @@ http://mirrors.pidginhost.com/ubuntu/
 http://ro-mirrors.evowise.com/ubuntu/
 http://ubuntu.mirrors.linux.ro/archive/
 #LOC:RS
-http://ubuntu.etf.bg.ac.rs/ubuntu/
 http://ubuntu.mirror.ftn.uns.ac.rs/archive/
 #LOC:RU
-http://linux.nsu.ru/ubuntu/
 http://mirror.corbina.net/ubuntu/
 http://mirror.logol.ru/ubuntu/
 http://mirror.rol.ru/ubuntu/
@@ -436,10 +433,13 @@ http://mirror.lstn.net/ubuntu/
 http://mirror.math.princeton.edu/pub/ubuntu/
 http://mirror.math.ucdavis.edu/ubuntu/
 http://mirror.metrocast.net/ubuntu/
+http://mirror.mrjester.net/ubuntu/archive/
 http://mirror.nexcess.net/ubuntu/
+http://mirror.nodesdirect.com/ubuntu/
 http://mirror.os6.org/ubuntu/
 http://mirror.picosecond.org/ubuntu/
 http://mirror.pnl.gov/ubuntu/
+http://mirror.redsox.cc/ubuntu/
 http://mirror.sjc02.svwh.net/ubuntu/
 http://mirror.steadfast.net/ubuntu/
 http://mirror.stjschools.org/public/ubuntu-archive/
@@ -448,7 +448,6 @@ http://mirror.tocici.com/ubuntu/
 http://mirror.umd.edu/ubuntu/
 http://mirror.uoregon.edu/ubuntu/
 http://mirror.us.leaseweb.net/ubuntu/
-http://mirrordenver.fdcservers.net/ubuntu/
 http://mirrors.accretive-networks.net/ubuntu/
 http://mirrors.acm.jhu.edu/ubuntu/
 http://mirrors.advancedhosters.com/ubuntu/
@@ -501,5 +500,3 @@ http://opensource.xtdv.net/ubuntu/
 http://ftp.leg.uct.ac.za/ubuntu/
 http://mirror.wiru.co.za/ubuntu/
 http://ubuntu.mirror.neology.co.za/ubuntu/
-#LOC:ZW
-http://mirror.zol.co.zw/ubuntu/
