@@ -1,3 +1,9 @@
+python-apt (1.4.0~beta3build2) artful; urgency=medium
+
+  * No-change rebuild to build to drop python3.5.
+
+ -- Matthias Klose <doko@ubuntu.com>  Sat, 05 Aug 2017 16:22:11 +0000
+
 python-apt (1.4.0~beta3build1) artful; urgency=medium
 
   * No change rebuild to add Python 3.6 support.
