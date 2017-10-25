@@ -1,3 +1,9 @@
+python-apt (1.4.0~beta3ubuntu1) bionic; urgency=medium
+
+  * data/templates/Ubuntu.info.in: Add bionic template
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Thu, 26 Oct 2017 00:11:27 +0200
+
 python-apt (1.4.0~beta3build2) artful; urgency=medium
 
   * No-change rebuild to build to drop python3.5.
