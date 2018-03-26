@@ -1,3 +1,11 @@
+python-apt (1.6.0~rc2ubuntu1) bionic; urgency=medium
+
+  * Revert change to make apt.Cache subclass of dict
+  * Fix get_changelog() to correctly decode non-unicode changelogs
+  * Try to work around memory corruption in PackageRecords.*_hash
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Mon, 26 Mar 2018 12:13:04 +0200
+
 python-apt (1.6.0~rc2) unstable; urgency=medium
 
   * Add some weird python3-distutils build-depends (Closes: #893837)
