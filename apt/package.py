@@ -1074,6 +1074,9 @@ class Package(object):
         # type: () -> str
         """Return the name of the package, including architecture.
 
+        Note that as for :meth:`architecture`, this returns the
+        native architecture for Architecture: all packages.
+
         .. versionadded:: 0.7.100.3"""
         return self._pkg.get_fullname(False)
 
@@ -1109,6 +1112,11 @@ class Package(object):
     def architecture(self):
         # type: () -> str
         """Return the Architecture of the package.
+
+        Note that for Architecture: all packages, this returns the
+        native architecture, as they are internally treated like native
+        packages. To get the concrete architecture, look at the
+        :attr:`Version.architecture` attribute.
 
         .. versionchanged:: 0.7.100.3
             This is now the package's architecture in the multi-arch sense,
@@ -1249,7 +1257,7 @@ class Package(object):
                 if isinstance(res, unicode):
                     return res
                 else:
-                    res.decode("utf-8")
+                    return res.decode("utf-8")
 
         # get the src package name
         src_pkg = self.candidate.source_name
@@ -1372,14 +1380,14 @@ class Package(object):
                 if isinstance(res, unicode):
                     return res
                 else:
-                    res.decode("utf-8")
+                    return res.decode("utf-8")
             except (IOError, BadStatusLine):
                 res = _("Failed to download the list of changes. \nPlease "
                         "check your Internet connection.")
                 if isinstance(res, unicode):
                     return res
                 else:
-                    res.decode("utf-8")
+                    return res.decode("utf-8")
         finally:
             socket.setdefaulttimeout(timeout)
         return self._changelog
