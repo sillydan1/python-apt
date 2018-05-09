@@ -1,3 +1,9 @@
+python-apt (1.7.0~alpha0~ubuntu2) cosmic; urgency=medium
+
+  * data/templates/Ubuntu.info.in: Add cosmic cuttlefish template
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Wed, 09 May 2018 10:49:06 +0200
+
 python-apt (1.7.0~alpha0~ubuntu1) cosmic; urgency=medium
 
   * data/templates/Ubuntu.info.in: Introduce cosmic release
