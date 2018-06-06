@@ -1,4 +1,4 @@
-from typing import Any, Dict, Iterable, Iterator, List, Mapping, Tuple, Union
+from typing import *
 
 from apt.progress.base import (
     AcquireProgress,
@@ -11,6 +11,9 @@ class Cdrom:
     def add(self, progress: CdromProgress) -> bool: ...
     def ident(self, progress: CdromProgress) -> str: ...
 
+@overload
+def gettext(msg: str, domain: str) -> str: ...
+@overload
 def gettext(msg: str) -> str: ...
 
 class Configuration(dict):
@@ -40,6 +43,10 @@ class Dependency():
     dep_type_untranslated: str
     def all_targets(self) -> List[Version]: ...
 
+# This is really a SystemError, but we don't want to expose that
+class Error(Exception):
+    pass
+
 class Package():
     name: str
     version_list: List[Version]
@@ -50,6 +57,10 @@ class Package():
     section: str
     current_state: int
     inst_state: int
+    selected_state: int
+    has_versions: bool
+    has_provides: bool
+    provides_list: List[Tuple[str, str, Version]]
     def get_fullname(self, pretty: bool=False) -> str: ...
 
 class ProblemResolver:
@@ -68,7 +79,7 @@ INSTSTATE_HOLD_REINSTREQ: int
 class Version():
     ver_str: str
     hash: int
-    file_list: List[PackageFile]
+    file_list: List[Tuple[PackageFile, int]]
     translated_description: Description
     installed_size: int
     size: int
@@ -79,10 +90,20 @@ class Version():
     priority: int
     priority_str: str
     provides_list: List[Tuple[str,str,str]]
-    def parent_pkg(self) -> Package: ...
+    depends_list: Dict[str, List[List[Dependency]]]
+    parent_pkg: Package
+    multi_arch: int
+    MULTI_ARCH_ALL: int
+    MULTI_ARCH_ALLOWED: int
+    MULTI_ARCH_ALL_ALLOWED: int
+    MULTI_ARCH_ALL_FOREIGN: int
+    MULTI_ARCH_FOREIGN: int
+    MULTI_ARCH_NO: int
+    MULTI_ARCH_NONE: int
+    MULTI_ARCH_SAME: int
 
 class Description():
-    file_list: List[PackageFile]
+    file_list: List[Tuple[PackageFile, int]]
 
 class PackageRecords():
     homepage: str
@@ -96,7 +117,7 @@ class PackageRecords():
     sha1_hash: str
     sha256_hash: str
     def __init__(self, cache: Cache) -> None: ...
-    def lookup(self, packagefile: PackageFile, index: int=0) -> bool: ...
+    def lookup(self, packagefile: Tuple[PackageFile, int], index: int=0) -> bool: ...
 
 class PackageFile(Iterable):
     architecture: str
@@ -114,12 +135,13 @@ class PackageFile(Iterable):
     size: int
     version: str
 
-class TagFile(Iterable):
+class TagFile(Iterator[TagSection]):
     def __init__(self, file: object, bytes: bool=False) -> None: ...
     def __iter__(self) -> Iterator[TagSection]: ...
+    def __next__(self) -> TagSection: ...
 
 class TagSection(Mapping):
-    def __init__(self, str) -> None: ...
+    def __init__(self, str: Union[bytes, str]) -> None: ...
     def __getitem__(self, key: object) -> str: ...
     def __contains__(self, key: object) -> bool: ...
     def __len__(self) -> int: ...
@@ -149,6 +171,7 @@ class Acquire:
     def shutdown(self) -> None: ...
 
 class AcquireWorker:
+    current_item: AcquireItemDesc
     current_size: int
     total_size: int
     status: str
@@ -173,6 +196,12 @@ class AcquireItem:
     STAT_ERROR: int
     STAT_AUTH_ERROR: int
     STAT_TRANSIENT_NETWORK_ERROR: int
+
+class AcquireItemDesc:
+    description: str
+    owner: AcquireItem
+    shortdesc: str
+    uri: str
 
 class AcquireFile(AcquireItem):
     def __init__(self, owner: Acquire, uri: str, md5: str="", size: int=0, descr: str="", short_descr: str="", destdir: str="", destfile: str="") -> None: ...
@@ -200,9 +229,16 @@ class SourceRecords:
 class ActionGroup:
     def __init__(self, depcache: DepCache) -> None: ...
 
+class MetaIndex:
+    dist: str
+    index_files: List[IndexFile]
+    is_trusted: bool
+    uri: str
+
 class SourceList():
+    list: List[MetaIndex]
     def read_main_list(self) -> None: ...
-    def find_index(self, PackageFile) -> IndexFile: ...
+    def find_index(self, pf: PackageFile) -> IndexFile: ...
 
 class PackageManager():
     RESULT_FAILED: int
@@ -211,9 +247,13 @@ class PackageManager():
     def __init__(self, depcache: DepCache) -> None: ...
     def get_archives(self, fetcher: Acquire, list: SourceList, recs: PackageRecords) -> bool: ...
 
-class Cache(dict):
+class Cache():
     packages: List[Package]
     def __init__(self, progress: OpProgress=None) -> None: ...
+    def __contains__(self, name: Union[str, Tuple[str, str]]) -> Package: ...
+    def __getitem__(self, name: Union[str, Tuple[str, str]]) -> Package: ...
+    def __len__(self) -> int: ...
+    def update(self, progress: AcquireProgress, sources: SourceList, pulse_interval: int) -> int: ...
     
 class DepCache():
     broken_count: int
@@ -248,7 +288,16 @@ class DepCache():
     def upgrade(self, dist_upgrade: bool=True) -> bool: ...
 
 class Policy():
-    def get_priority(self, pkg: Package) -> int: ...
+    def get_priority(self, pkg: Union[Package, PackageFile]) -> int: ...
     
 def upstream_version(ver: str) -> str: ...
 def get_architectures() -> List[str]: ...    
+def check_dep(pkg_ver: str, dep_op: str, dep_ver: str) -> bool: ...
+def uri_to_filename(uri: str) -> str: ...
+def str_to_time(rfc_time: str) -> int: ...
+def time_to_str(time: int) -> str: ...
+def size_to_str(size: Union[float, int]) -> str: ...
+def open_maybe_clear_signed_file(file: str) -> int: ...
+
+def parse_depends(s: str, strip_multi_arch: bool = True, architecture: str = '') -> List[List[Tuple[str, str, str]]]: ...
+def parse_src_depends(s: str, strip_multi_arch: bool = True, architecture: str = '') -> List[List[Tuple[str, str, str]]]: ...
