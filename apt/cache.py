@@ -27,24 +27,31 @@ import warnings
 import weakref
 
 try:
-    from typing import Any, Callable, Dict, Iterator, List, Set, Tuple
+    from typing import (Any, Callable, Dict, Iterator, List, Optional,
+                        Set, Tuple, Union, cast, KeysView)
     Any  # pyflakes
     Callable  # pyflakes
     Dict  # pyflakes
     Iterator  # pyflakes
+    KeysView  # pyflakes
     List  # pyflakes
+    Optional  # pyflakes
     Set  # pyflakes
     Tuple  # pyflakes
+    Union  # pyflakes
 except ImportError:
+    def cast(typ, obj):  # type: ignore
+        return obj
     pass
 
 import apt_pkg
-from apt.package import Package
+from apt.package import Package, Version
 import apt.progress.text
 from apt.progress.base import AcquireProgress, InstallProgress, OpProgress
 OpProgress  # pyflakes
 InstallProgress  # pyflakes
 AcquireProgress  # pyflakes
+Version  # pyflakes
 
 
 class FetchCancelledException(IOError):
@@ -91,15 +98,16 @@ class Cache(object):
 
     def __init__(self, progress=None, rootdir=None, memonly=False):
         # type: (OpProgress, str, bool) -> None
-        self._cache = None  # type: apt_pkg.Cache
-        self._depcache = None  # type: apt_pkg.DepCache
-        self._records = None  # type: apt_pkg.PackageRecords
-        self._list = None  # type: apt_pkg.SourceList
-        self._callbacks = {}  # type: Dict[str, List[Callable[..., None]]]
-        self._callbacks2 = {}  # type: Dict[str, List[Tuple[Callable[..., None], List[Any], Dict[Any,Any]]]] # nopep8
-        self._weakref = weakref.WeakValueDictionary()  # type: ignore
+        self._cache = cast(apt_pkg.Cache, None)  # type: apt_pkg.Cache
+        self._depcache = cast(apt_pkg.DepCache, None)  # type: apt_pkg.DepCache
+        self._records = cast(apt_pkg.PackageRecords, None)  # type: apt_pkg.PackageRecords # nopep8
+        self._list = cast(apt_pkg.SourceList, None)  # type: apt_pkg.SourceList
+        self._callbacks = {}  # type: Dict[str, List[Union[Callable[..., None],str]]] # nopep8
+        self._callbacks2 = {}  # type: Dict[str, List[Tuple[Callable[..., Any], Tuple[Any, ...], Dict[Any,Any]]]] # nopep8
+        self._weakref = weakref.WeakValueDictionary()  # type: weakref.WeakValueDictionary[str, apt.Package] # nopep8
+        self._weakversions = weakref.WeakSet()  # type: weakref.WeakSet[Version] # nopep8
         self._changes_count = -1
-        self._sorted_set = None  # type: List[str]
+        self._sorted_set = None  # type: Optional[List[str]]
 
         self.connect("cache_post_open", "_inc_changes_count")
         self.connect("cache_post_change", "_inc_changes_count")
@@ -164,7 +172,7 @@ class Cache(object):
                 if callback == '_inc_changes_count':
                     self._inc_changes_count()
                 else:
-                    callback()
+                    callback()  # type: ignore
 
         if name in self._callbacks2:
             for callback, args, kwds in self._callbacks2[name]:
@@ -188,19 +196,51 @@ class Cache(object):
         self._list = apt_pkg.SourceList()
         self._list.read_main_list()
         self._sorted_set = None
-        self._weakref.clear()
+        self.__remap()
 
         self._have_multi_arch = len(apt_pkg.get_architectures()) > 1
 
         progress.done()
         self._run_callbacks("cache_post_open")
 
+    def __remap(self):
+        # type: () -> None
+        """Called after cache reopen() to relocate to new cache.
+
+        Relocate objects like packages and versions from the old
+        underlying cache to the new one.
+        """
+        for key in list(self._weakref.keys()):
+            try:
+                pkg = self._weakref[key]
+            except KeyError:
+                continue
+
+            try:
+                pkg._pkg = self._cache[pkg._pkg.name, pkg._pkg.architecture]
+            except LookupError:
+                del self._weakref[key]
+
+        for ver in list(self._weakversions):
+            # Package has been reseated above, reseat version
+            for v in ver.package._pkg.version_list:
+                # Requirements as in debListParser::SameVersion
+                if (v.hash == ver._cand.hash and
+                    (v.size == 0 or ver._cand.size == 0 or
+                     v.size == ver._cand.size) and
+                    v.multi_arch == ver._cand.multi_arch and
+                    v.ver_str == ver._cand.ver_str):
+                    ver._cand = v
+                    break
+            else:
+                self._weakversions.remove(ver)
+
     def close(self):
         # type: () -> None
         """ Close the package cache """
         # explicitely free the FDs that _records has open
         del self._records
-        self._records = None
+        self._records = cast(apt_pkg.PackageRecords, None)
 
     def __enter__(self):
         # type: () -> Cache
@@ -208,16 +248,17 @@ class Cache(object):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
+        # type: (object, object, object) -> None
         """ Exit the with statement """
         self.close()
 
     def __getitem__(self, key):
         # type: (object) -> Package
         """ look like a dictionary (get key) """
+        key = str(key)
         try:
             return self._weakref[key]
         except KeyError:
-            key = str(key)
             try:
                 rawpkg = self._cache[key]
             except KeyError:
@@ -244,6 +285,7 @@ class Cache(object):
             return default
 
     def _rawpkg_to_pkg(self, rawpkg):
+        # type: (apt_pkg.Package) -> Package
         """Returns the apt.Package object for an apt_pkg.Package object.
 
         .. versionadded:: 1.0.0
@@ -267,6 +309,7 @@ class Cache(object):
             yield self[pkgname]
 
     def __is_real_pkg(self, rawpkg):
+        # type: (apt_pkg.Package) -> bool
         """Check if the apt_pkg.Package provided is a real package."""
         return rawpkg.has_versions
 
@@ -277,7 +320,7 @@ class Cache(object):
     def __contains__(self, key):
         # type: (object) -> bool
         try:
-            return self.__is_real_pkg(self._cache[key])
+            return self.__is_real_pkg(self._cache[str(key)])
         except KeyError:
             return False
 
@@ -286,7 +329,7 @@ class Cache(object):
         return len(self.keys())
 
     def keys(self):
-        # FIXME: type: () -> List[str] - does not work
+        # type: () -> List[str]
         if self._sorted_set is None:
             self._sorted_set = sorted(p.get_fullname(pretty=True)
                                       for p in self._cache.packages
@@ -463,7 +506,7 @@ class Cache(object):
 
     def update(self, fetch_progress=None, pulse_interval=0,
                raise_on_error=True, sources_list=None):
-        # FIXME: type: (AcquireProgress, int, bool, str) -> int
+        # type: (AcquireProgress, int, bool, str) -> int
         """Run the equivalent of apt-get update.
 
         You probably want to call open() afterwards, in order to utilise the
@@ -558,6 +601,8 @@ class Cache(object):
         if install_progress is None:
             install_progress = apt.progress.base.InstallProgress()
 
+        assert install_progress is not None
+
         pm = apt_pkg.PackageManager(self._depcache)
         fetcher = apt_pkg.Acquire(fetch_progress)
         while True:
@@ -598,6 +643,7 @@ class Cache(object):
         self._run_callbacks("cache_pre_change")
 
     def connect(self, name, callback):
+        # type: (str, Union[Callable[..., None],str]) -> None
         """Connect to a signal.
 
         .. deprecated:: 1.0
@@ -613,6 +659,7 @@ class Cache(object):
         self._callbacks[name].append(callback)
 
     def connect2(self, name, callback, *args, **kwds):
+        # type: (str, Callable[..., Any], object, object) -> None
         """Connect to a signal.
 
         The callback will be passed the cache as an argument, and
@@ -841,7 +888,7 @@ class FilteredCache(object):
             yield self.cache[pkgname]
 
     def keys(self):
-        # FIXME: type: () -> List[str] - does not work
+        # type: () -> KeysView[str]
         return self._helper._filtered.keys()
 
     def has_key(self, key):
@@ -868,19 +915,23 @@ class FilteredCache(object):
         self._helper.filter_cache_post_change(self.cache)
 
     def __getattr__(self, key):
+        # type: (str) -> Any
         """we try to look exactly like a real cache."""
         return getattr(self.cache, key)
 
 
 def cache_pre_changed(cache):
+    # type: (Cache) -> None
     print("cache pre changed")
 
 
 def cache_post_changed(cache):
+    # type: (Cache) -> None
     print("cache post changed")
 
 
 def _test():
+    # type: () -> None
     """Internal test code."""
     print("Cache self test")
     apt_pkg.init()
@@ -919,7 +970,7 @@ def _test():
     filtered.set_filter(MarkedChangesFilter())
     print(len(filtered))
     for pkgname in filtered.keys():
-        assert pkgname == filtered[pkg].name
+        assert pkgname == filtered[pkgname].name
 
     print(len(filtered))
 
