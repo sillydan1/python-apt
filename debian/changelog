@@ -1,3 +1,19 @@
+python-apt (1.7.0~alpha0~ubuntu4) cosmic; urgency=medium
+
+  [ Julian Andres Klode ]
+  * apt.Cache: Introduce fix_broken() binding
+  * Add support for custom fields to apt_pkg.PackageRecords
+  * Introduce gitlab ci
+  * Document whatsnew in 1.6 and 1.7
+  * apt.Cache: Keep / Re-establish the system lock in commit()
+    (should fix most of LP: #1602536, rest will be frontend locking)
+  * apt.Cache: Keep archive locked during commit()/ in fetch_archives()
+
+  [ Evgeni Golov ]
+  * fix SourceRecordsFile class reference
+
+ -- Julian Andres Klode <jak@debian.org>  Fri, 22 Jun 2018 11:19:10 +0200
+
 python-apt (1.7.0~alpha0~ubuntu3) cosmic; urgency=medium
 
   * apt.Cache: Fix error in apt.Package caching
