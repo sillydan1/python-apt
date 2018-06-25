@@ -32,6 +32,9 @@ Exceptions
 ----------
 .. autoclass:: Error
 
+.. autoclass:: CacheMismatchError
+
+
 Working with the cache
 ----------------------
 .. class:: Cache([progress: apt.progress.base.OpProgress])
@@ -207,6 +210,9 @@ Managing the cache with :class:`DepCache`
     methods for requesting state information or marking changes). If a
     method is expected to raise an exception, it will be stated in the
     description.
+
+    If an object of a different cache is passed, :class:`CacheMismatchError`
+    is raised.
 
     .. method:: commit(acquire_progress, install_progress)
 
@@ -1350,6 +1356,21 @@ Records (Release files, Packages, Sources)
             # Now you can access the record
             print(records.source_pkg) # == python-apt
 
+    .. describe:: section[key]
+
+        Return the value of the field at *key*. If *key* is not available,
+        raise :exc:`KeyError`.
+        Raises AttributeError if not yet looked up.
+
+        .. versionadded:: 1.7
+
+    .. describe:: key in section
+
+        Return ``True`` if *section* has a key *key*, else ``False``.
+        Raises AttributeError if not yet looked up.
+
+      .. versionadded:: 1.7
+
     .. attribute:: filename
 
         Return the field 'Filename' of the record. This is the path to the
@@ -1429,6 +1450,11 @@ Records (Release files, Packages, Sources)
         the record not available as an attribute, you can use
         :class:`apt_pkg.TagSection` to parse the record and access the field
         name.
+
+        .. deprecated:: 1.7
+
+            This property can be considered deprecated for simple string
+            lookups, as keys can now be looked up in the record itself.
 
         Example::
 
