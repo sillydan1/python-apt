@@ -1,3 +1,9 @@
+python-apt (1.7.0~alpha1build1) cosmic; urgency=medium
+
+  * No-change rebuild to build for python3.7.
+
+ -- Matthias Klose <doko@ubuntu.com>  Thu, 28 Jun 2018 06:58:59 +0000
+
 python-apt (1.7.0~alpha1) experimental; urgency=medium
 
   [ Julian Andres Klode ]
