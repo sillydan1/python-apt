@@ -1,3 +1,10 @@
+python-apt (1.7.0~alpha2ubuntu2) cosmic; urgency=medium
+
+  * travis: Run tests on ubuntu:cosmic too
+  * Revert "debian/control: Drop obsolete Python-Versions fields"
+
+ -- Julian Andres Klode <jak@debian.org>  Wed, 11 Jul 2018 12:01:38 +0200
+
 python-apt (1.7.0~alpha2ubuntu1) cosmic; urgency=medium
 
   * Fix __iter__ yielding different Packages than __getitem__
