@@ -291,7 +291,7 @@ class Cache(object):
 
         .. versionadded:: 1.0.0
         """
-        fullname = rawpkg.get_fullname(pretty=False)
+        fullname = rawpkg.get_fullname(pretty=True)
 
         return self._weakref.setdefault(fullname, Package(self, rawpkg))
 
@@ -586,11 +586,12 @@ class Cache(object):
                 break
             lock_count += 1
 
-        res = install_progress.run(pm)
-
-        # Reinstate lock count
-        for i in range(lock_count):
-            apt_pkg.pkgsystem_lock()
+        try:
+            res = install_progress.run(pm)
+        finally:
+            # Reinstate lock count
+            for i in range(lock_count):
+                apt_pkg.pkgsystem_lock()
 
         try:
             install_progress.finishUpdate()  # type: ignore

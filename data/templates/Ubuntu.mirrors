@@ -22,7 +22,6 @@ http://mirror.waia.asn.au/ubuntu/
 http://ubuntu.melbourneitmirror.net/archive/
 http://ubuntu.mirror.digitalpacific.com.au/archive/
 http://ubuntu.mirror.serversaustralia.com.au/ubuntu/
-http://ubuntu.mirror.solnode.io/ubuntu/
 #LOC:AZ
 http://mirror.datacenter.az/ubuntu/
 #LOC:BA
@@ -91,6 +90,7 @@ http://mirrors.cqu.edu.cn/ubuntu/
 http://mirrors.huaweicloud.com/repository/ubuntu/
 http://mirrors.nju.edu.cn/ubuntu/
 http://mirrors.njupt.edu.cn/ubuntu/
+http://mirrors.nwafu.edu.cn/ubuntu/
 http://mirrors.opencas.org/ubuntu/
 http://mirrors.shu.edu.cn/ubuntu/
 http://mirrors.sohu.com/ubuntu/
@@ -216,6 +216,7 @@ http://ubuntu.grena.ge/ubuntu/
 #LOC:GL
 http://mirror.greennet.gl/ubuntu/
 #LOC:GR
+http://ftp.cc.uoc.gr/mirrors/linux/ubuntu/packages/
 http://ftp.ntua.gr/ubuntu/
 http://ubuntu.otenet.gr/
 #LOC:HK
@@ -455,6 +456,7 @@ http://archive.linux.duke.edu/ubuntu/
 http://fireball-public.phys.wvu.edu/mirror/ubuntu/
 http://ftp.usf.edu/pub/ubuntu/
 http://ftp.ussg.iu.edu/linux/ubuntu/
+http://ftp.utexas.edu/ubuntu/
 http://la-mirrors.evowise.com/ubuntu/
 http://mirror.ancl.hawaii.edu/linux/ubuntu/
 http://mirror.atlantic.net/ubuntu/
