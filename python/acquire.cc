@@ -239,17 +239,6 @@ static PyObject *PkgAcquireShutdown(PyObject *Self,PyObject *Args)
     return HandleErrors(Py_None);
 }
 
-static PyObject *PkgAcquireGetLock(PyObject *Self,PyObject *Args)
-{
-    pkgAcquire *fetcher = GetCpp<pkgAcquire*>(Self);
-    PyApt_Filename path;
-    if (PyArg_ParseTuple(Args, "O&", PyApt_Filename::Converter, &path) == 0)
-        return 0;
-    fetcher->GetLock(path);
-    Py_INCREF(Py_None);
-    return HandleErrors(Py_None);
-}
-
 
 
 static PyMethodDef PkgAcquireMethods[] = {
@@ -265,9 +254,6 @@ static PyMethodDef PkgAcquireMethods[] = {
      "Shut the fetcher down, removing all items from it. Future access to\n"
      "queued AcquireItem objects will cause a segfault. The partial result\n"
      "is kept on the disk and not removed and APT might reuse it."},
-    {"get_lock",PkgAcquireGetLock, METH_VARARGS,
-     "get_lock(log: str)\n\n"
-     "Acquires a log for the given directory, using a file 'lock' in it."},
     {}
 };
 

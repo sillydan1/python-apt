@@ -216,7 +216,6 @@ http://debian.carnet.hr/debian/
 http://debian.iskon.hr/debian/
 http://ftp.hr.debian.org/debian/
 #LOC:HU
-http://debian.mirrors.crysys.hu/debian/
 http://ftp.bme.hu/debian/
 http://ftp.fsn.hu/debian/
 http://ftp.hu.debian.org/debian/
@@ -259,7 +258,6 @@ http://ftp.jp.debian.org/debian/
 http://ftp.kddilabs.jp/pub/debian/
 http://ftp.nara.wide.ad.jp/debian/
 http://ftp.riken.jp/Linux/debian/debian/
-http://ftp.tsukuba.wide.ad.jp/debian/
 http://ftp.yz.yamagata-u.ac.jp/debian/
 http://hanzubon.jp/debian/
 http://mirror.conformist.jp/debian/
@@ -438,7 +436,7 @@ http://mirrors.ocf.berkeley.edu/debian/
 http://mirrors.syringanetworks.net/debian/
 http://mirrors.wikimedia.org/debian/
 http://mirrors.xmission.com/debian/
-http://pubmirrors.dal.corespace.com/debian/
+http://repo.ialab.dsu.edu/debian/
 http://www.gtlib.gatech.edu/debian/
 #LOC:UY
 http://repo.cure.edu.uy/debian/

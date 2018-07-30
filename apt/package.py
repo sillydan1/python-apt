@@ -42,7 +42,7 @@ from collections import Mapping, Sequence
 
 try:
     from typing import (Any, Iterable, Iterator, List, Optional, Set,
-                        Tuple, Union, no_type_check, overload)
+                        Tuple, Union)
     Any  # pyflakes
     Iterable  # pyflakes
     Iterator  # pyflakes
@@ -51,11 +51,7 @@ try:
     Set  # pyflakes
     Tuple  # pyflakes
     Union  # pyflakes
-    overload  # pyflakes
 except ImportError:
-    def no_type_check(arg):
-        # type: (Any) -> Any
-        return arg
     pass
 
 import apt_pkg
@@ -103,7 +99,6 @@ class BaseDependency(object):
         """
 
         def __eq__(self, other):
-            # type: (object) -> bool
             if str.__eq__(self, other):
                 return True
             elif str.__eq__(self, '<'):
@@ -116,7 +111,6 @@ class BaseDependency(object):
                 return False
 
         def __ne__(self, other):
-            # type: (object) -> bool
             return not self.__eq__(other)
 
     def __init__(self, version, dep):
@@ -180,9 +174,9 @@ class BaseDependency(object):
         .. versionadded:: 1.0.0
         """
         tvers = []
-        _tvers = self._dep.all_targets()  # type: List[apt_pkg.Version]
-        for _tver in _tvers:  # type: apt_pkg.Version
-            _pkg = _tver.parent_pkg  # type: apt_pkg.Package
+        _tvers = self._dep.all_targets()  # [apt_pkg.Version, ...]
+        for _tver in _tvers:  # apt_pkg.Version
+            _pkg = _tver.parent_pkg  # apt_pkg.Package
             cache = self._version.package._pcache  # apt.cache.Cache
             pkg = cache._rawpkg_to_pkg(_pkg)  # apt.package.Package
             tver = Version(pkg, _tver)  # apt.package.Version
@@ -250,8 +244,8 @@ class Dependency(list):
     """
 
     def __init__(self, version, base_deps, rawtype):
-        # type: (Version, List[BaseDependency], str) -> None
-        super(Dependency, self).__init__(base_deps)
+        # type: (Version, apt_pkg.Dependency, str) -> None
+        super(Dependency, self).__init__(base_deps)  # type: ignore
         self._version = version  # apt.package.Version
         self._rawtype = rawtype
 
@@ -384,7 +378,7 @@ class Record(Mapping):
         self._rec = apt_pkg.TagSection(record_str)
 
     def __hash__(self):
-        # type: () -> int
+        # type: () -> Any
         return hash(self._rec)
 
     def __str__(self):
@@ -443,7 +437,7 @@ class Version(object):
         self.package._pcache._weakversions.add(self)
 
     def _cmp(self, other):
-        # type: (Any) -> Union[int, NotImplemented]
+        # FIXME: add type hint
         """Compares against another apt.Version object or a version string.
 
         This method behaves like Python 2's cmp builtin and returns an integer
@@ -493,14 +487,14 @@ class Version(object):
         return self._cmp(other) < 0
 
     def __ne__(self, other):
-        # type: (object) -> Union[bool, NotImplemented]
+        # type: (object) -> bool
         try:
             return self._cmp(other) != 0
         except TypeError:
             return NotImplemented
 
     def __hash__(self):
-        # type: () -> int
+        # type: () -> Any
         return self._cand.hash
 
     def __str__(self):
@@ -696,7 +690,7 @@ class Version(object):
         return Record(self._records.record)
 
     def get_dependencies(self, *types):
-        # type: (str) -> List[Dependency]
+        # FIXME: add type hints
         """Return a list of Dependency objects for the given types.
 
         Multiple types can be specified. Possible types are:
@@ -946,21 +940,19 @@ class VersionList(Sequence):
     """
 
     def __init__(self, package, slice_=None):
-        # type: (Package, slice) -> None
+        # type: (Package, Any) -> None
         self._package = package  # apt.package.Package()
         self._versions = package._pkg.version_list  # [apt_pkg.Version(), ...]
         if slice_:
             self._versions = self._versions[slice_]
 
     def __getitem__(self, item):
-        # type: (Union[int, slice, str]) -> Any
-        # FIXME: Should not be returning Any, should have overloads; but
-        # pyflakes complains
+        # FIXME: add type hints
         if isinstance(item, slice):
             return self.__class__(self._package, item)
         try:
             # Sequence interface, item is an integer
-            return Version(self._package, self._versions[item])  # type: ignore
+            return Version(self._package, self._versions[item])
         except TypeError:
             # Dictionary interface item is a string.
             for ver in self._versions:
@@ -1010,7 +1002,7 @@ class VersionList(Sequence):
         # type: (str, Optional[Version]) -> Optional[Version]
         """Return the key or the default."""
         try:
-            return self[key]  # type: ignore  # FIXME: should be deterined automatically # nopep8
+            return self[key]
         except LookupError:
             return default
 
@@ -1043,8 +1035,7 @@ class Package(object):
         # type: (Package) -> bool
         return self.name < other.name
 
-    @property
-    def candidate(self):
+    def __get_candidate(self):
         # type: () -> Optional[Version]
         """Return the candidate version of the package.
 
@@ -1057,13 +1048,14 @@ class Package(object):
             return Version(self, cand)
         return None
 
-    @candidate.setter
-    def candidate(self, version):
+    def __set_candidate(self, version):
         # type: (Version) -> None
         """Set the candidate version of the package."""
         self._pcache.cache_pre_change()
         self._pcache._depcache.set_candidate_ver(self._pkg, version._cand)
         self._pcache.cache_post_change()
+
+    candidate = property(__get_candidate, __set_candidate)
 
     @property
     def installed(self):
@@ -1257,10 +1249,9 @@ class Package(object):
         if self._changelog != u"":
             return self._changelog
 
-        if not self.candidate:
-            return _("The list of changes is not available")
-
         if uri is None:
+            if not self.candidate:
+                pass
             if self.candidate.origins[0].origin == "Debian":
                 uri = "http://packages.debian.org/changelogs/pool" \
                       "/%(src_section)s/%(prefix)s/%(src_pkg)s" \
@@ -1527,7 +1518,6 @@ class Package(object):
         self._pcache._depcache.commit(fprogress, iprogress)
 
 
-@no_type_check
 def _test():
     """Self-test."""
     print("Self-test for the Package modul")
