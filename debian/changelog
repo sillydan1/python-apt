@@ -1,3 +1,9 @@
+python-apt (1.7.0~alpha2ubuntu2+really1.6.2ubuntu1) cosmic; urgency=medium
+
+  * data/templates/Ubuntu.info.in: Re-Add cosmic cuttlefish template
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Mon, 30 Jul 2018 13:23:31 +0800
+
 python-apt (1.7.0~alpha2ubuntu2+really1.6.2) cosmic; urgency=medium
 
   * Revert to 1.6.2 for now to unblock stuff
