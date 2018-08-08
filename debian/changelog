@@ -1,21 +1,27 @@
+python-apt (1.7.0~alpha2ubuntu3) cosmic; urgency=medium
+
+  * Accept Version objects in apt_pkg.Policy.get_priority(), deprecate Package
+  * Return correct pin in apt.package.Version.policy_priority
+  * typehinting: apt_pkg.PackageFile is not an iterable
+  * Introduce frontend locking
+  * Convert apt.Cache.commit and apt_pkg.DepCache.commit to FE lock
+  * Revert "Revert to 1.6.2"
+  * Revert "Reset to 1.6.2"
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Wed, 08 Aug 2018 10:52:51 +0200
+
 python-apt (1.7.0~alpha2ubuntu2+really1.6.2ubuntu1) cosmic; urgency=medium
 
   * data/templates/Ubuntu.info.in: Re-Add cosmic cuttlefish template
 
  -- Julian Andres Klode <juliank@ubuntu.com>  Mon, 30 Jul 2018 13:23:31 +0800
 
-python-apt (1.7.0~alpha2ubuntu2+really1.6.2) cosmic; urgency=medium
-
-  * Revert to 1.6.2 for now to unblock stuff
-
- -- Julian Andres Klode <juliank@ubuntu.com>  Mon, 30 Jul 2018 13:20:05 +0800
-
 python-apt (1.7.0~alpha2ubuntu2) cosmic; urgency=medium
 
   * travis: Run tests on ubuntu:cosmic too
   * Revert "debian/control: Drop obsolete Python-Versions fields"
 
- -- Julian Andres Klode <jak@debian.org>  Mon, 30 Jul 2018 13:16:18 +0800
+ -- Julian Andres Klode <jak@debian.org>  Wed, 11 Jul 2018 12:01:38 +0200
 
 python-apt (1.7.0~alpha2ubuntu1) cosmic; urgency=medium
 
@@ -23,17 +29,6 @@ python-apt (1.7.0~alpha2ubuntu1) cosmic; urgency=medium
   * apt.Cache: Reinstate locks in a finally / run dpkg inside try
 
  -- Julian Andres Klode <juliank@ubuntu.com>  Wed, 11 Jul 2018 11:57:31 +0200
-
-python-apt (1.6.2) unstable; urgency=medium
-
-  * Introduce gitlab ci
-  * Document whatsnew in 1.6.y
-  * Add more extensive test cases for cache remapping
-  * Do not override __hash__ in apt.package.Package (LP: #1780099)
-  * debian/python-apt.docs: README is README.md since some time
-  * debian/control: Point to salsa instead of anonscm
-
- -- Julian Andres Klode <jak@debian.org>  Mon, 09 Jul 2018 15:37:51 +0200
 
 python-apt (1.7.0~alpha2) experimental; urgency=medium
 
@@ -116,17 +111,6 @@ python-apt (1.7.0~alpha0~ubuntu3) cosmic; urgency=medium
   * utils/get_debian_mirrors.py: Get data from salsa
 
  -- Julian Andres Klode <jak@debian.org>  Wed, 06 Jun 2018 16:09:32 -0700
-
-python-apt (1.6.1) unstable; urgency=medium
-
-  * apt: Fix typing errors to get CI pass again
-  * apt.Cache: Remap objects when reopening cache (LP: #1773316)
-  * apt_pkg.DepCache: Raise CacheMismatchError if argument belongs to diff. cache
-  * Set branch to 1.6.y and adjust travis CI to run against stable releases
-  * travis CI / Dockerfile: Pin mypy to 0.600 to prevent future changes breaking CI
-  * utils/get_debian_mirrors.py: Get data from salsa
-
- -- Julian Andres Klode <jak@debian.org>  Wed, 06 Jun 2018 15:14:59 -0700
 
 python-apt (1.7.0~alpha0~ubuntu2) cosmic; urgency=medium
 

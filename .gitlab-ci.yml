@@ -1,4 +1,4 @@
-image: ubuntu:bionic
+image: debian:testing
 variables:
   DEBIAN_FRONTEND: noninteractive
 
@@ -7,7 +7,7 @@ test:
   - apt update
   - apt install -q -y python3-pip
   - apt build-dep -q -y ./
-  - python3 -m pip install -U mypy==0.600
+  - python3 -m pip install -U mypy
   - env python3 tests/testmanual_pep8.py
   - env MYPYPATH=$PWD/typehinting/ mypy ./apt
   - dpkg-buildpackage
