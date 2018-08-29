@@ -291,7 +291,7 @@ class Cache(object):
 
         .. versionadded:: 1.0.0
         """
-        fullname = rawpkg.get_fullname(pretty=False)
+        fullname = rawpkg.get_fullname(pretty=True)
 
         return self._weakref.setdefault(fullname, Package(self, rawpkg))
 
@@ -576,21 +576,15 @@ class Cache(object):
         except AttributeError:
             install_progress.start_update()
 
-        # Need to unlock really hard, since the lock is reference
-        # counted and we must make sure that we are _really_ unlocked.
-        lock_count = 0
-        while True:
-            try:
-                apt_pkg.pkgsystem_unlock()
-            except apt_pkg.Error:
-                break
-            lock_count += 1
+        did_unlock = apt_pkg.pkgsystem_is_locked()
+        if did_unlock:
+            apt_pkg.pkgsystem_unlock_inner()
 
-        res = install_progress.run(pm)
-
-        # Reinstate lock count
-        for i in range(lock_count):
-            apt_pkg.pkgsystem_lock()
+        try:
+            res = install_progress.run(pm)
+        finally:
+            if did_unlock:
+                apt_pkg.pkgsystem_lock_inner()
 
         try:
             install_progress.finishUpdate()  # type: ignore
