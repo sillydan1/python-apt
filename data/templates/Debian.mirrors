@@ -154,7 +154,7 @@ http://ftp.udc.es/debian/
 http://softlibre.unizar.es/debian/
 http://ulises.hostalia.com/debian/
 #LOC:FI
-http://ftp.funet.fi/pub/linux/mirrors/debian/
+http://www.nic.funet.fi/debian/
 #LOC:FR
 http://deb-mir1.naitways.net/debian/
 http://debian.mirror.ate.info/
@@ -356,6 +356,7 @@ http://mirrors.powernet.com.ru/debian/
 http://debian.lth.se/debian/
 http://debian.mirror.su.se/debian/
 http://ftp.acc.umu.se/debian/
+http://ftp.fi.debian.org/debian/
 http://ftp.se.debian.org/debian/
 http://mirror.zetup.net/debian/
 http://mirrors.glesys.net/debian/
@@ -418,6 +419,7 @@ http://mirror.cs.uwm.edu/debian/
 http://mirror.hmc.edu/debian/
 http://mirror.keystealth.org/debian/
 http://mirror.math.princeton.edu/pub/debian/
+http://mirror.siena.edu/debian/
 http://mirror.sjc02.svwh.net/debian/
 http://mirror.steadfast.net/debian/
 http://mirror.us.leaseweb.net/debian/

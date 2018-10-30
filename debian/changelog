@@ -1,3 +1,10 @@
+python-apt (1.8.0~alpha0~ubuntu1) disco; urgency=medium
+
+  * templates: Add Ubuntu 19.04 'Disco Dingo'
+  * travis: Disable CI on debian:stretch and ubuntu:bionic
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Tue, 30 Oct 2018 13:15:24 +0100
+
 python-apt (1.7.0) unstable; urgency=medium
 
   * Fix escaping in regular expressions and ignore some pep8 warnings
@@ -24,6 +31,38 @@ python-apt (1.7.0~alpha3) experimental; urgency=medium
   * Convert apt.Cache.commit and apt_pkg.DepCache.commit to FE lock
 
  -- Julian Andres Klode <jak@debian.org>  Wed, 29 Aug 2018 10:30:22 +0200
+
+python-apt (1.7.0~alpha2ubuntu3) cosmic; urgency=medium
+
+  * Accept Version objects in apt_pkg.Policy.get_priority(), deprecate Package
+  * Return correct pin in apt.package.Version.policy_priority
+  * typehinting: apt_pkg.PackageFile is not an iterable
+  * Introduce frontend locking
+  * Convert apt.Cache.commit and apt_pkg.DepCache.commit to FE lock
+  * Revert "Revert to 1.6.2"
+  * Revert "Reset to 1.6.2"
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Wed, 08 Aug 2018 10:52:51 +0200
+
+python-apt (1.7.0~alpha2ubuntu2+really1.6.2ubuntu1) cosmic; urgency=medium
+
+  * data/templates/Ubuntu.info.in: Re-Add cosmic cuttlefish template
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Mon, 30 Jul 2018 13:23:31 +0800
+
+python-apt (1.7.0~alpha2ubuntu2) cosmic; urgency=medium
+
+  * travis: Run tests on ubuntu:cosmic too
+  * Revert "debian/control: Drop obsolete Python-Versions fields"
+
+ -- Julian Andres Klode <jak@debian.org>  Wed, 11 Jul 2018 12:01:38 +0200
+
+python-apt (1.7.0~alpha2ubuntu1) cosmic; urgency=medium
+
+  * Fix __iter__ yielding different Packages than __getitem__
+  * apt.Cache: Reinstate locks in a finally / run dpkg inside try
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Wed, 11 Jul 2018 11:57:31 +0200
 
 python-apt (1.7.0~alpha2) experimental; urgency=medium
 
@@ -78,6 +117,47 @@ python-apt (1.7.0~alpha1) experimental; urgency=medium
 
  -- Julian Andres Klode <jak@debian.org>  Mon, 25 Jun 2018 11:29:01 +0200
 
+python-apt (1.7.0~alpha0~ubuntu4) cosmic; urgency=medium
+
+  [ Julian Andres Klode ]
+  * apt.Cache: Introduce fix_broken() binding
+  * Add support for custom fields to apt_pkg.PackageRecords
+  * Introduce gitlab ci
+  * Document whatsnew in 1.6 and 1.7
+  * apt.Cache: Keep / Re-establish the system lock in commit()
+    (should fix most of LP: #1602536, rest will be frontend locking)
+  * apt.Cache: Keep archive locked during commit()/ in fetch_archives()
+
+  [ Evgeni Golov ]
+  * fix SourceRecordsFile class reference
+
+ -- Julian Andres Klode <jak@debian.org>  Fri, 22 Jun 2018 11:19:10 +0200
+
+python-apt (1.7.0~alpha0~ubuntu3) cosmic; urgency=medium
+
+  * apt.Cache: Fix error in apt.Package caching
+  * apt: Fix typing errors and use mypy --strict
+  * Correctly handle missing candidate in Package.get_changelog
+  * apt.Cache: Remap objects when reopening cache (LP: #1773316)
+  * apt_pkg.DepCache: Raise CacheMismatchError if argument belongs to diff. cache
+  * apt.debfile: Avoid exception in replaces_real_pkg for no-candidate packages
+  * apt.debfile.DebPackage: Handle no-candidate package in _maybe_append_multiarch_suffix
+  * utils/get_debian_mirrors.py: Get data from salsa
+
+ -- Julian Andres Klode <jak@debian.org>  Wed, 06 Jun 2018 16:09:32 -0700
+
+python-apt (1.7.0~alpha0~ubuntu2) cosmic; urgency=medium
+
+  * data/templates/Ubuntu.info.in: Add cosmic cuttlefish template
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Wed, 09 May 2018 10:49:06 +0200
+
+python-apt (1.7.0~alpha0~ubuntu1) cosmic; urgency=medium
+
+  * data/templates/Ubuntu.info.in: Introduce cosmic release
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Wed, 02 May 2018 22:40:27 +0100
+
 python-apt (1.6.0) unstable; urgency=medium
 
   * Final release, no further changes.
@@ -100,6 +180,26 @@ python-apt (1.6.0~rc3) unstable; urgency=medium
   * debian/gbp.conf: Default branch is master now
 
  -- Julian Andres Klode <jak@debian.org>  Fri, 13 Apr 2018 13:06:37 +0200
+
+python-apt (1.6.0~rc2ubuntu2) bionic; urgency=medium
+
+  * apt/auth.py: Protect against race with gpg when removing tmpdir
+    (Closes: #871585)
+  * Document Architecture: all handling in Package.{fullname,architecture()}
+    (Closes: #863193)
+  * python/tag.cc: Fix invalid read in TagFileNext
+  * Raise ValueError if objects passed to DepCache are from different cache
+    (LP: #1737441)
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Thu, 12 Apr 2018 11:22:27 +0200
+
+python-apt (1.6.0~rc2ubuntu1) bionic; urgency=medium
+
+  * Revert change to make apt.Cache subclass of dict
+  * Fix get_changelog() to correctly decode non-unicode changelogs
+  * Try to work around memory corruption in PackageRecords.*_hash
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Mon, 26 Mar 2018 12:13:04 +0200
 
 python-apt (1.6.0~rc2) unstable; urgency=medium
 
