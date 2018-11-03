@@ -1,3 +1,9 @@
+python-apt (1.8.0~alpha0~ubuntu2) disco; urgency=medium
+
+  * No-change rebuild to build without python3.6 support.
+
+ -- Matthias Klose <doko@ubuntu.com>  Sat, 03 Nov 2018 11:52:16 +0000
+
 python-apt (1.8.0~alpha0~ubuntu1) disco; urgency=medium
 
   * templates: Add Ubuntu 19.04 'Disco Dingo'
