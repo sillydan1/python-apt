@@ -1,3 +1,9 @@
+python-apt (1.9.0~alpha0~ubuntu2) eoan; urgency=medium
+
+  * data/templates/Ubuntu.info.in: Replace Eoan Eanimal with Eoan Ermine.
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Mon, 06 May 2019 14:17:27 -0600
+
 python-apt (1.9.0~alpha0~ubuntu1) eoan; urgency=medium
 
   * data/templates/Ubuntu.info.in: Add eoan (adjective only so far)
