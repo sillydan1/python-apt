@@ -1,3 +1,9 @@
+python-apt (1.9.0ubuntu2) focal; urgency=medium
+
+  * No-change rebuild to build with python3.8.
+
+ -- Matthias Klose <doko@ubuntu.com>  Fri, 18 Oct 2019 18:10:06 +0000
+
 python-apt (1.9.0ubuntu1) eoan; urgency=medium
 
   * apt/package.py: Use SHA256 instead of MD5 for fetching checks.
