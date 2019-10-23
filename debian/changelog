@@ -1,3 +1,9 @@
+python-apt (1.9.0ubuntu3) focal; urgency=medium
+
+  * data/templates/Ubuntu.info.in: Add focal.
+
+ -- Matthias Klose <doko@ubuntu.com>  Wed, 23 Oct 2019 23:21:34 +0200
+
 python-apt (1.9.0ubuntu2) focal; urgency=medium
 
   * No-change rebuild to build with python3.8.
