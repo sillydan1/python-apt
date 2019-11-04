@@ -1,3 +1,10 @@
+python-apt (1.9.0ubuntu5) focal; urgency=medium
+
+  * Run tests with allow-stderr restriction, deprecation warnings
+    with Python 3.8.
+
+ -- Matthias Klose <doko@ubuntu.com>  Mon, 04 Nov 2019 08:16:37 +0100
+
 python-apt (1.9.0ubuntu3) focal; urgency=medium
 
   * data/templates/Ubuntu.info.in: Add focal.
