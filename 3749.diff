@@ -1,0 +1,284 @@
+diff --git a/src/_imaging.c b/src/_imaging.c
+index 7715a79955..614f809bc9 100644
+--- a/src/_imaging.c
++++ b/src/_imaging.c
+@@ -71,6 +71,7 @@
+  * See the README file for information on usage and redistribution.
+  */
+ 
++#define PY_SSIZE_T_CLEAN
+ #include "Python.h"
+ 
+ #ifdef HAVE_LIBJPEG
+@@ -1564,7 +1565,7 @@ _putpalette(ImagingObject* self, PyObject* args)
+ 
+     char* rawmode;
+     UINT8* palette;
+-    int palettesize;
++    Py_ssize_t palettesize;
+     if (!PyArg_ParseTuple(args, "s"PY_ARG_BYTES_LENGTH, &rawmode, &palette, &palettesize))
+         return NULL;
+ 
+@@ -1626,7 +1627,7 @@ _putpalettealphas(ImagingObject* self, PyObject* args)
+ {
+     int i;
+     UINT8 *values;
+-    int length;
++    Py_ssize_t length;
+     if (!PyArg_ParseTuple(args, PY_ARG_BYTES_LENGTH, &values, &length))
+         return NULL;
+ 
+@@ -1770,7 +1771,7 @@ im_setmode(ImagingObject* self, PyObject* args)
+     Imaging im;
+ 
+     char* mode;
+-    int modelen;
++    Py_ssize_t modelen;
+     if (!PyArg_ParseTuple(args, "s#:setmode", &mode, &modelen))
+     return NULL;
+ 
+@@ -2066,8 +2067,8 @@ _getprojection(ImagingObject* self, PyObject* args)
+     ImagingGetProjection(self->image, (unsigned char *)xprofile, (unsigned char *)yprofile);
+ 
+     result = Py_BuildValue(PY_ARG_BYTES_LENGTH PY_ARG_BYTES_LENGTH,
+-                           xprofile, self->image->xsize,
+-                           yprofile, self->image->ysize);
++                           xprofile, (Py_ssize_t)self->image->xsize,
++                           yprofile, (Py_ssize_t)self->image->ysize);
+ 
+     free(xprofile);
+     free(yprofile);
+@@ -2342,7 +2343,7 @@ _font_new(PyObject* self_, PyObject* args)
+ 
+     ImagingObject* imagep;
+     unsigned char* glyphdata;
+-    int glyphdata_length;
++    Py_ssize_t glyphdata_length;
+     if (!PyArg_ParseTuple(args, "O!"PY_ARG_BYTES_LENGTH,
+                           &Imaging_Type, &imagep,
+                           &glyphdata, &glyphdata_length))
+diff --git a/src/_imagingcms.c b/src/_imagingcms.c
+index 5e4196cb71..5432a0117b 100644
+--- a/src/_imagingcms.c
++++ b/src/_imagingcms.c
+@@ -25,6 +25,7 @@ kevin@cazabon.com\n\
+ http://www.cazabon.com\n\
+ "
+ 
++#define PY_SSIZE_T_CLEAN
+ #include "Python.h" // Include before wchar.h so _GNU_SOURCE is set
+ #include "wchar.h"
+ #include "datetime.h"
+@@ -120,7 +121,7 @@ cms_profile_fromstring(PyObject* self, PyObject* args)
+     cmsHPROFILE hProfile;
+ 
+     char* pProfile;
+-    int nProfile;
++    Py_ssize_t nProfile;
+ #if PY_VERSION_HEX >= 0x03000000
+     if (!PyArg_ParseTuple(args, "y#:profile_frombytes", &pProfile, &nProfile))
+         return NULL;
+diff --git a/src/_imagingft.c b/src/_imagingft.c
+index b13c4030bc..6b65e2c33b 100644
+--- a/src/_imagingft.c
++++ b/src/_imagingft.c
+@@ -18,6 +18,7 @@
+  * Copyright (c) 1998-2007 by Secret Labs AB
+  */
+ 
++#define PY_SSIZE_T_CLEAN
+ #include "Python.h"
+ #include "Imaging.h"
+ 
+@@ -237,12 +238,12 @@ getfont(PyObject* self_, PyObject* args, PyObject* kw)
+     int error = 0;
+ 
+     char* filename = NULL;
+-    int size;
+-    int index = 0;
+-    int layout_engine = 0;
++    Py_ssize_t size;
++    Py_ssize_t index = 0;
++    Py_ssize_t layout_engine = 0;
+     unsigned char* encoding;
+     unsigned char* font_bytes;
+-    int font_bytes_size = 0;
++    Py_ssize_t font_bytes_size = 0;
+     static char* kwlist[] = {
+         "filename", "size", "index", "encoding", "font_bytes",
+         "layout_engine", NULL
+diff --git a/src/decode.c b/src/decode.c
+index be1b503e6a..562bc74369 100644
+--- a/src/decode.c
++++ b/src/decode.c
+@@ -29,6 +29,7 @@
+ 
+ /* FIXME: make these pluggable! */
+ 
++#define PY_SSIZE_T_CLEAN
+ #include "Python.h"
+ 
+ #include "Imaging.h"
+@@ -117,7 +118,8 @@ static PyObject*
+ _decode(ImagingDecoderObject* decoder, PyObject* args)
+ {
+     UINT8* buffer;
+-    int bufsize, status;
++    Py_ssize_t bufsize;
++    int status;
+     ImagingSectionCookie cookie;
+ 
+     if (!PyArg_ParseTuple(args, PY_ARG_BYTES_LENGTH, &buffer, &bufsize))
+diff --git a/src/encode.c b/src/encode.c
+index 13da1b999c..6832f90c8b 100644
+--- a/src/encode.c
++++ b/src/encode.c
+@@ -22,6 +22,7 @@
+ 
+ /* FIXME: make these pluggable! */
+ 
++#define PY_SSIZE_T_CLEAN
+ #include "Python.h"
+ 
+ #include "Imaging.h"
+@@ -123,7 +124,7 @@ _encode(ImagingEncoderObject* encoder, PyObject* args)
+ 
+     /* Encode to a Python string (allocated by this method) */
+ 
+-    int bufsize = 16384;
++    Py_ssize_t bufsize = 16384;
+ 
+     if (!PyArg_ParseTuple(args, "|i", &bufsize))
+         return NULL;
+@@ -176,8 +177,8 @@ _encode_to_file(ImagingEncoderObject* encoder, PyObject* args)
+ 
+     /* Encode to a file handle */
+ 
+-    int fh;
+-    int bufsize = 16384;
++    Py_ssize_t fh;
++    Py_ssize_t bufsize = 16384;
+ 
+     if (!PyArg_ParseTuple(args, "i|i", &fh, &bufsize))
+         return NULL;
+@@ -221,7 +222,7 @@ _setimage(ImagingEncoderObject* encoder, PyObject* args)
+     PyObject* op;
+     Imaging im;
+     ImagingCodecState state;
+-    int x0, y0, x1, y1;
++    Py_ssize_t x0, y0, x1, y1;
+ 
+     /* Define where image data should be stored */
+ 
+@@ -406,8 +407,8 @@ PyImaging_GifEncoderNew(PyObject* self, PyObject* args)
+ 
+     char *mode;
+     char *rawmode;
+-    int bits = 8;
+-    int interlace = 0;
++    Py_ssize_t bits = 8;
++    Py_ssize_t interlace = 0;
+     if (!PyArg_ParseTuple(args, "ss|ii", &mode, &rawmode, &bits, &interlace))
+         return NULL;
+ 
+@@ -438,7 +439,7 @@ PyImaging_PcxEncoderNew(PyObject* self, PyObject* args)
+ 
+     char *mode;
+     char *rawmode;
+-    int bits = 8;
++    Py_ssize_t bits = 8;
+ 
+     if (!PyArg_ParseTuple(args, "ss|ii", &mode, &rawmode, &bits)) {
+         return NULL;
+@@ -470,8 +471,8 @@ PyImaging_RawEncoderNew(PyObject* self, PyObject* args)
+ 
+     char *mode;
+     char *rawmode;
+-    int stride = 0;
+-    int ystep = 1;
++    Py_ssize_t stride = 0;
++    Py_ssize_t ystep = 1;
+ 
+     if (!PyArg_ParseTuple(args, "ss|ii", &mode, &rawmode, &stride, &ystep))
+         return NULL;
+@@ -503,7 +504,7 @@ PyImaging_TgaRleEncoderNew(PyObject* self, PyObject* args)
+ 
+     char *mode;
+     char *rawmode;
+-    int ystep = 1;
++    Py_ssize_t ystep = 1;
+ 
+     if (!PyArg_ParseTuple(args, "ss|i", &mode, &rawmode, &ystep))
+         return NULL;
+@@ -561,11 +562,11 @@ PyImaging_ZipEncoderNew(PyObject* self, PyObject* args)
+ 
+     char* mode;
+     char* rawmode;
+-    int optimize = 0;
+-    int compress_level = -1;
+-    int compress_type = -1;
++    Py_ssize_t optimize = 0;
++    Py_ssize_t compress_level = -1;
++    Py_ssize_t compress_type = -1;
+     char* dictionary = NULL;
+-    int dictionary_size = 0;
++    Py_ssize_t dictionary_size = 0;
+     if (!PyArg_ParseTuple(args, "ss|iii"PY_ARG_BYTES_LENGTH, &mode, &rawmode,
+                           &optimize,
+                           &compress_level, &compress_type,
+@@ -701,20 +702,20 @@ PyImaging_JpegEncoderNew(PyObject* self, PyObject* args)
+ 
+     char *mode;
+     char *rawmode;
+-    int quality = 0;
+-    int progressive = 0;
+-    int smooth = 0;
+-    int optimize = 0;
+-    int streamtype = 0; /* 0=interchange, 1=tables only, 2=image only */
+-    int xdpi = 0, ydpi = 0;
+-    int subsampling = -1; /* -1=default, 0=none, 1=medium, 2=high */
++    Py_ssize_t quality = 0;
++    Py_ssize_t progressive = 0;
++    Py_ssize_t smooth = 0;
++    Py_ssize_t optimize = 0;
++    Py_ssize_t streamtype = 0; /* 0=interchange, 1=tables only, 2=image only */
++    Py_ssize_t xdpi = 0, ydpi = 0;
++    Py_ssize_t subsampling = -1; /* -1=default, 0=none, 1=medium, 2=high */
+     PyObject* qtables=NULL;
+     unsigned int *qarrays = NULL;
+     int qtablesLen = 0;
+     char* extra = NULL;
+-    int extra_size;
++    Py_ssize_t extra_size;
+     char* rawExif = NULL;
+-    int rawExifLen = 0;
++    Py_ssize_t rawExifLen = 0;
+ 
+     if (!PyArg_ParseTuple(args, "ss|iiiiiiiiO"PY_ARG_BYTES_LENGTH""PY_ARG_BYTES_LENGTH,
+                           &mode, &rawmode, &quality,
+@@ -805,7 +806,7 @@ PyImaging_LibTiffEncoderNew(PyObject* self, PyObject* args)
+     char* rawmode;
+     char* compname;
+     char* filename;
+-    int fp;
++    Py_ssize_t fp;
+ 
+     PyObject *dir;
+     PyObject *key, *value;
+@@ -985,14 +986,14 @@ PyImaging_Jpeg2KEncoderNew(PyObject *self, PyObject *args)
+     PyObject *offset = NULL, *tile_offset = NULL, *tile_size = NULL;
+     char *quality_mode = "rates";
+     PyObject *quality_layers = NULL;
+-    int num_resolutions = 0;
++    Py_ssize_t num_resolutions = 0;
+     PyObject *cblk_size = NULL, *precinct_size = NULL;
+     PyObject *irreversible = NULL;
+     char *progression = "LRCP";
+     OPJ_PROG_ORDER prog_order;
+     char *cinema_mode = "no";
+     OPJ_CINEMA_MODE cine_mode;
+-    int fd = -1;
++    Py_ssize_t fd = -1;
+ 
+     if (!PyArg_ParseTuple(args, "ss|OOOsOIOOOssi", &mode, &format,
+                           &offset, &tile_offset, &tile_size,
