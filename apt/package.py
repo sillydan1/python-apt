@@ -94,12 +94,12 @@ if sys.version_info.major >= 3:
     unicode = str
 
 
-def _file_is_same(path, size, md5):
-    # type: (str, int, str) -> bool
+def _file_is_same(path, size, hashes):
+    # type: (str, int, apt_pkg.HashStringList) -> bool
     """Return ``True`` if the file is the same."""
     if os.path.exists(path) and os.path.getsize(path) == size:
         with open(path) as fobj:
-            return apt_pkg.md5sum(fobj) == md5
+            return apt_pkg.Hashes(fobj).hashes == hashes
     return False
 
 
@@ -352,8 +352,8 @@ class Origin(object):
         trusted   - Boolean value whether this is trustworthy.
     """
 
-    def __init__(self, pkg, packagefile):
-        # type: (Package, apt_pkg.PackageFile) -> None
+    def __init__(self, pkg_or_cache, packagefile):
+        # type: (Union[apt.Cache,Package], apt_pkg.PackageFile) -> None
         self.archive = packagefile.archive
         self.component = packagefile.component
         self.label = packagefile.label
@@ -362,7 +362,13 @@ class Origin(object):
         self.site = packagefile.site
         self.not_automatic = packagefile.not_automatic
         # check the trust
-        indexfile = pkg._pcache._list.find_index(packagefile)
+        if isinstance(pkg_or_cache, apt.Cache):
+            indexfile = pkg_or_cache._list.find_index(packagefile)
+        elif isinstance(pkg_or_cache, Package):
+            indexfile = pkg_or_cache._pcache._list.find_index(packagefile)
+        else:
+            raise TypeError("Invalid arg %r passed to Origin()" % pkg_or_cache)
+
         if indexfile and indexfile.is_trusted:
             self.trusted = True
         else:
@@ -767,7 +773,7 @@ class Version(object):
         """Return a list of origins for the package version."""
         origins = []
         for (packagefile, _unused) in self._cand.file_list:
-            origins.append(Origin(self.package, packagefile))
+            origins.append(self.package._pcache._origins[packagefile.id])
         return origins
 
     @property
@@ -850,7 +856,7 @@ class Version(object):
             return None
 
     def fetch_binary(self, destdir='', progress=None):
-        # type: (str, AcquireProgress) -> str
+        # type: (str, Optional[AcquireProgress]) -> str
         """Fetch the binary version of the package.
 
         The parameter *destdir* specifies the directory where the package will
@@ -864,11 +870,11 @@ class Version(object):
         """
         base = os.path.basename(self._records.filename)
         destfile = os.path.join(destdir, base)
-        if _file_is_same(destfile, self.size, self._records.md5_hash):
+        if _file_is_same(destfile, self.size, self._records.hashes):
             logging.debug('Ignoring already existing file: %s' % destfile)
             return os.path.abspath(destfile)
         acq = apt_pkg.Acquire(progress or apt.progress.text.AcquireProgress())
-        acqfile = apt_pkg.AcquireFile(acq, self.uri, self._records.md5_hash,  # type: ignore # TODO: Do not use MD5 # nopep8
+        acqfile = apt_pkg.AcquireFile(acq, self.uri, self._records.hashes,  # type: ignore # nopep8
                                       self.size, base, destfile=destfile)
         acq.run()
 
@@ -879,7 +885,7 @@ class Version(object):
         return os.path.abspath(destfile)
 
     def fetch_source(self, destdir="", progress=None, unpack=True):
-        # type: (str, AcquireProgress, bool) -> str
+        # type: (str, Optional[AcquireProgress], bool) -> str
         """Get the source code of a package.
 
         The parameter *destdir* specifies the directory where the source will
@@ -909,16 +915,17 @@ class Version(object):
         if not source_lookup:
             raise ValueError("No source for %r" % self)
         files = list()
-        for md5, size, path, type_ in src.files:
-            base = os.path.basename(path)
+        for fil in src.files:
+            base = os.path.basename(fil.path)
             destfile = os.path.join(destdir, base)
-            if type_ == 'dsc':
+            if fil.type == 'dsc':
                 dsc = destfile
-            if _file_is_same(destfile, size, md5):
+            if _file_is_same(destfile, fil.size, fil.hashes):
                 logging.debug('Ignoring already existing file: %s' % destfile)
                 continue
-            files.append(apt_pkg.AcquireFile(acq, src.index.archive_uri(path),
-                         md5, size, base, destfile=destfile))
+            files.append(apt_pkg.AcquireFile(acq,
+                            src.index.archive_uri(fil.path),
+                            fil.hashes, fil.size, base, destfile=destfile))
         acq.run()
 
         if dsc is None:
@@ -959,7 +966,7 @@ class VersionList(Sequence[Version]):
     """
 
     def __init__(self, package, slice_=None):
-        # type: (Package, slice) -> None
+        # type: (Package, Optional[slice]) -> None
         self._package = package  # apt.package.Package()
         self._versions = package._pkg.version_list  # [apt_pkg.Version(), ...]
         if slice_:
@@ -1243,7 +1250,7 @@ class Package(object):
         return []
 
     def get_changelog(self, uri=None, cancel_lock=None):
-        # type: (str, threading.Event) -> str
+        # type: (Optional[str], Optional[threading.Event]) -> str
         """
         Download the changelog of the package and return it as unicode
         string.
