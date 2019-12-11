@@ -165,6 +165,12 @@ class InstallProgress(object):
     def __init__(self):
         # type: () -> None
         (self.statusfd, self.writefd) = os.pipe()
+        try:
+            # PEP-446 implemented in Python 3.4 made all descriptors CLOEXEC,
+            # but we need to be able to pass writefd to dpkg when we spawn it
+            os.set_inheritable(self.writefd, True)
+        except AttributeError:  # if we don't have os.set_inheritable()
+            pass
         # These will leak fds, but fixing this safely requires API changes.
         self.write_stream = os.fdopen(self.writefd, "w")  # type: io.TextIOBase
         self.status_stream = os.fdopen(self.statusfd, "r")  # type: io.TextIOBase # nopep8
@@ -177,6 +183,15 @@ class InstallProgress(object):
     def finish_update(self):
         # type: () -> None
         """(Abstract) Called when update has finished."""
+
+    def __enter__(self):
+        # type: () -> InstallProgress
+        return self
+
+    def __exit__(self, type, value, traceback):
+        # type: (object, object, object) -> None
+        self.write_stream.close()
+        self.status_stream.close()
 
     def error(self, pkg, errormsg):
         # type: (str, str) -> None
@@ -226,9 +241,9 @@ class InstallProgress(object):
             try:
                 os._exit(obj.do_install(self.write_stream.fileno()))  # type: ignore # nopep8
             except AttributeError:
-                os._exit(os.spawnlp(os.P_WAIT, "dpkg", "dpkg", "--status-fd",   # type: ignore # nopep8
+                os._exit(os.spawnlp(os.P_WAIT, "dpkg", "dpkg", "--status-fd",
                                     str(self.write_stream.fileno()), "-i",
-                                    obj))
+                                    obj))  # type: ignore # nopep8
             except Exception as e:
                 sys.stderr.write("%s\n" % e)
                 os._exit(apt_pkg.PackageManager.RESULT_FAILED)

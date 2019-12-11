@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # auth - authentication key management
 #
@@ -25,6 +25,12 @@
 """Handle GnuPG keys used to trust signed repositories."""
 
 from __future__ import print_function
+
+try:
+    from typing import Optional
+except ImportError:
+    pass
+
 
 import errno
 import os
@@ -75,7 +81,7 @@ class TrustedKey(object):
 
 
 def _call_apt_key_script(*args, **kwargs):
-    # type: (str, Union[str, bytes]) -> str
+    # type: (str, Optional[str]) -> str
     """Run the apt-key script with the given arguments."""
     conf = None
     cmd = [apt_pkg.config.find_file("Dir::Bin::Apt-Key", "/usr/bin/apt-key")]
@@ -102,7 +108,7 @@ def _call_apt_key_script(*args, **kwargs):
         stdin = kwargs.get("stdin", None)
         # py2 needs this encoded, py3.3 will crash if it is
         if sys.version_info.major < 3 and isinstance(stdin, unicode):
-            stdin = stdin.encode("utf-8")
+            stdin = stdin.encode("utf-8")  # type: ignore
 
         output, stderr = proc.communicate(stdin)  # type: str, str
 

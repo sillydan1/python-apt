@@ -120,13 +120,14 @@ class Cache(object):
     """
 
     def __init__(self, progress=None, rootdir=None, memonly=False):
-        # type: (OpProgress, str, bool) -> None
+        # type: (Optional[OpProgress], Optional[str], bool) -> None
         self._cache = cast(apt_pkg.Cache, None)  # type: apt_pkg.Cache
         self._depcache = cast(apt_pkg.DepCache, None)  # type: apt_pkg.DepCache
         self._records = cast(apt_pkg.PackageRecords, None)  # type: apt_pkg.PackageRecords # nopep8
         self._list = cast(apt_pkg.SourceList, None)  # type: apt_pkg.SourceList
         self._callbacks = {}  # type: Dict[str, List[Union[Callable[..., None],str]]] # nopep8
         self._callbacks2 = {}  # type: Dict[str, List[Tuple[Callable[..., Any], Tuple[Any, ...], Dict[Any,Any]]]] # nopep8
+        self._origins = {}  # type: Dict[int, apt.package.Origin]
         self._weakref = weakref.WeakValueDictionary()  # type: weakref.WeakValueDictionary[str, apt.Package] # nopep8
         self._weakversions = weakref.WeakSet()  # type: weakref.WeakSet[Version] # nopep8
         self._changes_count = -1
@@ -181,14 +182,16 @@ class Cache(object):
         check if the required apt directories/files are there and if
         not create them
         """
-        files = ["/var/lib/dpkg/status",
-                 "/etc/apt/sources.list",
-                 ]
-        dirs = ["/var/lib/dpkg",
-                "/etc/apt/",
-                "/var/cache/apt/archives/partial",
-                "/var/lib/apt/lists/partial",
-                ]
+        files = [
+            "/var/lib/dpkg/status",
+            "/etc/apt/sources.list",
+        ]
+        dirs = [
+            "/var/lib/dpkg",
+            "/etc/apt/",
+            "/var/cache/apt/archives/partial",
+            "/var/lib/apt/lists/partial",
+        ]
         for d in dirs:
             if not os.path.exists(rootdir + d):
                 #print "creating: ", rootdir + d
@@ -209,10 +212,10 @@ class Cache(object):
 
         if name in self._callbacks2:
             for callback, args, kwds in self._callbacks2[name]:
-                    callback(self, *args, **kwds)
+                callback(self, *args, **kwds)
 
     def open(self, progress=None):
-        # type: (OpProgress) -> None
+        # type: (Optional[OpProgress]) -> None
         """ Open the package cache, after that it can be used like
             a dictionary
         """
@@ -232,6 +235,10 @@ class Cache(object):
         self.__remap()
 
         self._have_multi_arch = len(apt_pkg.get_architectures()) > 1
+
+        self._origins = {}
+        for pf in self._cache.file_list:
+            self._origins[pf.id] = apt.package.Origin(self, pf)
 
         progress.done()
         self._run_callbacks("cache_post_open")
@@ -455,7 +462,7 @@ class Cache(object):
         return self._run_fetcher(fetcher)
 
     def fetch_archives(self, progress=None, fetcher=None):
-        # type: (AcquireProgress, apt_pkg.Acquire) -> int
+        # type: (Optional[AcquireProgress], Optional[apt_pkg.Acquire]) -> int
         """Fetch the archives for all packages marked for install/upgrade.
 
         You can specify either an :class:`apt.progress.base.AcquireProgress()`
@@ -524,7 +531,7 @@ class Cache(object):
 
     def update(self, fetch_progress=None, pulse_interval=0,
                raise_on_error=True, sources_list=None):
-        # type: (AcquireProgress, int, bool, str) -> int
+        # type: (Optional[AcquireProgress], int, bool, Optional[str]) -> int
         """Run the equivalent of apt-get update.
 
         You probably want to call open() afterwards, in order to utilise the
@@ -608,7 +615,7 @@ class Cache(object):
         return res
 
     def commit(self, fetch_progress=None, install_progress=None):
-        # type: (AcquireProgress, InstallProgress) -> bool
+        # type: (Optional[AcquireProgress], Optional[InstallProgress]) -> bool
         """Apply the marked changes to the cache.
 
         The first parameter, *fetch_progress*, refers to a FetchProgress()
@@ -894,7 +901,7 @@ class FilteredCache(object):
     """
 
     def __init__(self, cache=None, progress=None):
-        # type: (Cache, OpProgress) -> None
+        # type: (Optional[Cache], Optional[OpProgress]) -> None
         if cache is None:
             self.cache = Cache(progress)
         else:

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Builds on python2.X and python3
 # $Id: setup.py,v 1.2 2002/01/08 07:13:21 jgg Exp $
 import glob
@@ -31,7 +31,11 @@ class InstallTypeinfo(install):
     def run(self):
         install.run(self)
         for pyi in glob.glob("typehinting/*.pyi"):
-            shutil.copy(pyi, self.install_purelib)
+            stubs = os.path.basename(pyi).split(".")[0] + "-stubs"
+            stubs = os.path.join(self.install_purelib, stubs)
+            if not os.path.exists(stubs):
+                os.makedirs(stubs)
+            shutil.copy(pyi, os.path.join(stubs, "__init__.pyi"))
 
 
 cmdclass['install'] = InstallTypeinfo
@@ -67,13 +71,15 @@ apt_pkg = Extension("apt_pkg", files, libraries=["apt-pkg"],
                     extra_compile_args=['-std=c++11', '-Wno-write-strings',
                                         '-DAPT_8_CLEANER_HEADERS',
                                         '-DAPT_9_CLEANER_HEADERS',
-                                        '-DAPT_10_CLEANER_HEADERS'])
+                                        '-DAPT_10_CLEANER_HEADERS',
+                                        '-DPY_SSIZE_T_CLEAN'])
 
 # The apt_inst module
 files = ["python/apt_instmodule.cc", "python/generic.cc",
          "python/arfile.cc", "python/tarfile.cc"]
 apt_inst = Extension("apt_inst", files, libraries=["apt-pkg"],
-                     extra_compile_args=['-std=c++11', '-Wno-write-strings'])
+                     extra_compile_args=['-std=c++11', '-Wno-write-strings',
+                                         '-DPY_SSIZE_T_CLEAN'])
 
 # Replace the leading _ that is used in the templates for translation
 if len(sys.argv) > 1 and sys.argv[1] == "build":
@@ -104,7 +110,7 @@ setup(name="python-apt",
       ext_modules=[apt_pkg, apt_inst],
       packages=['apt', 'apt.progress', 'aptsources'],
       package_data={
-          'apt': ["*.pyi"],
+          'apt': ["*.pyi", "py.typed"],
       },
       data_files=[('share/python-apt/templates',
                    glob.glob('build/data/templates/*.info')),
@@ -112,4 +118,5 @@ setup(name="python-apt",
                    glob.glob('data/templates/*.mirrors'))],
       cmdclass=cmdclass,
       license='GNU GPL',
-      platforms='posix')
+      platforms='posix',
+      )
