@@ -1,3 +1,9 @@
+python-apt (1.9.3ubuntu2) focal; urgency=medium
+
+  * Revert "apt.Cache: cache apt.package.Origin objects by id"
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Tue, 17 Dec 2019 19:24:36 +0100
+
 python-apt (1.9.3ubuntu1) focal; urgency=medium
 
   * InstallProgress: Move set_inheritable into if pid == 0
