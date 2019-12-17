@@ -1,3 +1,9 @@
+python-apt (1.9.3ubuntu1) focal; urgency=medium
+
+  * InstallProgress: Move set_inheritable into if pid == 0
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Tue, 17 Dec 2019 17:15:53 +0100
+
 python-apt (1.9.3) experimental; urgency=medium
 
   [ Dave Jones ]
@@ -63,6 +69,14 @@ python-apt (1.9.1) experimental; urgency=medium
 
  -- Julian Andres Klode <jak@debian.org>  Wed, 11 Dec 2019 16:17:24 +0100
 
+python-apt (1.9.0ubuntu1) eoan; urgency=medium
+
+  * apt/package.py: Use SHA256 instead of MD5 for fetching checks.
+    This should unbreak snapd, but should really be cleaned up more
+    and use the entire HashStringList (LP: #1837926)
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Tue, 06 Aug 2019 14:34:24 +0200
+
 python-apt (1.9.0) experimental; urgency=medium
 
   * python/pkgsrcrecords.cc: Improve readability of ...BuildDepends
@@ -87,6 +101,13 @@ python-apt (1.9.0) experimental; urgency=medium
     - apt_pkg.HashStringList: Avoid nullptr dereference on no result
 
  -- Julian Andres Klode <jak@debian.org>  Mon, 24 Jun 2019 15:54:56 +0200
+
+python-apt (1.9.0~alpha0~ubuntu1) eoan; urgency=medium
+
+  * data/templates/Ubuntu.info.in: Add eoan (adjective only so far)
+  * Automatic mirror list update
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Mon, 22 Apr 2019 12:42:37 +0200
 
 python-apt (1.8.4) unstable; urgency=medium
 
