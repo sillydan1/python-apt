@@ -1,3 +1,29 @@
+python-apt (0.8.3ubuntu7.5) precise-security; urgency=medium
+
+  * SECURITY UPDATE: Check that repository is trusted before downloading
+    files from it (LP: #1858973)
+    - apt/cache.py: Add checks to fetch_archives() and commit()
+    - apt/package.py: Add checks to fetch_binary() and fetch_source()
+    - CVE-2019-15796
+  * SECURITY UPDATE: Do not use MD5 for verifying downloadeds
+    (Closes: #944696) (#LP: #1858972)
+    - apt/package.py: Use strongest hashes when fetching packages. Packages
+      without a trusted hash are still accepted.
+    - CVE-2019-15795
+  * To work around the new checks, the parameter allow_unauthenticated=True
+    can be passed to the functions. It defaults to the value of the
+    APT::Get::AllowUnauthenticated option.
+    - Bump Breaks aptdaemon (<< 0.43+bzr805-0ubuntu10+esm1), as it will have
+      to set that parameter after having done validation.
+  * Automatic changes and fixes for external regressions:
+    - Adjustments to test suite and CI to fix CI regressions
+    - Automatic mirror list update
+    - utils/get_debian_mirrors.py: Get data from salsa
+  * Make allow_unauthenticated argument to fetch_archives() optional
+    - apt/cache.py
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Wed, 15 Jan 2020 17:54:15 +0100
+
 python-apt (0.8.3ubuntu7.3) precise-proposed; urgency=medium
 
   * Update list of mirrors from launchpad, using pre-build.sh hook.
@@ -18,7 +44,6 @@ python-apt (0.8.3ubuntu7.1) precise-proposed; urgency=low
   * Make python{,3}-apt{,-dbg} Multi-Arch: allowed. LP: #1130709.
 
  -- Matthias Klose <doko@ubuntu.com>  Fri, 22 Feb 2013 09:14:45 +0100
-
 python-apt (0.8.3ubuntu7) precise; urgency=low
 
   [ Michael Vogt ]

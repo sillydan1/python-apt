@@ -48,15 +48,54 @@ __all__ = ('BaseDependency', 'Dependency', 'Origin', 'Package', 'Record',
            'Version', 'VersionList')
 
 
-def _file_is_same(path, size, md5):
+def _get_binary_hash(binrec):
+    """Return a hash string"""
+    if binrec.sha256_hash:
+        return apt_pkg.HashString("SHA256", binrec.sha256_hash)
+    if binrec.sha1_hash:
+        return apt_pkg.HashString("SHA1", binrec.sha1_hash)
+    if binrec.md5_hash:
+        return apt_pkg.HashString("MD5Sum", binrec.md5_hash)
+    return None
+
+
+def _get_source_hashs(srcrec):
+    """Return a mapping name -> (hashstring, size)"""
+    fields = ["Checksums-Sha256", "Checksums-Sha1", "Files"]
+    types = ["SHA256", "SHA1", "MD5Sum"]
+    result = {}
+
+    section = apt_pkg.TagSection(srcrec.record)
+
+    for field, hashtype in zip(fields, types):
+        try:
+            files = section[field]
+        except KeyError:
+            continue
+
+        for hashsum, size, fname in (l.split() for l in files.splitlines()):
+            if fname not in result:
+                result[fname] = (apt_pkg.HashString(hashtype, hashsum),
+                                 int(size))
+
+    for md5, size, path, typ in srcrec.files:
+        for key, (hashstring, size) in result.items():
+            if path.endswith(key):
+                yield (hashstring, size, path, typ)
+
+
+def _file_is_same(path, size, hashstring):
     """Return ``True`` if the file is the same."""
     if os.path.exists(path) and os.path.getsize(path) == size:
-        with open(path) as fobj:
-            return apt_pkg.md5sum(fobj) == md5
+        return hashstring.verify_file(path)
 
 
 class FetchError(Exception):
     """Raised when a file could not be fetched."""
+
+
+class UntrustedError(FetchError):
+    """Exception that is thrown when fetching fails for trust reasons"""
 
 
 class BaseDependency(object):
@@ -285,6 +324,7 @@ class Version(object):
     @property
     def _records(self):
         """Internal helper that moves the Records to the right position."""
+        # If changing lookup, change fetch_binary() as well
         if self.package._pcache._records.lookup(self._cand.file_list[0]):
             return self.package._pcache._records
 
@@ -550,7 +590,8 @@ class Version(object):
         except StopIteration:
             return None
 
-    def fetch_binary(self, destdir='', progress=None):
+    def fetch_binary(self, destdir='', progress=None,
+                     allow_unauthenticated=None):
         """Fetch the binary version of the package.
 
         The parameter *destdir* specifies the directory where the package will
@@ -560,15 +601,34 @@ class Version(object):
         object. If not specified or None, apt.progress.text.AcquireProgress()
         is used.
 
+        The keyword-only parameter *allow_unauthenticated* specifies whether
+        to allow unauthenticated downloads. If not specified, it defaults to
+        the configuration option `APT::Get::AllowUnauthenticated`.
+
         .. versionadded:: 0.7.10
         """
+        if allow_unauthenticated is None:
+            allow_unauthenticated = apt_pkg.config.find_b("APT::Get::"
+                                        "AllowUnauthenticated", False)
         base = os.path.basename(self._records.filename)
         destfile = os.path.join(destdir, base)
-        if _file_is_same(destfile, self.size, self._records.md5_hash):
+        hashstring = _get_binary_hash(self._records)
+        if _file_is_same(destfile, self.size, hashstring):
             print('Ignoring already existing file: %s' % destfile)
             return os.path.abspath(destfile)
+
+        # Verify that the index is actually trusted
+        pfile, offset = self._cand.file_list[0]
+        index = self.package._pcache._list.find_index(pfile)
+
+        if not (allow_unauthenticated or (index and index.is_trusted)):
+            raise UntrustedError("Could not fetch %s %s source package: "
+                                 "Source %r is not trusted" %
+                                 (self.package.name, self.version,
+                                  getattr(index, "describe", "<unkown>")))
         acq = apt_pkg.Acquire(progress or apt.progress.text.AcquireProgress())
-        acqfile = apt_pkg.AcquireFile(acq, self.uri, self._records.md5_hash,
+        acqfile = apt_pkg.AcquireFile(acq, self.uri,
+                                      hashstring and str(hashstring),
                                       self.size, base, destfile=destfile)
         acq.run()
 
@@ -578,7 +638,8 @@ class Version(object):
 
         return os.path.abspath(destfile)
 
-    def fetch_source(self, destdir="", progress=None, unpack=True):
+    def fetch_source(self, destdir="", progress=None, unpack=True,
+                     allow_unauthenticated=None):
         """Get the source code of a package.
 
         The parameter *destdir* specifies the directory where the source will
@@ -593,7 +654,15 @@ class Version(object):
 
         If *unpack* is ``True``, the path to the extracted directory is
         returned. Otherwise, the path to the .dsc file is returned.
+
+        The keyword-only parameter *allow_unauthenticated* specifies whether
+        to allow unauthenticated downloads. If not specified, it defaults to
+        the configuration option `APT::Get::AllowUnauthenticated`.
         """
+        if allow_unauthenticated is None:
+            allow_unauthenticated = apt_pkg.config.find_b("APT::Get::"
+                                        "AllowUnauthenticated", False)
+
         src = apt_pkg.SourceRecords()
         acq = apt_pkg.Acquire(progress or apt.progress.text.AcquireProgress())
 
@@ -608,16 +677,23 @@ class Version(object):
         if not source_lookup:
             raise ValueError("No source for %r" % self)
         files = list()
-        for md5, size, path, type_ in src.files:
+
+        if not (allow_unauthenticated or src.index.is_trusted):
+            raise UntrustedError("Could not fetch %s %s source package: "
+                                 "Source %r is not trusted" %
+                                 (self.package.name, self.version,
+                                  src.index.describe))
+        for hashstring, size, path, type_ in _get_source_hashs(src):
             base = os.path.basename(path)
             destfile = os.path.join(destdir, base)
             if type_ == 'dsc':
                 dsc = destfile
-            if _file_is_same(destfile, size, md5):
+            if _file_is_same(destfile, size, hashstring):
                 print('Ignoring already existing file: %s' % destfile)
                 continue
             files.append(apt_pkg.AcquireFile(acq, src.index.archive_uri(path),
-                         md5, size, base, destfile=destfile))
+                         hashstring and str(hashstring),
+                         size, base, destfile=destfile))
         acq.run()
 
         for item in acq.items:
