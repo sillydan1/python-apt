@@ -356,8 +356,8 @@ class Origin(object):
         trusted   - Boolean value whether this is trustworthy.
     """
 
-    def __init__(self, pkg_or_cache, packagefile):
-        # type: (Union[apt.Cache,Package], apt_pkg.PackageFile) -> None
+    def __init__(self, pkg, packagefile):
+        # type: (Package, apt_pkg.PackageFile) -> None
         self.archive = packagefile.archive
         self.component = packagefile.component
         self.label = packagefile.label
@@ -366,13 +366,7 @@ class Origin(object):
         self.site = packagefile.site
         self.not_automatic = packagefile.not_automatic
         # check the trust
-        if isinstance(pkg_or_cache, apt.Cache):
-            indexfile = pkg_or_cache._list.find_index(packagefile)
-        elif isinstance(pkg_or_cache, Package):
-            indexfile = pkg_or_cache._pcache._list.find_index(packagefile)
-        else:
-            raise TypeError("Invalid arg %r passed to Origin()" % pkg_or_cache)
-
+        indexfile = pkg._pcache._list.find_index(packagefile)
         if indexfile and indexfile.is_trusted:
             self.trusted = True
         else:
@@ -543,6 +537,7 @@ class Version(object):
     def _records(self):
         # type: () -> apt_pkg.PackageRecords
         """Internal helper that moves the Records to the right position."""
+        # If changing lookup, change fetch_binary() as well
         if not self.package._pcache._records.lookup(self._cand.file_list[0]):
             raise LookupError("Could not lookup record")
 
@@ -777,7 +772,7 @@ class Version(object):
         """Return a list of origins for the package version."""
         origins = []
         for (packagefile, _unused) in self._cand.file_list:
-            origins.append(self.package._pcache._origins[packagefile.id])
+            origins.append(Origin(self.package, packagefile))
         return origins
 
     @property
@@ -859,8 +854,9 @@ class Version(object):
         except StopIteration:
             return None
 
-    def fetch_binary(self, destdir='', progress=None):
-        # type: (str, Optional[AcquireProgress]) -> str
+    def fetch_binary(self, destdir='', progress=None,
+                     allow_unauthenticated=None):
+        # type: (str, Optional[AcquireProgress], Optional[bool]) -> str
         """Fetch the binary version of the package.
 
         The parameter *destdir* specifies the directory where the package will
@@ -870,18 +866,34 @@ class Version(object):
         object. If not specified or None, apt.progress.text.AcquireProgress()
         is used.
 
+        The keyword-only parameter *allow_unauthenticated* specifies whether
+        to allow unauthenticated downloads. If not specified, it defaults to
+        the configuration option `APT::Get::AllowUnauthenticated`.
+
         .. versionadded:: 0.7.10
         """
+        if allow_unauthenticated is None:
+            allow_unauthenticated = apt_pkg.config.find_b("APT::Get::"
+                                        "AllowUnauthenticated", False)
         base = os.path.basename(self._records.filename)
         destfile = os.path.join(destdir, base)
         if _file_is_same(destfile, self.size, self._records.hashes):
             logging.debug('Ignoring already existing file: %s' % destfile)
             return os.path.abspath(destfile)
 
+        # Verify that the index is actually trusted
+        pfile, offset = self._cand.file_list[0]
+        index = self.package._pcache._list.find_index(pfile)
+
+        if not (allow_unauthenticated or (index and index.is_trusted)):
+            raise UntrustedError("Could not fetch %s %s source package: "
+                                 "Source %r is not trusted" %
+                                 (self.package.name, self.version,
+                                  getattr(index, "describe", "<unkown>")))
         if not self.uri:
             raise ValueError("No URI for this binary.")
         hashes = self._records.hashes
-        if not hashes.usable:
+        if not (allow_unauthenticated or hashes.usable):
             raise UntrustedError("The item %r could not be fetched: "
                                      "No trusted hash found." %
                                      destfile)
@@ -896,8 +908,9 @@ class Version(object):
 
         return os.path.abspath(destfile)
 
-    def fetch_source(self, destdir="", progress=None, unpack=True):
-        # type: (str, Optional[AcquireProgress], bool) -> str
+    def fetch_source(self, destdir="", progress=None, unpack=True,
+                     allow_unauthenticated=None):
+        # type: (str, Optional[AcquireProgress], bool, Optional[bool]) -> str
         """Get the source code of a package.
 
         The parameter *destdir* specifies the directory where the source will
@@ -912,7 +925,15 @@ class Version(object):
 
         If *unpack* is ``True``, the path to the extracted directory is
         returned. Otherwise, the path to the .dsc file is returned.
+
+        The keyword-only parameter *allow_unauthenticated* specifies whether
+        to allow unauthenticated downloads. If not specified, it defaults to
+        the configuration option `APT::Get::AllowUnauthenticated`.
         """
+        if allow_unauthenticated is None:
+            allow_unauthenticated = apt_pkg.config.find_b("APT::Get::"
+                                        "AllowUnauthenticated", False)
+
         src = apt_pkg.SourceRecords()
         acq = apt_pkg.Acquire(progress or apt.progress.text.AcquireProgress())
 
@@ -927,6 +948,12 @@ class Version(object):
         if not source_lookup:
             raise ValueError("No source for %r" % self)
         files = list()
+
+        if not (allow_unauthenticated or src.index.is_trusted):
+            raise UntrustedError("Could not fetch %s %s source package: "
+                                 "Source %r is not trusted" %
+                                 (self.package.name, self.version,
+                                  src.index.describe))
         for fil in src.files:
             base = os.path.basename(fil.path)
             destfile = os.path.join(destdir, base)
@@ -936,7 +963,7 @@ class Version(object):
                 logging.debug('Ignoring already existing file: %s' % destfile)
                 continue
 
-            if not fil.hashes.usable:
+            if not (allow_unauthenticated or fil.hashes.usable):
                 raise UntrustedError("The item %r could not be fetched: "
                                          "No trusted hash found." %
                                          destfile)
