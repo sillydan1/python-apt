@@ -25,6 +25,7 @@ struct PkgSrcRecordsStruct
    PkgSrcRecordsStruct() : Last(0) {
       List.ReadMainList();
       Records = new pkgSrcRecords(List);
+      Records->Restart();
    };
    ~PkgSrcRecordsStruct() {
       delete Records;
