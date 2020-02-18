@@ -1,3 +1,9 @@
+python-apt (1.9.5build1) focal; urgency=medium
+
+  * No-change rebuild to drop python3.7.
+
+ -- Matthias Klose <doko@ubuntu.com>  Tue, 18 Feb 2020 10:45:31 +0100
+
 python-apt (1.9.5) experimental; urgency=medium
 
   [ Marc Deslauriers ]
