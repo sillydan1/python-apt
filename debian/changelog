@@ -1,3 +1,9 @@
+python-apt (1.9.6ubuntu1) focal; urgency=medium
+
+  * Expect stderr in the autopkg tests.
+
+ -- Matthias Klose <doko@ubuntu.com>  Sat, 22 Feb 2020 16:13:00 +0100
+
 python-apt (1.9.6) experimental; urgency=medium
 
   [ dann frazier ]
