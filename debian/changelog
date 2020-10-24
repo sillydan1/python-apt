@@ -1,3 +1,9 @@
+python-apt (2.1.3ubuntu2) hirsute; urgency=medium
+
+  * No-change rebuild to build with python3.9 as supported.
+
+ -- Matthias Klose <doko@ubuntu.com>  Sat, 24 Oct 2020 10:54:11 +0200
+
 python-apt (2.1.3ubuntu1) groovy; urgency=medium
 
   * Cherrypick pr#51 to fix FTBFS with new sphinx.
