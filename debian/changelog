@@ -1,3 +1,9 @@
+python-apt (2.1.3ubuntu3) hirsute; urgency=medium
+
+  * Add hirsute to the Ubuntu template.
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Mon, 26 Oct 2020 16:28:01 -0700
+
 python-apt (2.1.3ubuntu2) hirsute; urgency=medium
 
   * No-change rebuild to build with python3.9 as supported.
