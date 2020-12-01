@@ -1,4 +1,4 @@
-image: ubuntu:focal
+image: ubuntu:groovy
 variables:
   DEBIAN_FRONTEND: noninteractive
 
@@ -6,7 +6,7 @@ typing:
   script:
   - apt update
   - apt install -q -y python3-pip
-  - python3 -m pip install -U mypy
+  - python3 -m pip install -U mypy==0.782
   - env MYPYPATH=$PWD/typehinting/ mypy --strict ./apt
 
 pep8:
