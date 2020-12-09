@@ -1,3 +1,10 @@
+python-apt (2.1.3ubuntu1.2) groovy-security; urgency=medium
+
+  * Fix regression in data/templates/Ubuntu.info.in versus the release
+    pocket.  LP: #1907496.
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Wed, 09 Dec 2020 13:33:26 -0800
+
 python-apt (2.1.3ubuntu1.1) groovy-security; urgency=high
 
   * SECURITY UPDATE: various memory and file descriptor leaks (LP: #1899193)
