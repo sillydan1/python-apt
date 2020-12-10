@@ -1,3 +1,12 @@
+python-apt (2.1.3ubuntu1.3) groovy-security; urgency=medium
+
+  * REGRESSION UPDATE: Passing a file descriptor to apt_inst.ArFile or
+    apt_inst.DebFile caused a segmentation fault (LP: #1907676)
+    - python/arfile.cc: Fix segmentation fault when opening fd, track
+      lifetime correctly
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Thu, 10 Dec 2020 09:43:25 -0500
+
 python-apt (2.1.3ubuntu1.2) groovy-security; urgency=medium
 
   * Fix regression in data/templates/Ubuntu.info.in versus the release
