@@ -1,3 +1,28 @@
+python-apt (1.8.4.3) buster-security; urgency=high
+
+  * REGRESSION UPDATE: Passing a file descriptor to apt_inst.ArFile or
+    apt_inst.DebFile caused a segmentation fault (Closes: #977000):
+    - python/arfile.cc: Fix segmentation fault when opening fd, track lifetime
+      correctly
+  * REGRESSION UPDATE: arfile: Collect file<->deb/ar reference cycles
+
+ -- Julian Andres Klode <jak@debian.org>  Tue, 22 Dec 2020 20:38:06 +0100
+
+python-apt (1.8.4.2) buster-security; urgency=high
+
+  * SECURITY UPDATE: various memory and file descriptor leaks (LP: #1899193)
+    - python/arfile.cc, python/generic.h, python/tag.cc, python/tarfile.cc:
+      fix file descriptor and memory leaks
+    - python/apt_instmodule.cc, python/apt_instmodule.h, python/arfile.h:
+      Avoid reference cycle with control,data members in apt_inst.DebFile
+      objects
+    - tests/test_cve_2020_27351.py: Test cases for DebFile (others not easily
+      testable)
+    - CVE-2020-27351
+  * data/templates: Update mirror lists
+
+ -- Julian Andres Klode <jak@debian.org>  Tue, 01 Dec 2020 20:18:12 +0100
+
 python-apt (1.8.4.1) buster-security; urgency=high
 
   * SECURITY UPDATE: Check that repository is trusted before downloading
