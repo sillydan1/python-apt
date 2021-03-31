@@ -1,3 +1,10 @@
+python-apt (2.1.7ubuntu1) hirsute; urgency=medium
+
+  * Enable building with pie. That was disabled in 2016, but seems
+    to build now.
+
+ -- Lukas Märdian <slyon@ubuntu.com>  Wed, 31 Mar 2021 16:40:30 +0200
+
 python-apt (2.1.7) unstable; urgency=medium
 
   * SECURITY UPDATE: various memory and file descriptor leaks (LP: #1899193)
