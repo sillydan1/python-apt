@@ -1,3 +1,9 @@
+python-apt (2.1.7ubuntu2) hirsute; urgency=medium
+
+  * Update mirror lists for release
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Mon, 19 Apr 2021 12:09:09 +0200
+
 python-apt (2.1.7ubuntu1) hirsute; urgency=medium
 
   * Enable building with pie. That was disabled in 2016, but seems
