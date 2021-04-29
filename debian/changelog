@@ -1,3 +1,16 @@
+python-apt (2.2.0~ubuntu0.21.04.1) hirsute; urgency=medium
+
+  * Upload to hirsute; changes since 2.1.7ubuntu2:
+    - Annotate test dependencies with <!nocheck> (Closes: #980719)
+    - Mirror list updates
+    - debfile: Pass `Name` instead of `Binary` to ExtractTar.
+      Passing the binary causes it to fail trying to find the `false`
+      compressor when a binary for a given compressor is not installed.
+      (LP: #1926437)
+    - debian/gbp.conf: Branch name is main
+
+ -- Julian Andres Klode <juliank@ubuntu.com>  Thu, 29 Apr 2021 15:20:13 +0200
+
 python-apt (2.2.0) unstable; urgency=medium
 
   [ Helmut Grohne ]
