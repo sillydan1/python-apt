@@ -1,3 +1,9 @@
+python-apt (2.2.1build1) jammy; urgency=medium
+
+  * No-change rebuild to add python3.10.
+
+ -- Matthias Klose <doko@ubuntu.com>  Sat, 16 Oct 2021 06:58:06 +0000
+
 python-apt (2.2.1) unstable; urgency=medium
 
   [ Debian Janitor ]
