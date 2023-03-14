@@ -1,3 +1,9 @@
+python-apt (2.0.1ubuntu0.20.04.1) focal; urgency=medium
+
+  * Update mirror lists for Ubuntu and Debian
+
+ -- Graham Inggs <ginggs@ubuntu.com>  Tue, 14 Mar 2023 12:07:38 +0000
+
 python-apt (2.0.1) focal; urgency=medium
 
   * We're back to a proper upstream release with CI and all
