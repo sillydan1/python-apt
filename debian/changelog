@@ -1,3 +1,9 @@
+python-apt (2.6.0ubuntu1) mantic; urgency=medium
+
+  * Update mirror lists.
+
+ -- Brian Murray <brian@ubuntu.com>  Mon, 02 Oct 2023 13:44:34 -0700
+
 python-apt (2.6.0) unstable; urgency=medium
 
   * The Debian bookworm stable release
