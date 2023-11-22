@@ -5,6 +5,7 @@ import glob
 import os
 import shutil
 import sys
+import subprocess
 
 from setuptools import setup, Extension
 from setuptools.command.install import install
@@ -20,13 +21,6 @@ else:
     cmdclass["build"] = build_extra.build_extra
     cmdclass["build_i18n"] = build_i18n.build_i18n
     cmdclass["clean"] = clean_build_tree
-
-try:
-    from sphinx.setup_command import BuildDoc
-except ImportError:
-    print("W: [python%s] Sphinx import error." % sys.version[:3])
-else:
-    cmdclass["build_sphinx"] = BuildDoc
 
 
 class InstallTypeinfo(install):
@@ -46,6 +40,15 @@ cmdclass["install"] = InstallTypeinfo
 def get_version():
     """Get a PEP 0440 compatible version string"""
     version = os.environ.get("DEBVER")
+    if not version:
+        proc = subprocess.Popen(
+            ["dpkg-parsechangelog", "-SVersion"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        out, _ = proc.communicate()
+        if proc.returncode == 0:
+            version = out.decode("utf-8")
     if not version:
         return version
 
